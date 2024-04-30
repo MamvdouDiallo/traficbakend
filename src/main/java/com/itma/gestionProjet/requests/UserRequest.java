@@ -13,6 +13,7 @@ public class UserRequest {
     private String date_of_birth;
     private String place_of_birth;
     private Boolean enabled;
+    private String password;
     private List<RoleRequest> roles;
     public String getEmail() {
         return this.email;

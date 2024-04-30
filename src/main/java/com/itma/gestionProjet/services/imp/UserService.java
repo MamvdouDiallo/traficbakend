@@ -1,20 +1,21 @@
 package com.itma.gestionProjet.services.imp;
 
-import com.itma.gestionProjet.dtos.RoleDTO;
 import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.Role;
 import com.itma.gestionProjet.entities.User;
+import com.itma.gestionProjet.entities.VerificationToken;
 import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
-import com.itma.gestionProjet.exceptions.RoleAlreadyExistsException;
+import com.itma.gestionProjet.repositories.RoleRepository;
+import com.itma.gestionProjet.repositories.VerificationTokenRepository;
 import com.itma.gestionProjet.requests.UserRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.itma.gestionProjet.repositories.UserRepository;
 import com.itma.gestionProjet.services.IUserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,22 +26,37 @@ public class UserService  implements IUserService {
     private UserRepository userRepository;
 
     @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+  private RoleRepository roleRepository;
 
     @Autowired
     ModelMapper modelMapper;
+     @Autowired
+    private  VerificationTokenRepository tokenRepository;
     @Override
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
-    public UserDTO saveUser(UserRequest p) {
+    public User saveUser(UserRequest p) {
 
         Optional<User>  optionalUser = userRepository.findByEmail(p.getEmail());
         if(optionalUser.isPresent())
             throw new EmailAlreadyExistsException("Email déjà existant!");
-       return null;
+        User newUser=new User();
+        newUser.setEmail(p.getEmail());
+        newUser.setLastname(p.getLastname());
+        newUser.setFirstname(p.getFirstname());
+        newUser.setDate_of_birth(p.getDate_of_birth());
+        newUser.setPlace_of_birth(p.getDate_of_birth());
+        newUser.setEnabled(p.getEnabled());
+        newUser.setPassword(p.getPassword());
+        userRepository.save(newUser);
+        Role r = roleRepository.findRoleByName("Super Admin");
+        List<Role> roles = new ArrayList<>();
+        roles.add(r);
+        newUser.setRoles(roles);
+       return userRepository.save(newUser)    ;
     }
 
     @Override
@@ -54,8 +70,8 @@ public class UserService  implements IUserService {
     }
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        return List.of();
+    public List<User> getAllUsers() {
+        return   userRepository.findAll();
     }
 
     @Override
@@ -74,7 +90,11 @@ public class UserService  implements IUserService {
         return userDTO;
     }
 
-
+    @Override
+    public void saveUserVerificationToken(User theUser, String token) {
+        var verificationToken = new VerificationToken(token, theUser);
+        tokenRepository.save(verificationToken);
+    }
 
 
 }

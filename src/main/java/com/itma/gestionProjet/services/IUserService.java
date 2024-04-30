@@ -10,11 +10,14 @@ import java.util.Optional;
 public interface IUserService {
     Optional<User> findUserByEmail(String email);
 
-    UserDTO saveUser(UserRequest p);
+    User saveUser(UserRequest p);
     UserDTO updateUser(UserDTO p);
     UserDTO getUser(Long id);
-    List<UserDTO> getAllUsers();
+    List<User> getAllUsers();
 
+
+
+    void saveUserVerificationToken(User theUser, String verificationToken);
     void deleteUser(User p);
     void deleteUserById(Long id);
 

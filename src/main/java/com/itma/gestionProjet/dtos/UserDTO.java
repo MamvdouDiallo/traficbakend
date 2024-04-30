@@ -1,5 +1,9 @@
 package com.itma.gestionProjet.dtos;
 
+import com.itma.gestionProjet.requests.RoleRequest;
+
+import java.util.List;
+
 public class UserDTO {
     private Long id;
     private String lastname;
@@ -8,4 +12,5 @@ public class UserDTO {
     private String date_of_birth;
     private String place_of_birth;
     private Boolean enabled;
+    private List<RoleRequest> roles;
 }

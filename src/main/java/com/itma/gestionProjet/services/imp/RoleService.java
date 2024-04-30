@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 @Service
 public class RoleService implements IRoleService {
 
@@ -56,6 +57,7 @@ public class RoleService implements IRoleService {
     @Override
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
+
     }
 
     @Override
@@ -71,8 +73,7 @@ public class RoleService implements IRoleService {
     @Override
     public RoleDTO convertEntityToDto(Role p) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        RoleDTO produitDTO=  modelMapper.map(p, RoleDTO.class);
-        return produitDTO;
+        return modelMapper.map(p, RoleDTO.class);
     }
 
     @Override
@@ -80,5 +81,6 @@ public class RoleService implements IRoleService {
         Role role = new Role();
         role = modelMapper.map(RoleDto, Role.class);
         return role;
+
     }
 }

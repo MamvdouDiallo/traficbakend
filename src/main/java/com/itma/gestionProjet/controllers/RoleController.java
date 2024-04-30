@@ -4,7 +4,6 @@ import com.itma.gestionProjet.dtos.RoleDTO;
 import com.itma.gestionProjet.entities.Role;
 import com.itma.gestionProjet.requests.RoleRequest;
 import com.itma.gestionProjet.services.imp.RoleService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
