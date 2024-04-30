@@ -1,6 +1,6 @@
-package repositories;
+package com.itma.gestionProjet.repositories;
 
-import entities.Role;
+import com.itma.gestionProjet.entities.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

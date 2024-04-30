@@ -1,4 +1,4 @@
-package dtos;
+package com.itma.gestionProjet.dtos;
 
 public class UserDTO {
     private Long id;

@@ -1,11 +1,12 @@
-package services.imp;
+package com.itma.gestionProjet.services.imp;
 
-import dtos.UserDTO;
-import entities.User;
+import com.itma.gestionProjet.dtos.UserDTO;
+import com.itma.gestionProjet.entities.User;
+import com.itma.gestionProjet.requests.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repositories.UserRepository;
-import services.IUserService;
+import com.itma.gestionProjet.repositories.UserRepository;
+import com.itma.gestionProjet.services.IUserService;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class UserService  implements IUserService {
     }
 
     @Override
-    public UserDTO saveUser(UserDTO p) {
+    public UserDTO saveUser(UserRequest p) {
         return null;
     }
 

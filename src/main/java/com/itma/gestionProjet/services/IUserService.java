@@ -1,7 +1,8 @@
-package services;
+package com.itma.gestionProjet.services;
 
-import dtos.UserDTO;
-import entities.User;
+import com.itma.gestionProjet.dtos.UserDTO;
+import com.itma.gestionProjet.entities.User;
+import com.itma.gestionProjet.requests.UserRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,7 @@ import java.util.Optional;
 public interface IUserService {
     Optional<User> findUserByEmail(String email);
 
-    UserDTO saveUser(UserDTO p);
+    UserDTO saveUser(UserRequest p);
     UserDTO updateUser(UserDTO p);
     UserDTO getUser(Long id);
     List<UserDTO> getAllUsers();
