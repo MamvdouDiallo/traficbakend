@@ -14,4 +14,8 @@ public class RoleRequest {
     private Long id;
     private String name;
 
+    public String getName() {
+        return this.name;
+    }
+
 }

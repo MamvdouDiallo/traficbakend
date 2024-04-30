@@ -20,6 +20,6 @@ public interface IUserService {
 
 
     UserDTO convertEntityToDto(User p);
-    User convertDtoToEntity(UserDTO UserDTO);
+  //  User convertDtoToEntity(UserRequest UserDTO);
     
 }

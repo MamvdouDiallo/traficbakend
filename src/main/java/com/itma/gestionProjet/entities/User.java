@@ -5,12 +5,9 @@ import lombok.*;
 
 import java.util.List;
 
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-
+@NoArgsConstructor
+@AllArgsConstructor
 
 @Entity
 public class User {

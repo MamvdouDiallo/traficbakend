@@ -1,12 +1,7 @@
 package com.itma.gestionProjet.requests;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +14,7 @@ public class UserRequest {
     private String place_of_birth;
     private Boolean enabled;
     private List<RoleRequest> roles;
+    public String getEmail() {
+        return this.email;
+    }
 }
