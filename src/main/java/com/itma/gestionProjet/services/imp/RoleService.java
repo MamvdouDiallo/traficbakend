@@ -6,6 +6,7 @@ import com.itma.gestionProjet.entities.Role;
 import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.exceptions.RoleAlreadyExistsException;
 import com.itma.gestionProjet.repositories.RoleRepository;
+import com.itma.gestionProjet.repositories.VerificationTokenRepository;
 import com.itma.gestionProjet.requests.RoleRequest;
 import com.itma.gestionProjet.services.IRoleService;
 import org.modelmapper.ModelMapper;
@@ -22,11 +23,11 @@ public class RoleService implements IRoleService {
 
     private RoleRepository roleRepository;
 
-
     @Autowired
     ModelMapper modelMapper;
+
     @Autowired
-    public RoleService(RoleRepository roleRepository) {
+    public RoleService(RoleRepository roleRepository, VerificationTokenRepository tokenRepository) {
         this.roleRepository = roleRepository;
     }
 
@@ -40,7 +41,7 @@ public class RoleService implements IRoleService {
 
         Optional<Role>  optionalUser = roleRepository.findByName(p.getName());
         if(optionalUser.isPresent())
-            throw new RoleAlreadyExistsException("Role déjà existant!");
+            throw new RoleAlreadyExistsException("Role déjà existant");
         return convertEntityToDto( roleRepository.save(convertDtoToEntity(p)));
     }
 

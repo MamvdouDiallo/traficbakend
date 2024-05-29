@@ -2,6 +2,7 @@ package com.itma.gestionProjet.exceptions;
 
 import java.time.LocalDateTime;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 
 @Data
 public class ErrorDetails {
@@ -11,10 +12,10 @@ public class ErrorDetails {
     private String errorCode;
 
     // Constructeur avec initialisation des champs
-    public ErrorDetails(LocalDateTime timestamp, String message, String path, String errorCode) {
+    public ErrorDetails(LocalDateTime timestamp, String message, String path, HttpStatus errorCode) {
         this.timestamp = timestamp;
         this.message = message;
         this.path = path;
-        this.errorCode = errorCode;
+        this.errorCode = String.valueOf(errorCode);
     }
 }

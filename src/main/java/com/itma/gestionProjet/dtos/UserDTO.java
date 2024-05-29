@@ -1,9 +1,12 @@
 package com.itma.gestionProjet.dtos;
 
+import com.itma.gestionProjet.entities.Image;
 import com.itma.gestionProjet.requests.RoleRequest;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class UserDTO {
     private Long id;
     private String lastname;
@@ -12,5 +15,6 @@ public class UserDTO {
     private String date_of_birth;
     private String place_of_birth;
     private Boolean enabled;
-    private List<RoleRequest> roles;
+    private Image image;
+    private List<RoleDTO> roles;
 }

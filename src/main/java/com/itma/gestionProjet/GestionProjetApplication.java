@@ -12,13 +12,10 @@ public class GestionProjetApplication {
 		SpringApplication.run(GestionProjetApplication.class, args);
 	}
 
-
 	@Bean
 	public ModelMapper modelMapper()
 	{
 		return new ModelMapper();
 	}
-
-
 
 }

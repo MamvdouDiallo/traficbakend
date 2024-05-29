@@ -1,5 +1,6 @@
 package com.itma.gestionProjet.services;
 
+import com.itma.gestionProjet.Password.PasswordResetToken;
 import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.requests.UserRequest;
@@ -9,11 +10,12 @@ import java.util.Optional;
 
 public interface IUserService {
     Optional<User> findUserByEmail(String email);
-
     User saveUser(UserRequest p);
+
+
     UserDTO updateUser(UserDTO p);
     UserDTO getUser(Long id);
-    List<User> getAllUsers();
+    List<UserDTO> getAllUsers();
 
 
 
@@ -23,6 +25,19 @@ public interface IUserService {
 
 
     UserDTO convertEntityToDto(User p);
-  //  User convertDtoToEntity(UserRequest UserDTO);
-    
+   User convertDtoToEntity(UserRequest UserDTO);
+
+    String validateToken(String theToken);
+
+    void createPasswordResetTokenForUser(User user, String passwordResetToken);
+
+    String validatePasswordResetToken(String token);
+
+    void deletePasswordResetToken(String token);
+
+    User findUserByToken(String token);
+
+    void changePassword(User user, String newPassword);
+
+    boolean oldPasswordIsValid(User user, String oldPassword);
 }
