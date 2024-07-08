@@ -1,5 +1,6 @@
 package com.itma.gestionProjet.requests;
 
+import com.itma.gestionProjet.entities.Image;
 import lombok.*;
 import java.util.List;
 @Data
@@ -14,8 +15,9 @@ public class UserRequest {
     private String place_of_birth;
     private Boolean enabled;
     private String password;
+    private  String locality;
+    private  String contact;
+    private Image image;
     private List<RoleRequest> roles;
-    public String getEmail() {
-        return this.email;
-    }
+    private  List<Long> project_ids;
 }

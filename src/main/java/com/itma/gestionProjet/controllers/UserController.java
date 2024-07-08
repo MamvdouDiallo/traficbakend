@@ -4,10 +4,7 @@ package com.itma.gestionProjet.controllers;
 import com.itma.gestionProjet.Password.PasswordRequest;
 import com.itma.gestionProjet.Password.PasswordRequestUtil;
 import com.itma.gestionProjet.Password.PasswordResetUtil;
-import com.itma.gestionProjet.dtos.ApiResponse;
-import com.itma.gestionProjet.dtos.AuthResponseDTO;
-import com.itma.gestionProjet.dtos.LoginDTO;
-import com.itma.gestionProjet.dtos.UserDTO;
+import com.itma.gestionProjet.dtos.*;
 import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.entities.VerificationToken;
 import com.itma.gestionProjet.events.RegistrationCompleteEvent;
@@ -72,8 +69,6 @@ public class UserController {
         return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
     }
 
-
-
     @RequestMapping(path = "/createUser", method = RequestMethod.POST)
     public  ApiResponse<User> createUser(@RequestBody UserRequest userRequest, final HttpServletRequest request) {
         User user = userService.saveUser(userRequest);
@@ -81,6 +76,18 @@ public class UserController {
         return   new ApiResponse<>(HttpStatus.OK.value(), "User cree avec succés",user);
     }
 
+
+    @GetMapping("/{id}")
+    public ApiResponse<User> getUserById(@PathVariable Long id) {
+        Optional<User> user = userService.findById((id));
+        User user1 = user.get();
+        UserDTO userDTO = userService.convertEntityToDto(user1);
+        if (user.isPresent()) {
+            return new ApiResponse<>(200,"utilisateur",    userDTO);
+        } else {
+            throw  new UsernameNotFoundException("utilisateur not found");
+        }
+    }
     @PostMapping("login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDto){
         Authentication authentication = authenticationManager.authenticate(
@@ -171,4 +178,42 @@ public class UserController {
 
     }
 
+
+//creation des maitres d'ouvrages
+    @RequestMapping(path = "/createMo", method = RequestMethod.POST)
+    public  ApiResponse<User> createMO(@RequestBody UserRequest userRequest, final HttpServletRequest request) {
+      //  ProjectDTO projectDTO = projectService.saveProject(projectRequest);
+        UserDTO user = userService.saveMo(userRequest);
+
+      //  publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
+        return  new ApiResponse<>(HttpStatus.OK.value(), "Maitres d'ouvrtages  crée avec succés",user);
+    }
+
+//liste des maitres d'ouvrages
+    @RequestMapping(path = "/by_role", method = RequestMethod.GET)
+    public ApiResponse<List<UserDTO>> getMaitresOuvrages(@RequestParam String roleName) {
+        List<UserDTO> users = userService.getUsersByRoleName(roleName);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
+    }
+
+
+    @DeleteMapping("/deleteMo/{id}")
+    public ApiResponse<?> deleteUser(@PathVariable Long id) throws Exception {
+        try {
+            userService.deleteUserById(id);
+            return new  ApiResponse<>(HttpStatus.OK.value(),"User deleted successfully.",null);
+        } catch (Exception e) {
+             throw  new Exception( "An error occurred while deleting the user."+e);
+        }
+    }
+
+    @PostMapping("/updateMo")
+    public ApiResponse<UserDTO> updateUser(@RequestBody UserRequest userRequest) throws Exception {
+        try{
+            UserDTO updatedUser = userService.updateUser(userRequest);
+            return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully", updatedUser);
+        }catch (Exception e){
+            throw new Exception("An error ocuured while deleting the user "+e);
+        }
+    }
 }

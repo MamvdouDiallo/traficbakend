@@ -1,6 +1,7 @@
 package com.itma.gestionProjet.services.imp;
 
 import com.itma.gestionProjet.entities.Image;
+import com.itma.gestionProjet.exceptions.ImageNotFoundException;
 import com.itma.gestionProjet.repositories.ImageRepository;
 import com.itma.gestionProjet.repositories.UserRepository;
 import com.itma.gestionProjet.services.IImageService;
@@ -38,6 +39,22 @@ public class ImageService  implements IImageService {
         return imageRepository.save(Image.builder().name(file.getOriginalFilename()).type(file.getContentType())
                 .image(file.getBytes()).build());
     }
+
+    @Override
+    public Image updateImage(Long imageId, MultipartFile file) throws IOException {
+        // Vérifier si l'image existe
+        Image currentImage = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ImageNotFoundException("Image not found with id " + imageId));
+
+        // Mettre à jour les propriétés de l'image existante avec les nouvelles données
+        currentImage.setName(file.getOriginalFilename());
+        currentImage.setType(file.getContentType());
+        currentImage.setImage(file.getBytes());
+
+        // Enregistrer et retourner l'image mise à jour
+        return imageRepository.save(currentImage);
+    }
+
 
     @Override
     public Image getImageDetails(Long id) throws IOException {

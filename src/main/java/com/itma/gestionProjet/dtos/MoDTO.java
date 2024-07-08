@@ -1,14 +1,14 @@
 package com.itma.gestionProjet.dtos;
 
 import com.itma.gestionProjet.entities.Image;
-import com.itma.gestionProjet.requests.RoleRequest;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
+
 
 @Data
-public class UserDTO {
+public class MoDTO {
+
     private Long id;
     private String lastname;
     private String firstname;
@@ -20,6 +20,4 @@ public class UserDTO {
     private Boolean enabled;
     private Image image;
     private List<RoleDTO> roles;
-    private  List<ProjectDTOUSER> projects;
-  //  private Set<ProjectDTO> projects;
 }

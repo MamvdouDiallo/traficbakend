@@ -9,7 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class ProjectDTO {
+public class ProjectDTOUSER {
+
     private  String id;
     private  String libelle;
     private String description;
@@ -19,6 +20,5 @@ public class ProjectDTO {
     private  Date datefin;
     private Image image;
     private List<File> files;
-    private  List<MoDTO> users;
     private  List<NormeProjet> normeProjets;
 }

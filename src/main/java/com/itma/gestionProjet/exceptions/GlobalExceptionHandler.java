@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                HttpStatus.BAD_REQUEST
+                HttpStatus.NOT_FOUND
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED); // Utilisation de UNAUTHORIZED pour une expiration de token
     }
@@ -74,6 +74,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadySendException.class)
     public ResponseEntity<ErrorDetails> handleEmailAlreadySendException(EmailAlreadySendException exception, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(ContactMobileAlreadyExistsException.class)
+    public ResponseEntity<ErrorDetails> handleContactMobileAlreadyExistsException(ContactMobileAlreadyExistsException exception, WebRequest webRequest){
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
@@ -115,6 +127,17 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
 
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handleImageNotFounException(ImageNotFoundException exception, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST
+        );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 

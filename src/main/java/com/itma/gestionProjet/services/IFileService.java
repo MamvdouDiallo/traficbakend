@@ -13,7 +13,7 @@ public interface IFileService {
     File uplaodFile(MultipartFile file) throws IOException;
     File getFileDetails(Long id) throws IOException;
     ResponseEntity<byte[]> getFile(Long id) throws IOException;
-    void deleteFile(Long id) ;
+    List<File> deleteFile(Long id) ;
     
 
     File uplaodFileProj(MultipartFile file,Long idProd) throws IOException;
@@ -23,4 +23,5 @@ public interface IFileService {
     List<File> getFilesParProj(Long prodId);
 
 
+    List<File> updateFiles(MultipartFile[] files, Long idProd) throws IOException;
 }

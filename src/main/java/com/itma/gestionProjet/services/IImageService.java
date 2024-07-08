@@ -14,7 +14,7 @@ public interface IImageService {
     ResponseEntity<byte[]> getImage(Long id) throws IOException;
     void deleteImage(Long id) ;
 
-
+ Image   updateImage(Long imageId,MultipartFile file) throws IOException;
     Image uplaodImageProd(MultipartFile file,Long idProd) throws IOException;
     List<Image> getImagesParProd(Long prodId);
 

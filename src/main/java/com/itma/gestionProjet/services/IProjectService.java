@@ -11,13 +11,15 @@ import java.util.Optional;
 public interface IProjectService {
     Optional<Project> findProjectByName(String name);
 
-    ProjectDTO saveProject(ProjectRequest p);
-    ProjectDTO updateProject(UserDTO p);
-    ProjectDTO getProject(Long id);
+    ProjectDTO saveProject(Project p);
+    ProjectDTO updateProject(Project p);
+    Optional<ProjectDTO> findProjectById(Long id);
+
+
     List<ProjectDTO> getAllProjects();
     void deleteProject(Project p);
     void deleteProjectById(Long id);
 
     ProjectDTO convertEntityToDto(Project p);
-    Project convertDtoToEntity(ProjectRequest ProjectDto);
+    Project convertDtoToEntity(Project ProjectDto);
 }

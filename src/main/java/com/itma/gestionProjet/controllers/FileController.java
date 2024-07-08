@@ -30,11 +30,32 @@ public class FileController {
         return fileService.uplaodFileProj(file,idProd);
     }
 
+
+
+    @PostMapping(value = "/update/{projectId}" )
+    public List<File> uploadFiles(@RequestParam("files") MultipartFile[] files, @PathVariable("projectId") Long projectId) {
+        try {
+            return fileService.updateFiles(files, projectId);
+        } catch (Exception e) {
+            // Gérer l'exception selon vos besoins
+            throw new RuntimeException("Failed to upload files", e);
+        }
+    }
     public List<File> getImagesProd(@PathVariable("idProd") Long idProd)
             throws IOException {
         return fileService.getFilesParProj(idProd);
     }
 
+
+    @RequestMapping(value = "/delete/{projectId}" )
+    public List<File> deletefiles(@PathVariable("projectId") Long projectId) {
+        try {
+            return fileService.deleteFile(projectId);
+        } catch (Exception e) {
+            // Gérer l'exception selon vos besoins
+            throw new RuntimeException("Failed to delete files", e);
+        }
+    }
 
 
 

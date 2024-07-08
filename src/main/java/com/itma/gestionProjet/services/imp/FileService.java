@@ -5,12 +5,14 @@ import com.itma.gestionProjet.entities.Project;
 import com.itma.gestionProjet.repositories.FileRepository;
 import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.services.IFileService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,8 +21,7 @@ public class FileService implements IFileService {
 
     @Autowired
     FileRepository fileRepository;
-    @Autowired
-    ProjectService projectService;
+
 
     @Autowired
     ProjectRepository projectRepository;
@@ -39,8 +40,9 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void deleteFile(Long id) {
-
+    public List<File> deleteFile(Long id) {
+        fileRepository.deleteByProjectId(id);
+        return null;
     }
 
     @Override
@@ -65,4 +67,30 @@ public class FileService implements IFileService {
                 .project(p).build() );
     }
 
+
+
+
+    @Transactional
+    @Override
+    public List<File> updateFiles(MultipartFile[] files, Long idProd) throws IOException {
+        Project p = new Project();
+        p.setId(Math.toIntExact(idProd));
+
+        // Supprimer les fichiers existants associés au projet
+        fileRepository.deleteByProjectId(idProd);
+        // Ajouter les nouveaux fichiers
+        List<File> uploadedFiles = new ArrayList<>();
+        for (MultipartFile file : files) {
+            File uploadedFile = File.builder()
+                    .name(file.getOriginalFilename())
+                    .type(file.getContentType())
+                    .file(file.getBytes())
+                    .project(p)
+                    .build();
+            uploadedFiles.add(uploadedFile);
+            fileRepository.save(uploadedFile);
+        }
+        return uploadedFiles;
+    }
 }
+

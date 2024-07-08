@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class imageRequest {
-    //   private Integer idImage ;
+    private Long idImage ;
       private    String name;
       private  String  type  ;
       private Integer[]  image ;

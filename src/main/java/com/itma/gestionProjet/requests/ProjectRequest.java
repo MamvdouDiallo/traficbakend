@@ -2,6 +2,9 @@ package com.itma.gestionProjet.requests;
 
 import com.itma.gestionProjet.entities.File;
 import com.itma.gestionProjet.entities.Image;
+import com.itma.gestionProjet.entities.Project;
+import com.itma.gestionProjet.entities.User;
+import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,11 +15,10 @@ import java.util.Date;
 import java.util.List;
 
 
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectRequest {
-
+public class ProjectRequest extends Project {
     @NotBlank(message = "Name cannot be blank")
     @NotNull(message = "name cannot be null")
     private  String libelle;
@@ -35,4 +37,5 @@ public class ProjectRequest {
     private  Date datefin;
     private Image image;
     private List<File> files;
+    private  List<User> users;
 }

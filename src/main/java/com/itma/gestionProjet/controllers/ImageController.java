@@ -25,6 +25,13 @@ public class ImageController {
         return imageService.uplaodImage(file);
     }
 
+    @PutMapping("/update/{imageId}")
+    public Image updateImage(
+            @PathVariable Long imageId,
+            @RequestParam("image") MultipartFile file) throws IOException {
+        return imageService.updateImage(imageId, file);
+    }
+
     @RequestMapping(value = "/load/{id}" , method = RequestMethod.GET)
     public ResponseEntity<byte[]> getImage(@PathVariable("id") Long id) throws IOException
     {
@@ -37,9 +44,4 @@ public class ImageController {
     }
 
 
-
-    @RequestMapping(value="/update",method = RequestMethod.PUT)
-    public Image UpdateImage(@RequestParam("image")MultipartFile file) throws IOException {
-        return imageService.uplaodImage(file);
-    }
 }
