@@ -84,6 +84,17 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(PartieInteresseAlreadyExistsException.class)
+    public ResponseEntity<ErrorDetails> handlePartieInteresseAlreadyExistsException(PartieInteresseAlreadyExistsException exception, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ContactMobileAlreadyExistsException.class)
     public ResponseEntity<ErrorDetails> handleContactMobileAlreadyExistsException(ContactMobileAlreadyExistsException exception, WebRequest webRequest){
         ErrorDetails errorDetails = new ErrorDetails(
@@ -141,4 +152,46 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
+
+
+    @ExceptionHandler(PartieInteresseNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handlePartieInteresseNotFoundException(PartieInteresseNotFoundException exception, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        body.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false).substring(4));  // Removing "uri=" from the path
+
+        ex.printStackTrace(); // Print the stack trace to the console for debugging
+
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<Object> handleNullPointerException(NullPointerException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        body.put("error", "Null Pointer Exception");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false).substring(4));  // Removing "uri=" from the path
+
+        ex.printStackTrace(); // Print the stack trace to the console for debugging
+
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

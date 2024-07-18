@@ -2,6 +2,7 @@ package com.itma.gestionProjet.services;
 
 import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.User;
+import com.itma.gestionProjet.requests.ConsultantRequest;
 import com.itma.gestionProjet.requests.UserRequest;
 
 import java.util.List;
@@ -42,4 +43,11 @@ List<UserDTO> getUsersByRoleName(String username);
     void changePassword(User user, String newPassword);
 
     boolean oldPasswordIsValid(User user, String oldPassword);
+
+
+
+
+
+    UserDTO saveConsultant(ConsultantRequest p);
+    UserDTO updateConsultant(Long id,ConsultantRequest p);
 }

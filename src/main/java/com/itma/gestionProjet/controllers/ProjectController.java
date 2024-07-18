@@ -39,7 +39,6 @@ public class ProjectController {
 
     @Autowired
     private ProjectRepository projectRepository;
-
     @RequestMapping(path = "/all", method = RequestMethod.GET)
     public ApiResponse<List<ProjectDTO>> getUsers() {
         List<ProjectDTO> projects = projectService.getAllProjects();

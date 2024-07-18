@@ -7,6 +7,7 @@ import com.itma.gestionProjet.exceptions.ContactMobileAlreadyExistsException;
 import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
 import com.itma.gestionProjet.exceptions.UserNotFoundException;
 import com.itma.gestionProjet.repositories.*;
+import com.itma.gestionProjet.requests.ConsultantRequest;
 import com.itma.gestionProjet.requests.UserRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.itma.gestionProjet.services.IUserService;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -284,5 +282,104 @@ public class UserService  implements IUserService {
     public boolean oldPasswordIsValid(User user, String oldPassword){
         return bCryptPasswordEncoder.matches(oldPassword, user.getPassword());
     }
+
+    @Override
+    public UserDTO saveConsultant(ConsultantRequest p) {
+        if (userRepository.findByEmail(p.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email déjà existant!");
+        }
+
+        // Check if a user with the given contact number already exists
+        if (userRepository.findByContact(p.getContact()).isPresent()) {
+            throw new ContactMobileAlreadyExistsException("Ce numero téléphone est dejà utilisé");
+        }
+
+        // Create a new Mo
+        User newUser = new User();
+        newUser.setEmail(p.getEmail());
+        newUser.setLastname(p.getLastname());
+        newUser.setFirstname(p.getFirstname());
+        newUser.setContact(p.getContact());
+        newUser.setDate_of_birth(p.getDate_of_birth());
+        newUser.setLocality(p.getLocality());
+        newUser.setPlace_of_birth(p.getPlace_of_birth()); // Assuming this should be 'getPlaceOfBirth'
+        newUser.setEnabled(false);
+        newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
+        newUser.setImage(p.getImage());
+        // Assign roles to the new user
+        Role r = roleRepository.findRoleByName("Consultant");
+        List<Role> roles = new ArrayList<>();
+        roles.add(r);
+        newUser.setRoles(roles);
+        // Assign projects to the new user
+        List<Long> projectIds = Collections.singletonList(p.getProject_id());
+        List<Project> projects = projectRepository.findAllById(projectIds);
+        newUser.setProjects(projects);// Update each project with the new user
+        for (Project project : projects) {
+            project.getUsers().add(newUser);
+        }
+        // Save the new user
+        return    convertEntityToDto(userRepository.save(newUser));
+    }
+
+
+
+
+
+
+    @Override
+    public UserDTO updateConsultant(Long id, ConsultantRequest p) {
+        // Find the user by ID
+        User existingUser = userRepository.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + p.getId()));
+
+        // Check if the email is being changed and if the new email already exists
+        // Vérification de l'email
+        userRepository.findByEmail(p.getEmail()).ifPresent(user -> {
+
+            if (!Objects.equals(user.getId(), existingUser.getId())) {
+                throw new EmailAlreadyExistsException("Email déjà existant!");
+            }
+
+        });
+
+
+        // Vérification du numéro de contact
+
+        userRepository.findByContact(p.getContact()).ifPresent(user -> {
+
+            if (!Objects.equals(user.getId(), existingUser.getId())) {
+                throw new EmailAlreadyExistsException("Email déjà existant!");
+            }
+
+        });
+
+        // Update the user's information
+        existingUser.setEmail(p.getEmail());
+        existingUser.setLastname(p.getLastname());
+        existingUser.setFirstname(p.getFirstname());
+        existingUser.setContact(p.getContact());
+        existingUser.setDate_of_birth(p.getDate_of_birth());
+        existingUser.setLocality(p.getLocality());
+        existingUser.setPlace_of_birth(p.getPlace_of_birth());
+        existingUser.setImage(p.getImage());
+
+        List<Long> projectIds = Collections.singletonList(p.getProject_id());
+        List<Project> projects = projectRepository.findAllById(projectIds);
+        existingUser.setProjects(projects);// Update each project with the new user
+        for (Project project : projects) {
+            project.getUsers().add(existingUser);
+        }
+
+        // Save the updated user
+        return convertEntityToDto(userRepository.save(existingUser));
+    }
+
+
+
+
+
+
+
 
 }

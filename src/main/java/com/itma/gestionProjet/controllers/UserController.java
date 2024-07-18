@@ -11,6 +11,7 @@ import com.itma.gestionProjet.events.RegistrationCompleteEvent;
 import com.itma.gestionProjet.events.listenner.RegistrationCompleteEventListener;
 import com.itma.gestionProjet.repositories.UserRepository;
 import com.itma.gestionProjet.repositories.VerificationTokenRepository;
+import com.itma.gestionProjet.requests.ConsultantRequest;
 import com.itma.gestionProjet.requests.UserRequest;
 import com.itma.gestionProjet.security.JWTGenerator;
 import com.itma.gestionProjet.services.imp.UserService;
@@ -214,6 +215,28 @@ public class UserController {
             return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully", updatedUser);
         }catch (Exception e){
             throw new Exception("An error ocuured while deleting the user "+e);
+        }
+    }
+
+
+
+//creation des consultants
+    @RequestMapping(path = "/createConsultant", method = RequestMethod.POST)
+    public  ApiResponse<User> createConsultant(@RequestBody ConsultantRequest userRequest, final HttpServletRequest request) {
+        UserDTO user = userService.saveConsultant(userRequest);
+
+        //  publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
+        return  new ApiResponse<>(HttpStatus.OK.value(), "Consultant   crée avec succés",user);
+    }
+
+
+    @PutMapping("/updateConsultant/{id}")
+    public  ApiResponse<User> updateConsultant(@RequestBody ConsultantRequest userRequest,@PathVariable Long id) {
+        try {
+            UserDTO user = userService.updateConsultant(id, userRequest);
+            return new ApiResponse<>(HttpStatus.OK.value(), "Consultant mis à jour avec succès", user);
+        } catch (Exception e) {
+            return new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Erreur interne du serveur", null);
         }
     }
 }

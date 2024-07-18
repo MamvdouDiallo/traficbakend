@@ -55,7 +55,6 @@ public class ProjectService implements IProjectService {
                 user.getProjects().add(p);
             }
         }
-
         // Sauvegardez le projet
         Project savedProject = projectRepository.save(p);
         return convertEntityToDto(savedProject);

@@ -2,13 +2,13 @@ package com.itma.gestionProjet.dtos;
 
 import java.util.List;
 
-public class AApiResponse <T>{
-
+public class AApiResponse<T> {
 
     private int responseCode;
     private List<T> data;
     private int offset;
     private int max;
+    private String message;
     private long length;
 
     // Getters and Setters
@@ -50,5 +50,13 @@ public class AApiResponse <T>{
 
     public void setLength(long length) {
         this.length = length;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
