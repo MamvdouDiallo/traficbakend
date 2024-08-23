@@ -17,6 +17,7 @@ public class ConsultantDTO {
     private  String locality;
     private Boolean enabled;
     private Image image;
+    private  String sous_role;
     private RoleDTO role;
     private  ProjectDTOUSER project;
 }

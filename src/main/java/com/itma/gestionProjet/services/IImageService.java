@@ -18,4 +18,7 @@ public interface IImageService {
     Image uplaodImageProd(MultipartFile file,Long idProd) throws IOException;
     List<Image> getImagesParProd(Long prodId);
 
+
+    String uploadImageToFileSystem(MultipartFile file)  throws IOException;
+
 }

@@ -151,6 +151,7 @@ public class PartieInteresseController {
         dto.setSexeContactPrincipal(partieInteresse.getUser().getSexe());
         dto.setStatut(partieInteresse.getStatut());
         dto.setTelephoneContactPrincipal(partieInteresse.getUser().getContact());
+        dto.setProject_id((long) partieInteresse.getProject().getId());
         return dto;
     }
 

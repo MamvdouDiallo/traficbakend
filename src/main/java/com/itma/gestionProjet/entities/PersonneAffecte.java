@@ -1,9 +1,6 @@
 package com.itma.gestionProjet.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +27,7 @@ public class PersonneAffecte {
     private  String pays;
     private Integer age;
     private String nationalite;
+    private  String codePap;
     private String departement;
     private  String typeIdentification;
     private String numeroIdentification;
@@ -48,4 +46,9 @@ public class PersonneAffecte {
     private String typeEquipement;
     private Double superficieCultive;
     private String descriptionBienAffecte;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+    private String signaturePath;
+    private  String imagePath;
 }

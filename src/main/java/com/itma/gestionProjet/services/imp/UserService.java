@@ -302,6 +302,7 @@ public class UserService  implements IUserService {
         newUser.setContact(p.getContact());
         newUser.setDate_of_birth(p.getDate_of_birth());
         newUser.setLocality(p.getLocality());
+        newUser.setSous_role(p.getSous_role());
         newUser.setPlace_of_birth(p.getPlace_of_birth()); // Assuming this should be 'getPlaceOfBirth'
         newUser.setEnabled(false);
         newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
@@ -363,7 +364,7 @@ public class UserService  implements IUserService {
         existingUser.setLocality(p.getLocality());
         existingUser.setPlace_of_birth(p.getPlace_of_birth());
         existingUser.setImage(p.getImage());
-
+        existingUser.setSous_role(p.getSous_role());
         List<Long> projectIds = Collections.singletonList(p.getProject_id());
         List<Project> projects = projectRepository.findAllById(projectIds);
         existingUser.setProjects(projects);// Update each project with the new user

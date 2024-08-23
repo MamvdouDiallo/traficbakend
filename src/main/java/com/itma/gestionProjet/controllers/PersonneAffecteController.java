@@ -3,7 +3,10 @@ package com.itma.gestionProjet.controllers;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.ApiResponse;
+import com.itma.gestionProjet.dtos.PersonneAffecteDTO;
 import com.itma.gestionProjet.entities.PersonneAffecte;
+import com.itma.gestionProjet.entities.Project;
+import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.services.ExcelService;
 import com.itma.gestionProjet.services.imp.PersonneAffecteServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +36,15 @@ public class PersonneAffecteController {
     @Autowired
     private PersonneAffecteServiceImpl personneAffecteService;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
     @GetMapping
-    public ResponseEntity<AApiResponse<PersonneAffecte>> getPersonneAffectes(
+    public ResponseEntity<AApiResponse<PersonneAffecteDTO>> getPersonneAffectes(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int max) {
-        Page<PersonneAffecte> personneAffectePage = personneAffecteService.getPersonneAffectes(offset, max);
-        AApiResponse<PersonneAffecte> response = new AApiResponse<>();
+        Page<PersonneAffecteDTO> personneAffectePage = personneAffecteService.getPersonneAffectes(offset, max);
+        AApiResponse<PersonneAffecteDTO> response = new AApiResponse<>();
         response.setResponseCode(200);
         response.setData(personneAffectePage.getContent());
         response.setOffset(offset);
@@ -54,10 +60,10 @@ public class PersonneAffecteController {
     }
 
     @PostMapping
-    public ResponseEntity<AApiResponse<PersonneAffecte>> createPersonneAffecte(@RequestBody PersonneAffecte personneAffecte) {
-        AApiResponse<PersonneAffecte> response = new AApiResponse<>();
+    public ResponseEntity<AApiResponse<PersonneAffecteDTO>> createPersonneAffecte(@RequestBody PersonneAffecteDTO personneAffecte) {
+        AApiResponse<PersonneAffecteDTO> response = new AApiResponse<>();
         try {
-            PersonneAffecte savedPersonneAffecte = personneAffecteService.savePersonneAffecte(personneAffecte);
+            PersonneAffecteDTO savedPersonneAffecte = personneAffecteService.savePersonneAffecte(personneAffecte);
             response.setResponseCode(200);
             response.setMessage("Personne affecté créé avec succés");
             response.setData(Collections.singletonList(savedPersonneAffecte));
@@ -71,13 +77,13 @@ public class PersonneAffecteController {
 
 
     @PostMapping("/importer")
-    public ResponseEntity<ApiResponse<List<PersonneAffecte>>> createPersonneAffectes(@RequestBody List<PersonneAffecte> personneAffectes) {
+    public ResponseEntity<ApiResponse<List<PersonneAffecteDTO>>> createPersonneAffectes(@RequestBody List<PersonneAffecteDTO> personneAffectes) {
         try {
-            List<PersonneAffecte> savedPersonneAffectes = personneAffecteService.savePersonneAffectes(personneAffectes);
-            ApiResponse<List<PersonneAffecte>> response = new ApiResponse<>(HttpStatus.CREATED.value(), "Personnes affectées importées avec succès", savedPersonneAffectes);
+            List<PersonneAffecteDTO> savedPersonneAffectes = personneAffecteService.savePersonneAffectes(personneAffectes);
+            ApiResponse<List<PersonneAffecteDTO>> response = new ApiResponse<>(HttpStatus.CREATED.value(), "Personnes affectées importées avec succès", savedPersonneAffectes);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            ApiResponse<List<PersonneAffecte>> errorResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Erreur lors de la création des personnes affectées", null);
+            ApiResponse<List<PersonneAffecteDTO>> errorResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Erreur lors de la création des personnes affectées", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -85,41 +91,26 @@ public class PersonneAffecteController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<PersonneAffecte> updatePersonneAffecte(@PathVariable Long id, @RequestBody PersonneAffecte personneAffecteDetails) {
-        Optional<PersonneAffecte> personneAffecte = personneAffecteService.getPersonneAffecteById(id);
-        if (personneAffecte.isPresent()) {
-            PersonneAffecte updatedPersonneAffecte = personneAffecte.get();
-            updatedPersonneAffecte.setIdPap(personneAffecteDetails.getIdPap());
-            updatedPersonneAffecte.setNombreParcelle(personneAffecteDetails.getNombreParcelle());
-            updatedPersonneAffecte.setIdParcelle(personneAffecteDetails.getIdParcelle());
-            updatedPersonneAffecte.setCategorie(personneAffecteDetails.getCategorie());
-            updatedPersonneAffecte.setPrenom(personneAffecteDetails.getPrenom());
-            updatedPersonneAffecte.setNom(personneAffecteDetails.getNom());
-            updatedPersonneAffecte.setDateNaissance(personneAffecteDetails.getDateNaissance());
-            updatedPersonneAffecte.setLieuNaissance(personneAffecteDetails.getLieuNaissance());
-            updatedPersonneAffecte.setSexe(personneAffecteDetails.getSexe());
-            updatedPersonneAffecte.setAge(personneAffecteDetails.getAge());
-            updatedPersonneAffecte.setNationalite(personneAffecteDetails.getNationalite());
-            updatedPersonneAffecte.setDepartement(personneAffecteDetails.getDepartement());
-            updatedPersonneAffecte.setNumeroIdentification(personneAffecteDetails.getNumeroIdentification());
-            updatedPersonneAffecte.setNumeroTelephone(personneAffecteDetails.getNumeroTelephone());
-            updatedPersonneAffecte.setLocaliteResidence(personneAffecteDetails.getLocaliteResidence());
-            updatedPersonneAffecte.setStatutPap(personneAffecteDetails.getStatutPap());
-            updatedPersonneAffecte.setStatutVulnerable(personneAffecteDetails.getStatutVulnerable());
-            updatedPersonneAffecte.setPrenomExploitant(personneAffecteDetails.getPrenomExploitant());
-            updatedPersonneAffecte.setNomExploitant(personneAffecteDetails.getNomExploitant());
-            updatedPersonneAffecte.setSuperficieAffecte(personneAffecteDetails.getSuperficieAffecte());
-            updatedPersonneAffecte.setTypeCulture(personneAffecteDetails.getTypeCulture());
-            updatedPersonneAffecte.setTypeEquipement(personneAffecteDetails.getTypeEquipement());
-            updatedPersonneAffecte.setSuperficieCultive(personneAffecteDetails.getSuperficieCultive());
-            updatedPersonneAffecte.setDescriptionBienAffecte(personneAffecteDetails.getDescriptionBienAffecte());
 
-            PersonneAffecte savedPersonneAffecte = personneAffecteService.savePersonneAffecte(updatedPersonneAffecte);
-            return ResponseEntity.ok(savedPersonneAffecte);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<AApiResponse<PersonneAffecteDTO>> updatePersonneAffecte(@PathVariable Long id, @RequestBody PersonneAffecteDTO personneAffecteDetails) {
+        AApiResponse<PersonneAffecteDTO> response = new AApiResponse<>();
+        try {
+            PersonneAffecteDTO updatedPersonneAffecte = personneAffecteService.updatePersonneAffecte(id, personneAffecteDetails);
+            response.setResponseCode(200);
+            response.setMessage("Personne affecté mis à jour avec succès");
+            response.setData(Collections.singletonList(updatedPersonneAffecte));
+            return ResponseEntity.ok().body(response);
+        } catch (RuntimeException e) {
+            response.setResponseCode(404);
+            response.setMessage("Personne affecté non trouvée: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            response.setResponseCode(500);
+            response.setMessage("An error occurred while updating the PersonneAffecte: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePersonneAffecte(@PathVariable Long id) {
@@ -143,4 +134,68 @@ public class PersonneAffecteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to import data: " + e.getMessage());
         }
     }
+
+
+
+    @PutMapping("addImage/{id}")
+
+    public ResponseEntity<AApiResponse<PersonneAffecteDTO>> addImageToPap(@PathVariable Long id, @RequestBody String url) {
+        AApiResponse<PersonneAffecteDTO> response = new AApiResponse<>();
+        try {
+            PersonneAffecteDTO updatedPersonneAffecte = personneAffecteService.addImageToPap(id, url);
+            response.setResponseCode(200);
+            response.setMessage("Personne affecté mis à jour avec succès");
+            response.setData(Collections.singletonList(updatedPersonneAffecte));
+            return ResponseEntity.ok().body(response);
+        } catch (RuntimeException e) {
+            response.setResponseCode(404);
+            response.setMessage("Personne affecté non trouvée: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            response.setResponseCode(500);
+            response.setMessage("An error occurred while updating the PersonneAffecte: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PutMapping("addSignature/{id}")
+    public ResponseEntity<AApiResponse<PersonneAffecteDTO>> addSignature(@PathVariable Long id, @RequestBody String url) {
+        AApiResponse<PersonneAffecteDTO> response = new AApiResponse<>();
+        try {
+            PersonneAffecteDTO updatedPersonneAffecte = personneAffecteService.addSignatureToPap(id, url);
+            response.setResponseCode(200);
+            response.setMessage("Personne affecté mis à jour avec succès");
+            response.setData(Collections.singletonList(updatedPersonneAffecte));
+            return ResponseEntity.ok().body(response);
+        } catch (RuntimeException e) {
+            response.setResponseCode(404);
+            response.setMessage("Personne affecté non trouvée: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            response.setResponseCode(500);
+            response.setMessage("An error occurred while updating the PersonneAffecte: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PutMapping("dedommagerPap/{id}")
+    public ResponseEntity<AApiResponse<PersonneAffecteDTO>> dedommagerPap(@PathVariable Long id, @RequestBody String url) {
+        AApiResponse<PersonneAffecteDTO> response = new AApiResponse<>();
+        try {
+            PersonneAffecteDTO updatedPersonneAffecte = personneAffecteService.dedommagerPap(id, url);
+            response.setResponseCode(200);
+            response.setMessage("Personne affecté mis à jour avec succès");
+            response.setData(Collections.singletonList(updatedPersonneAffecte));
+            return ResponseEntity.ok().body(response);
+        } catch (RuntimeException e) {
+            response.setResponseCode(404);
+            response.setMessage("Personne affecté non trouvée: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            response.setResponseCode(500);
+            response.setMessage("An error occurred while updating the PersonneAffecte: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

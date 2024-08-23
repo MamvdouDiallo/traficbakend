@@ -41,6 +41,13 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
     )
     private List<User> users;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonneAffecte> personnesAffectees ;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PartieInteresse> partiesInteressees ;
+
+
 
     public void addUser(User user) {
         this.users.add(user);

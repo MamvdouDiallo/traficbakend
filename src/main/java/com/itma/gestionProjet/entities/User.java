@@ -24,6 +24,7 @@ public class User {
     private String password;
     private  String locality;
     private String contact;
+    private  String sous_role;
     private  String sexe;
 @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

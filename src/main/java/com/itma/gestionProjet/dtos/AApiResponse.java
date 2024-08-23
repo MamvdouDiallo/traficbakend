@@ -10,7 +10,6 @@ public class AApiResponse<T> {
     private int max;
     private String message;
     private long length;
-
     // Getters and Setters
     public int getResponseCode() {
         return responseCode;

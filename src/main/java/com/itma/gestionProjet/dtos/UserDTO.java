@@ -20,6 +20,7 @@ public class UserDTO {
     private Boolean enabled;
     private Image image;
     private List<RoleDTO> roles;
+    private String sous_role;
     private  List<ProjectDTOUSER> projects;
   //  private Set<ProjectDTO> projects;
 }

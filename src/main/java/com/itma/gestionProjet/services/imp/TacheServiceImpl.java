@@ -2,6 +2,7 @@ package com.itma.gestionProjet.services.imp;
 
 import com.itma.gestionProjet.dtos.ConsultantResponse;
 import com.itma.gestionProjet.dtos.TacheDTO;
+import com.itma.gestionProjet.dtos.TacheResponseDTO;
 import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.Tache;
 import com.itma.gestionProjet.entities.User;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -90,6 +92,23 @@ public class TacheServiceImpl implements ITacheService {
         consultantDTO.setEnabled(consultant.getEnabled());
         consultantDTO.setImage(consultant.getImage());
         return consultantDTO;
+    }
+
+
+
+    public Page<Tache> getTachesByUserId(Long userId, Pageable pageable) {
+        return tacheRepository.findTachesByUserId(userId, pageable);
+    }
+
+    public TacheResponseDTO mapToDTO(Tache tache) {
+        TacheResponseDTO dto = new TacheResponseDTO();
+        dto.setId(tache.getId());
+        dto.setLibelle(tache.getLibelle());
+        dto.setDescription(tache.getDescription());
+        dto.setDateDebut(tache.getDateDebut());
+        dto.setDateFin(tache.getDateFin());
+        dto.setStatut(tache.getStatut());
+        return dto;
     }
 
 }

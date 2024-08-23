@@ -16,4 +16,6 @@ public interface PartieInteresseRepository extends JpaRepository<PartieInteresse
 
     @Query("SELECT pi FROM PartieInteresse pi JOIN pi.categoriePartieInteresse c WHERE c.libelle = :libelle")
     Page<PartieInteresse> findByCategoriePartieInteresseLibelle(@Param("libelle") String libelle, Pageable pageable);
+
+
 }

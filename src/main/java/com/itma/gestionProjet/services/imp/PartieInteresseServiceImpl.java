@@ -7,11 +7,9 @@ import com.itma.gestionProjet.exceptions.ContactMobileAlreadyExistsException;
 import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
 import com.itma.gestionProjet.exceptions.PartieInteresseAlreadyExistsException;
 import com.itma.gestionProjet.exceptions.PartieInteresseNotFoundException;
-import com.itma.gestionProjet.repositories.CategoriePartieInteresseRepository;
-import com.itma.gestionProjet.repositories.PartieInteresseRepository;
-import com.itma.gestionProjet.repositories.RoleRepository;
-import com.itma.gestionProjet.repositories.UserRepository;
+import com.itma.gestionProjet.repositories.*;
 import com.itma.gestionProjet.services.PartieInteresseService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +33,10 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
     private UserRepository userRepository;
 
     @Autowired
+    private ProjectRepository projectRepository;
+
+
+    @Autowired
     private CategoriePartieInteresseRepository categoriePartieInteresseRepository;
 
     @Autowired
@@ -50,6 +52,7 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         return repository.findById(id);
     }
 
+    @Transactional
     @Override
     public PartieInteresse save(PartieInteresseDTO partieInteresse) {
         // Vérifier si une PartieInteresse avec le même libellé existe déjà
@@ -58,6 +61,7 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
             throw new PartieInteresseAlreadyExistsException("Partie intéressée avec ce même libellé existe déjà !");
         }
 
+        Project defaultProject = projectRepository.findById((long) partieInteresse.getProject_id()).orElseThrow(() -> new RuntimeException("Project not found"));
         // Vérifier si un utilisateur avec le même email existe déjà
 
 
@@ -97,6 +101,7 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         Optional<CategoriePartieInteresse> cpip = categoriePartieInteresseRepository.findById(partieInteresse.getCategoriePartieInteresse());
         cpip.ifPresent(pip::setCategoriePartieInteresse);
         pip.setUser(newUser);
+        pip.setProject(defaultProject);
 
         return repository.save(pip);
     }

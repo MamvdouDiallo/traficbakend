@@ -21,4 +21,5 @@ public class PartieInteresseResponseDTO {
     private String sexeContactPrincipal;
     private String statut;
     private String telephoneContactPrincipal;
+    private Long project_id;
 }

@@ -44,7 +44,6 @@ import java.util.UUID;
 public class UserController {
     @Autowired
     UserService userService;
-
     @Autowired
     private UserRepository userRepository;
     @Autowired

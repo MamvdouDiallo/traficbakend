@@ -21,6 +21,7 @@ public class ConsultantRequest {
     private String password;
     private  String locality;
     private  String contact;
+    private  String sous_role;
    private Image image;
     private RoleRequest role;
     private  Long project_id;
