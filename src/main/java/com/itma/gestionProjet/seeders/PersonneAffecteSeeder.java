@@ -28,7 +28,7 @@ public class PersonneAffecteSeeder implements CommandLineRunner {
        // personneAffecteRepository.deleteAll();
 
         // Initialize Faker
-        Faker faker = new Faker();
+     /*   Faker faker = new Faker();
         Random random = new Random();
         Project defaultProject = projectRepository.findById(18L).orElseThrow(() -> new RuntimeException("Project not found"));
 
@@ -82,6 +82,10 @@ public class PersonneAffecteSeeder implements CommandLineRunner {
             personneAffecte.setDescriptionBienAffecte(faker.lorem().sentence());
 
          //   personneAffecteRepository.save(personneAffecte);
+
+
         }
+
+      */
     }
 }

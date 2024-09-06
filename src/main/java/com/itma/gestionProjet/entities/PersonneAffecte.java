@@ -1,6 +1,7 @@
 package com.itma.gestionProjet.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,9 @@ public class PersonneAffecte {
     private String idParcelle;
     private Integer nombreParcelle;
     private String categorie;
+    @NotBlank
     private String prenom;
+    @NotBlank
     private String nom;
     private Date dateNaissance;
     private String lieuNaissance;
@@ -27,6 +30,7 @@ public class PersonneAffecte {
     private  String pays;
     private Integer age;
     private String nationalite;
+    @NotBlank
     private  String codePap;
     private String departement;
     private  String typeIdentification;

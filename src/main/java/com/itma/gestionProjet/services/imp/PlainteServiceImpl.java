@@ -47,7 +47,8 @@ public class PlainteServiceImpl implements PlainteService {
         plainte.setTypeIdentification(plainteRequest.getTypeIdentification());
         plainte.setCodePap(plainteRequest.getCodePap());
         plainte.setVulnerabilite(plainteRequest.getVulnerabilite());
-
+        plainte.setEtat(plainteRequest.getEtat());
+        plainte.setDocumentUrls(plainteRequest.getDocumentUrls());
         plainte = plainteRepository.save(plainte);
 
         return convertEntityToDto(plainte);
@@ -89,7 +90,8 @@ public class PlainteServiceImpl implements PlainteService {
         plainte.setTypeIdentification(plainteRequest.getTypeIdentification());
         plainte.setVulnerabilite(plainteRequest.getVulnerabilite());
         plainte.setCodePap(plainteRequest.getCodePap());
-
+        plainte.setDocumentUrls(plainteRequest.getDocumentUrls());
+        plainte.setEtat(plainteRequest.getEtat());
         plainte = plainteRepository.save(plainte);
 
         return convertEntityToDto(plainte);
@@ -118,6 +120,8 @@ public class PlainteServiceImpl implements PlainteService {
         plainteDto.setVulnerabilite(plainte.getVulnerabilite());
         plainteDto.setProjectId((long) plainte.getProjet().getId());
         plainteDto.setCodePap(plainte.getCodePap());
+        plainteDto.setEtat(plainte.getEtat());
+        plainteDto.setDocumentUrls(plainte.getDocumentUrls());
         return plainteDto;
     }
 

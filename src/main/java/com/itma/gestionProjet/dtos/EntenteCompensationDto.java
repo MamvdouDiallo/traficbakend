@@ -18,6 +18,8 @@ public class EntenteCompensationDto {
     private String numeroPiece;
     private String localiteEnregistrement;
     private  String dateEnregistrement;
+    private  String urlSignatureResponsable;
+    private  String urlSignaturePap;
     private List<ArticleEntenteDto> articles;
 
 }

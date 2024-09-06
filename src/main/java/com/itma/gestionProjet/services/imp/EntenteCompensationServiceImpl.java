@@ -89,6 +89,8 @@ public class EntenteCompensationServiceImpl implements EntenteCompensationServic
         dto.setNom(ententeCompensation.getNom());
         dto.setDateNaissance(ententeCompensation.getDateNaissance());
         dto.setLieuNaissance(ententeCompensation.getLieuNaissance());
+        dto.setUrlSignatureResponsable(ententeCompensation.getUrlSignatureResponsable());
+        dto.setUrlSignaturePap(ententeCompensation.getUrlSignaturePap());
         dto.setNaturePiece(ententeCompensation.getNaturePiece());
         dto.setNumeroPiece(ententeCompensation.getNumeroPiece());
         dto.setDateEnregistrement(ententeCompensation.getDateEnregistrement());
@@ -108,6 +110,8 @@ public class EntenteCompensationServiceImpl implements EntenteCompensationServic
         ententeCompensation.setDateNaissance(dto.getDateNaissance());
         ententeCompensation.setLieuNaissance(dto.getLieuNaissance());
         ententeCompensation.setNaturePiece(dto.getNaturePiece());
+        ententeCompensation.setUrlSignaturePap(dto.getUrlSignaturePap());
+        ententeCompensation.setUrlSignatureResponsable(dto.getUrlSignatureResponsable());
         ententeCompensation.setNumeroPiece(dto.getNumeroPiece());
         ententeCompensation.setDateEnregistrement(dto.getDateEnregistrement());
         ententeCompensation.setLocaliteEnregistrement(dto.getLocaliteEnregistrement());

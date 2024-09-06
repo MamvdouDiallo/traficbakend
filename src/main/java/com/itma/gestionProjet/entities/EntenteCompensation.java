@@ -28,6 +28,10 @@ public class EntenteCompensation {
     private  String dateEnregistrement;
     private String naturePiece;
     private String numeroPiece;
+    private  String urlSignatureResponsable;
+    private  String urlSignaturePap;
+
+
 
     @OneToMany(mappedBy = "ententeCompensation", cascade = CascadeType.ALL)
     private List<ArticleEntente> articles;

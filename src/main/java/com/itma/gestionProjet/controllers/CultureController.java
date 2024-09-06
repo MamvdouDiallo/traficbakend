@@ -6,6 +6,7 @@ import com.itma.gestionProjet.entities.Coproprietaire;
 import com.itma.gestionProjet.entities.Culture;
 import com.itma.gestionProjet.requests.CultureRequest;
 import com.itma.gestionProjet.services.CultureService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class CultureController {
         return cultureService.getAllCultures(offset, max);
     }
     @PostMapping()
-    public ResponseEntity<AApiResponse<List<CultureDTO>>> createCulture(@RequestBody List<CultureRequest> cultureRequests) {
+    public ResponseEntity<AApiResponse<List<CultureDTO>>> createCulture(@Valid @RequestBody List<CultureRequest> cultureRequests) {
         AApiResponse<List<CultureDTO>> response = new AApiResponse<>();
         try {
             List<CultureDTO> cultureDTOs = cultureService.createCulture(cultureRequests);

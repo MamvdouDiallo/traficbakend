@@ -12,6 +12,7 @@ import com.itma.gestionProjet.events.listenner.RegistrationCompleteEventListener
 import com.itma.gestionProjet.repositories.UserRepository;
 import com.itma.gestionProjet.repositories.VerificationTokenRepository;
 import com.itma.gestionProjet.requests.ConsultantRequest;
+import com.itma.gestionProjet.requests.MoRequest;
 import com.itma.gestionProjet.requests.UserRequest;
 import com.itma.gestionProjet.security.JWTGenerator;
 import com.itma.gestionProjet.services.imp.UserService;
@@ -181,7 +182,7 @@ public class UserController {
 
 //creation des maitres d'ouvrages
     @RequestMapping(path = "/createMo", method = RequestMethod.POST)
-    public  ApiResponse<User> createMO(@RequestBody UserRequest userRequest, final HttpServletRequest request) {
+    public  ApiResponse<User> createMO(@RequestBody MoRequest userRequest, final HttpServletRequest request) {
       //  ProjectDTO projectDTO = projectService.saveProject(projectRequest);
         UserDTO user = userService.saveMo(userRequest);
 

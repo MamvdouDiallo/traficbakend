@@ -3,6 +3,7 @@ package com.itma.gestionProjet.requests;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -23,6 +24,8 @@ public class PlainteRequest {
     private String vulnerabilite;
     private Long projectId;
     private String codePap;
+    private List<String> documentUrls;
+    private  String etat;
 
     // Getters and Setters
 }

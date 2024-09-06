@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -28,9 +29,14 @@ public class Plainte {
     private String typeIdentification;
     private String vulnerabilite;
     private String codePap;
+    private  String etat;
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project projet;
+
+    @ElementCollection
+    @Column(name = "document_url")
+    private List<String> documentUrls;
 
     // Getters and Setters
 }

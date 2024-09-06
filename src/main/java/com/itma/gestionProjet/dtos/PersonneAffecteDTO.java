@@ -1,5 +1,6 @@
 package com.itma.gestionProjet.dtos;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.Date;
@@ -41,5 +42,6 @@ public class PersonneAffecteDTO {
     private int project_id;
     private String signaturePath;
     private  String imagePath;
+    @NotBlank(message = "Le code su Pap est obligatoire")
     private  String codePap;
 }
