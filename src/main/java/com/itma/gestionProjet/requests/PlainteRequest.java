@@ -23,6 +23,8 @@ public class PlainteRequest {
     private String typeIdentification;
     private String vulnerabilite;
     private Long projectId;
+    private  String libelleProjet;
+    private  String descriptionObjet;
     private String codePap;
     private List<String> documentUrls;
     private  String etat;

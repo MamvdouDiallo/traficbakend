@@ -28,9 +28,9 @@ public class PersonneAffecteSeeder implements CommandLineRunner {
        // personneAffecteRepository.deleteAll();
 
         // Initialize Faker
-     /*   Faker faker = new Faker();
+        Faker faker = new Faker();
         Random random = new Random();
-        Project defaultProject = projectRepository.findById(18L).orElseThrow(() -> new RuntimeException("Project not found"));
+     //  Project defaultProject = projectRepository.findById(1L).orElseThrow(() -> new RuntimeException("Project not found"));
 
         // Set to store unique codePap values
         Set<String> uniqueCodePap = new HashSet<>();
@@ -74,18 +74,14 @@ public class PersonneAffecteSeeder implements CommandLineRunner {
             personneAffecte.setStatutVulnerable(faker.options().option("Oui", "Non"));
             personneAffecte.setPrenomExploitant(faker.name().firstName());
             personneAffecte.setNomExploitant(faker.name().lastName());
-            personneAffecte.setProject(defaultProject);
+         //  personneAffecte.setProject(defaultProject);
             personneAffecte.setSuperficieAffecte(random.nextDouble() * 10);
             personneAffecte.setTypeCulture(faker.options().option("Blé", "Maïs", "Riz", "Orge"));
             personneAffecte.setTypeEquipement(faker.options().option("Tracteur", "Moissonneuse", "Charrue"));
             personneAffecte.setSuperficieCultive(random.nextDouble() * 10);
             personneAffecte.setDescriptionBienAffecte(faker.lorem().sentence());
 
-         //   personneAffecteRepository.save(personneAffecte);
-
-
+          // personneAffecteRepository.save(personneAffecte);
         }
-
-      */
     }
 }

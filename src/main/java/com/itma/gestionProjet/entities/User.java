@@ -1,6 +1,5 @@
 package com.itma.gestionProjet.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,14 +24,27 @@ public class User {
     private  String locality;
     private String contact;
     private  String sous_role;
+    private  String imageUrl;
     private  String sexe;
-@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "fonction_id")
+    private Fonction fonction;
+
+    @OneToOne
+    @JoinColumn(name = "categorie_id")
+    private Categorie categorie;
+    /*
+    @OneToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Role role;
+
+     */
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles ;
     @OneToOne
     private  Image image;
-
     @ManyToMany(mappedBy = "users", cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     private List<Project> projects;
 

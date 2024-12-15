@@ -126,12 +126,13 @@ public class ProjectService implements IProjectService {
 
         Project project = projectRepository.findById((long) Math.toIntExact(id)).orElseThrow(() -> new IllegalArgumentException("project not found with id " + id));
         // Remove the user's associations with roles
+      /*
         if (project.getImage() != null) {
             Image image = project.getImage();
             project.setImage(null);
             imageRepository.delete(image);
         }
-
+*/
         List<NormeProjet> normeProjects = normeProjectRepository.findByProjectId(id);
         for (NormeProjet normeProject : normeProjects) {
             normeProjectRepository.delete(normeProject);

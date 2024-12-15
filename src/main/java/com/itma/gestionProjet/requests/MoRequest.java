@@ -22,6 +22,7 @@ public class MoRequest {
     private  String locality;
     private  String contact;
     private Image image;
+    private  String imageUrl;
     private List<RoleRequest> roles;
     private  List<Long> project_ids;
 }

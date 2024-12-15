@@ -2,6 +2,7 @@ package com.itma.gestionProjet.controllers;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.PlainteDto;
+import com.itma.gestionProjet.dtos.PlainteInvalidDto;
 import com.itma.gestionProjet.requests.PlainteRequest;
 import com.itma.gestionProjet.services.PlainteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/plaintes")
@@ -30,6 +30,63 @@ public class PlainteController {
         response.setData(Collections.singletonList(createdPlainte));
         return ResponseEntity.ok(response);
     }
+
+
+    @PostMapping("/importer")
+    public ResponseEntity<AApiResponse<Map<String, Object>>> createPlaintes(@RequestBody List<PlainteRequest> plainteRequests) {
+        List<PlainteDto> plaintesValides = new ArrayList<>();
+        List<PlainteInvalidDto> plaintesInvalides = new ArrayList<>();
+
+        for (PlainteRequest plainteRequest : plainteRequests) {
+            try {
+                PlainteDto plainteDto = plainteService.createPlainte(plainteRequest);
+                plaintesValides.add(plainteDto);
+            } catch (Exception e) {
+                PlainteInvalidDto invalidDto = new PlainteInvalidDto();
+                invalidDto.setPlainteRequest(plainteRequest);
+                invalidDto.setErrorMessage(e.getMessage());
+                plaintesInvalides.add(invalidDto);
+            }
+        }
+
+        AApiResponse<Map<String, Object>> response = new AApiResponse<>();
+
+        if (plaintesValides.isEmpty() && !plaintesInvalides.isEmpty()) {
+            response.setResponseCode(400); // Bad Request
+            response.setMessage("Toutes les plaintes sont invalides");
+        } else if (plaintesInvalides.isEmpty()) {
+            response.setResponseCode(201); // Created
+            response.setMessage("Toutes les plaintes ont été créées avec succès");
+        } else {
+            response.setResponseCode(207); // Multi-Status
+            response.setMessage("Certaines plaintes sont invalides");
+        }
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("plaintesValides", plaintesValides);
+        responseData.put("plaintesInvalides", plaintesInvalides);
+
+        response.setData(Collections.singletonList(responseData));
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    /*
+    public ResponseEntity<AApiResponse<?>> createPlaintes(@RequestBody List<PlainteRequest> plainteRequests) {
+        List<PlainteDto> createdPlaintes = plainteService.createPlaintes(plainteRequests);
+
+        AApiResponse<List<PlainteDto>> response = new AApiResponse<>();
+        response.setResponseCode(201);
+        response.setMessage("Plaintes créées avec succès");
+        response.setData(Collections.singletonList(createdPlaintes));
+
+        return ResponseEntity.ok(response);
+    }
+*/
+
+
+
 
     @GetMapping
     public ResponseEntity<AApiResponse<PlainteDto>> getAllPlaintes(

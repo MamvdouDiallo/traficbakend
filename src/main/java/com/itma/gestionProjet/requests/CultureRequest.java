@@ -1,14 +1,15 @@
 package com.itma.gestionProjet.requests;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class CultureRequest {
-    @NotNull(message = "Le codePap est obligatoire")
+    @NotBlank(message = "Le codePap est obligatoire")
     private String codePap;
-    @NotNull(message = "Le type de culture est obligatoire")
+    @NotBlank(message = "Le type de culture ne peut pas etre null")
     private String typeCulture;
-    @NotNull(message = "La description est obligatoire")
+    @NotBlank(message = "La description est obligatoire")
     private String description;
 }

@@ -29,6 +29,8 @@ public class Plainte {
     private String typeIdentification;
     private String vulnerabilite;
     private String codePap;
+    private  String descriptionObjet;
+    private  String libelleProjet;
     private  String etat;
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)

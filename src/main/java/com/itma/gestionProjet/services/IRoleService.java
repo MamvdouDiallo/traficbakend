@@ -14,7 +14,7 @@ public interface IRoleService {
     Optional<User> findRoleByName(String name);
 
     RoleDTO saveRole(RoleRequest p);
-    RoleDTO updateRole(UserDTO p);
+    RoleDTO updateRole(Long id,RoleRequest p);
     RoleDTO getRole(Long id);
     List<Role> getAllRoles();
     void deleteRole(Role p);

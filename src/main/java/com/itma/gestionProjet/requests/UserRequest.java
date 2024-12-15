@@ -11,13 +11,17 @@ public class UserRequest {
     private String lastname;
     private String firstname;
     private String email;
-    private String date_of_birth;
-    private String place_of_birth;
-    private Boolean enabled;
-    private String password;
+   // private String date_of_birth;
+    //private String place_of_birth;
+   // private Boolean enabled;
+   // private String password;
     private  String locality;
     private  String contact;
+    private Long fonction_id;
+    private Long categorie_id;
+    private  String imageUrl;
+    private Long role_id;
     private Image image;
-    private List<RoleRequest> roles;
-    private  List<Long> project_ids;
+  //  private List<RoleRequest> roles;
+    //private  List<Long> project_ids;
 }

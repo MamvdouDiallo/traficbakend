@@ -3,6 +3,7 @@ package com.itma.gestionProjet.services;
 import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.requests.ConsultantRequest;
+import com.itma.gestionProjet.requests.MoRequest;
 import com.itma.gestionProjet.requests.UserRequest;
 
 import java.util.List;
@@ -12,10 +13,10 @@ public interface IUserService {
     Optional<User> findUserByEmail(String email);
     User saveUser(UserRequest p);
 
-    UserDTO saveMo(UserRequest p);
+    UserDTO saveMo(MoRequest p);
 
     Optional<User> findById(Long id);
-    UserDTO updateUser(UserRequest p);
+    UserDTO updateMo(MoRequest p);
     UserDTO getUser(Long id);
     List<UserDTO> getAllUsers();
 

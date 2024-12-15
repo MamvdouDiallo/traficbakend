@@ -22,7 +22,8 @@ public class ConsultantRequest {
     private  String locality;
     private  String contact;
     private  String sous_role;
-   private Image image;
+    private  String imageUrl;
+    private Image image;
     private RoleRequest role;
     private  Long project_id;
 

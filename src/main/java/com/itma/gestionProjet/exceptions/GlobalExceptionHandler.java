@@ -2,10 +2,13 @@ package com.itma.gestionProjet.exceptions;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.ApiResponse;
 import com.itma.gestionProjet.dtos.ExceptionResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -117,6 +120,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDetails> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest webRequest) {
         Map<String, String> errors = new HashMap<>();
@@ -137,7 +141,6 @@ public class GlobalExceptionHandler {
                 webRequest.getDescription(false),
                 HttpStatus.BAD_REQUEST
         );
-
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
@@ -204,5 +207,24 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<AApiResponse<String>> handleRuntimeException(RuntimeException ex) {
+        AApiResponse<String> response = new AApiResponse<>();
+        response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setData(List.of(ex.getMessage()));
+        response.setMessage("An unexpected error occurred.");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Gestion des exceptions EntityNotFoundException
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<AApiResponse<String>> handleEntityNotFoundException(EntityNotFoundException ex) {
+        AApiResponse<String> response = new AApiResponse<>();
+        response.setResponseCode(HttpStatus.NOT_FOUND.value());
+        response.setData(List.of(ex.getMessage()));
+        response.setMessage("Entity not found.");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

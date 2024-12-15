@@ -1,8 +1,8 @@
 package com.itma.gestionProjet.dtos;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 

@@ -23,6 +23,8 @@ public class PlainteDto {
     private String situationMatrimoniale;
     private String typeIdentification;
     private String vulnerabilite;
+    private  String libelleProjet;
+    private  String descriptionObjet;
     private  String codePap;
     private  String etat;
     private Long projectId;

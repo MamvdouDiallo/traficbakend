@@ -2,6 +2,7 @@ package com.itma.gestionProjet.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,16 +22,34 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotNull
+    @NotBlank(message = "Le libelle est obligatoire et ne peut pas être vide")
+    @Column(nullable = false)
     private String libelle;
+    @NotNull
+    @NotBlank(message = "La description est obligatoire et ne peut pas être vide")
+    @Column(nullable = false)
     private String description;
-    private String status;
+    @NotNull
+    @NotBlank(message = "La catégorie est obligatoire et ne peut pas être vide")
+    @Column(nullable = false)
     private String categorie;
+
+    private String status;
+    private String imageUrl;
     private Date datedebut;
     private Date datefin;
+    /*
     @OneToOne
     private  Image image;
+
+     */
     @OneToMany(mappedBy = "project")
     private List<File> files;
+
+    @OneToMany(mappedBy = "project")
+    private List<Fichier> fichiers;
+
     @OneToMany(mappedBy = "project")
     private List<NormeProjet> normeProjets;
    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

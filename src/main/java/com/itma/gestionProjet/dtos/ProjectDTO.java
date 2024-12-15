@@ -1,5 +1,6 @@
 package com.itma.gestionProjet.dtos;
 
+import com.itma.gestionProjet.entities.Fichier;
 import com.itma.gestionProjet.entities.File;
 import com.itma.gestionProjet.entities.Image;
 import com.itma.gestionProjet.entities.NormeProjet;
@@ -18,7 +19,9 @@ public class ProjectDTO {
     private Date datedebut;
     private  Date datefin;
     private Image image;
-    private List<File> files;
+    private  String imageUrl;
+   // private List<File> files;
+    private List<Fichier> fichiers;
     private  List<MoDTO> users;
     private  List<NormeProjet> normeProjets;
 }

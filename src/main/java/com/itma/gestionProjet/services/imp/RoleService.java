@@ -5,6 +5,7 @@ import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.Role;
 import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.exceptions.RoleAlreadyExistsException;
+import com.itma.gestionProjet.exceptions.RoleNotFoundException;
 import com.itma.gestionProjet.repositories.RoleRepository;
 import com.itma.gestionProjet.repositories.VerificationTokenRepository;
 import com.itma.gestionProjet.requests.RoleRequest;
@@ -46,8 +47,16 @@ public class RoleService implements IRoleService {
     }
 
     @Override
-    public RoleDTO updateRole(UserDTO p) {
-        return null;
+    public RoleDTO updateRole(Long id, RoleRequest roleRequest) {
+        Role role = roleRepository.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        if (!role.getName().equals(roleRequest.getName()) &&
+                roleRepository.existsByName(roleRequest.getName())) {
+            throw new RuntimeException("Role with this name already exists");
+        }
+        role.setName(roleRequest.getName());
+        Role updatedRole = roleRepository.save(role);
+        return convertEntityToDto(updatedRole);
     }
 
     @Override
@@ -68,7 +77,11 @@ public class RoleService implements IRoleService {
 
     @Override
     public void deleteRoleById(Long id) {
-
+        if (roleRepository.existsById(Math.toIntExact(id))) {
+            roleRepository.deleteById(Math.toIntExact(id));
+        } else {
+            throw new RoleNotFoundException("Le rôle avec l'id " + id + " n'existe pas.");
+        }
     }
 
     @Override

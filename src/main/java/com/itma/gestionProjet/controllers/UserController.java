@@ -186,7 +186,7 @@ public class UserController {
       //  ProjectDTO projectDTO = projectService.saveProject(projectRequest);
         UserDTO user = userService.saveMo(userRequest);
 
-      //  publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
+       //publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
         return  new ApiResponse<>(HttpStatus.OK.value(), "Maitres d'ouvrtages  crée avec succés",user);
     }
 
@@ -194,6 +194,13 @@ public class UserController {
     @RequestMapping(path = "/by_role", method = RequestMethod.GET)
     public ApiResponse<List<UserDTO>> getMaitresOuvrages(@RequestParam String roleName) {
         List<UserDTO> users = userService.getUsersByRoleName(roleName);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
+    }
+
+
+    @RequestMapping(path = "/by_sous_role", method = RequestMethod.GET)
+    public ApiResponse<List<UserDTO>> getConsultantBySousRole(@RequestParam String roleName) {
+        List<UserDTO> users = userService.getUsersBySousRoleName(roleName);
         return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
     }
 
@@ -209,9 +216,9 @@ public class UserController {
     }
 
     @PostMapping("/updateMo")
-    public ApiResponse<UserDTO> updateUser(@RequestBody UserRequest userRequest) throws Exception {
+    public ApiResponse<UserDTO> updateMo(@RequestBody MoRequest moRequest) throws Exception {
         try{
-            UserDTO updatedUser = userService.updateUser(userRequest);
+            UserDTO updatedUser = userService.updateMo(moRequest);
             return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully", updatedUser);
         }catch (Exception e){
             throw new Exception("An error ocuured while deleting the user "+e);

@@ -6,17 +6,19 @@ import com.itma.gestionProjet.entities.Coproprietaire;
 import com.itma.gestionProjet.entities.Culture;
 import com.itma.gestionProjet.requests.CultureRequest;
 import com.itma.gestionProjet.services.CultureService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("/cultures")
+@Validated
 public class CultureController {
 
     @Autowired
@@ -25,7 +27,7 @@ public class CultureController {
     @GetMapping()
     public AApiResponse<Culture> getAllCultures(
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int max) {
+            @RequestParam(defaultValue = "100") int max) {
         return cultureService.getAllCultures(offset, max);
     }
     @PostMapping()

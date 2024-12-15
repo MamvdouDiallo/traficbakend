@@ -1,6 +1,9 @@
 package com.itma.gestionProjet.dtos;
 
+import lombok.Data;
+
 import java.util.List;
+
 
 public class AApiResponse<T> {
 
@@ -10,7 +13,22 @@ public class AApiResponse<T> {
     private int max;
     private String message;
     private long length;
-    // Getters and Setters
+
+    // Constructeur par défaut requis par Spring
+    public AApiResponse() {
+    }
+
+    // Constructeur avec tous les arguments
+    public AApiResponse(int responseCode, List<T> data, int offset, int max, String message, long length) {
+        this.responseCode = responseCode;
+        this.data = data;
+        this.offset = offset;
+        this.max = max;
+        this.message = message;
+        this.length = length;
+    }
+
+    // Getters et Setters
     public int getResponseCode() {
         return responseCode;
     }
@@ -43,14 +61,6 @@ public class AApiResponse<T> {
         this.max = max;
     }
 
-    public long getLength() {
-        return length;
-    }
-
-    public void setLength(long length) {
-        this.length = length;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -58,4 +68,13 @@ public class AApiResponse<T> {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public long getLength() {
+        return length;
+    }
+
+    public void setLength(long length) {
+        this.length = length;
+    }
 }
+

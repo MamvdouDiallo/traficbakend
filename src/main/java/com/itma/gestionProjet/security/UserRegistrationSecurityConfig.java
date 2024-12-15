@@ -27,7 +27,7 @@ public class UserRegistrationSecurityConfig {
 @Autowired
     private JwtAuthEntryPoint authEntryPoint;
 
-    private static final String[] SECURED_URLs = {"/roles/**"};
+    private static final String[] SECURED_URLs = {"/yna/**"};
 
     private static final String[] UN_SECURED_URLs = {
             "/users/**",

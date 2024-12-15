@@ -2,6 +2,7 @@ package com.itma.gestionProjet.services.imp;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.PlainteDto;
+import com.itma.gestionProjet.dtos.PlainteInvalidDto;
 import com.itma.gestionProjet.entities.Plainte;
 import com.itma.gestionProjet.entities.Project;
 import com.itma.gestionProjet.repositories.PlainteRepository;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +52,8 @@ public class PlainteServiceImpl implements PlainteService {
         plainte.setVulnerabilite(plainteRequest.getVulnerabilite());
         plainte.setEtat(plainteRequest.getEtat());
         plainte.setDocumentUrls(plainteRequest.getDocumentUrls());
+        plainte.setLibelleProjet(plainteRequest.getLibelleProjet());
+        plainte.setDescriptionObjet(plainteRequest.getDescriptionObjet());
         plainte = plainteRepository.save(plainte);
 
         return convertEntityToDto(plainte);
@@ -102,6 +107,43 @@ public class PlainteServiceImpl implements PlainteService {
         plainteRepository.deleteById(id);
     }
 
+    @Override
+    /*
+    public List<PlainteDto> createPlaintes(List<PlainteRequest> plainteRequests) {
+        List<PlainteDto> plaintesDtos = new ArrayList<>();
+
+        for (PlainteRequest plainteRequest : plainteRequests) {
+            // Utilisez la méthode existante pour chaque plainteRequest
+            PlainteDto plainteDto = createPlainte(plainteRequest);
+            plaintesDtos.add(plainteDto);
+        }
+
+        return plaintesDtos;
+    }
+
+     */
+    public List<PlainteDto> createPlaintes(List<PlainteRequest> plainteRequests) {
+        List<PlainteDto> plaintesValides = new ArrayList<>();
+        List<PlainteInvalidDto> plaintesInvalides = new ArrayList<>();
+
+        for (PlainteRequest plainteRequest : plainteRequests) {
+            try {
+                PlainteDto plainteDto = createPlainte(plainteRequest);
+                plaintesValides.add(plainteDto);
+            } catch (Exception e) {
+                PlainteInvalidDto invalidDto = new PlainteInvalidDto();
+                invalidDto.setPlainteRequest(plainteRequest);
+                invalidDto.setErrorMessage(e.getMessage());
+                plaintesInvalides.add(invalidDto);
+            }
+        }
+
+        List<PlainteDto> allPlaintes = new ArrayList<>();
+        allPlaintes.addAll(plaintesValides);
+        return allPlaintes;
+    }
+
+
     private PlainteDto convertEntityToDto(Plainte plainte) {
         PlainteDto plainteDto = new PlainteDto();
         plainteDto.setId(plainte.getId());
@@ -121,6 +163,8 @@ public class PlainteServiceImpl implements PlainteService {
         plainteDto.setProjectId((long) plainte.getProjet().getId());
         plainteDto.setCodePap(plainte.getCodePap());
         plainteDto.setEtat(plainte.getEtat());
+        plainteDto.setDescriptionObjet(plainte.getDescriptionObjet());
+        plainteDto.setLibelleProjet(plainte.getLibelleProjet());
         plainteDto.setDocumentUrls(plainte.getDocumentUrls());
         return plainteDto;
     }
