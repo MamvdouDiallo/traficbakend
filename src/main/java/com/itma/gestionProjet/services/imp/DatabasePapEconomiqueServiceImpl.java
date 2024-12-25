@@ -9,6 +9,7 @@ import com.itma.gestionProjet.repositories.DatabasePapEconomiqueRepository;
 import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.requests.DatabasePapEconomiqueRequest;
 import com.itma.gestionProjet.services.DatabasePapEconomiqueService;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -91,5 +92,11 @@ public class DatabasePapEconomiqueServiceImpl implements DatabasePapEconomiqueSe
         DatabasePapEconomique papEconomique = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("PapEconomique not found"));
         repository.delete(papEconomique);
+    }
+
+
+    public DatabasePapEconomique getByCodePap(String codePap) {
+        return repository.findByCodePap(codePap)
+                .orElseThrow(() -> new EntityNotFoundException("DatabasePapEconomique avec codePap " + codePap + " introuvable"));
     }
 }

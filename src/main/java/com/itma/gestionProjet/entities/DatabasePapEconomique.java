@@ -47,7 +47,6 @@ public class DatabasePapEconomique {
     private String descriptionEquipement;
     private String evaluationPerte;
     private String infosComplementaires;
-
     private String pj1;
     private String pj2;
     private String pj3;
@@ -55,10 +54,8 @@ public class DatabasePapEconomique {
     private String pj5;
     private String statutPap;
     private String vulnerabilite;
-
     @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PAPECONOMIQUE'")
     private String type = "PAPECONOMIQUE";
-
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;

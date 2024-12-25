@@ -14,5 +14,7 @@ public interface DatabasePapAgricoleService {
     void deleteDatabasePapAgricole(Long id);
 
      long getTotalCount();
+
+    DatabasePapAgricole getByCodePap(String codePap);
 }
 

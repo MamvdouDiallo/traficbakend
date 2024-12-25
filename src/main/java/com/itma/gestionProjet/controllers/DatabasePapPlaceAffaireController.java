@@ -3,6 +3,7 @@ package com.itma.gestionProjet.controllers;
 import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireRequestDTO;
 import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireResponseDTO;
+import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
 import com.itma.gestionProjet.services.DatabasePapPlaceAffaireService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ public class DatabasePapPlaceAffaireController {
     @GetMapping
     public AApiResponse<DatabasePapPlaceAffaireResponseDTO> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10000000") int size) {
         List<DatabasePapPlaceAffaireResponseDTO> data = databasePapPlaceAffaireService.getAllDatabasePapPlaceAffaire(page, size);
         AApiResponse<DatabasePapPlaceAffaireResponseDTO> response = new AApiResponse<>();
         response.setResponseCode(200);
@@ -93,5 +94,19 @@ public class DatabasePapPlaceAffaireController {
         response.setData(List.of("Entity deleted successfully."));
         response.setMessage("Successfully deleted entity.");
         return response;
+    }
+
+    @GetMapping("/byCodePap/{codePap}")
+    public ResponseEntity<AApiResponse<DatabasePapPlaceAffaire>> getByCodePap(@PathVariable String codePap) {
+        DatabasePapPlaceAffaire papPlaceAffaire = databasePapPlaceAffaireService.getByCodePap(codePap);
+        AApiResponse<DatabasePapPlaceAffaire> response = new AApiResponse<>(
+                200,
+                List.of(papPlaceAffaire),
+                0,
+                1,
+                "Success",
+                1L
+        );
+        return ResponseEntity.ok(response);
     }
 }

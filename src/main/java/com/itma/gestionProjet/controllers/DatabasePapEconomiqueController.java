@@ -3,6 +3,7 @@ package com.itma.gestionProjet.controllers;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.DatabasePapEconomiqueDto;
+import com.itma.gestionProjet.entities.DatabasePapEconomique;
 import com.itma.gestionProjet.requests.DatabasePapEconomiqueRequest;
 import com.itma.gestionProjet.services.DatabasePapEconomiqueService;
 import org.springframework.data.domain.Page;
@@ -50,7 +51,7 @@ public class DatabasePapEconomiqueController {
     @GetMapping
     public ResponseEntity<AApiResponse<DatabasePapEconomiqueDto>> getAllPapEconomiques(
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int max) {
+            @RequestParam(defaultValue = "100000000") int max) {
         try {
             Page<DatabasePapEconomiqueDto> page = service.getAllPapEconomiques(offset, max);
             return ResponseEntity.ok(new AApiResponse<>(
@@ -148,5 +149,19 @@ public class DatabasePapEconomiqueController {
                             0
                     ));
         }
+    }
+
+    @GetMapping("/byCodePap/{codePap}")
+    public ResponseEntity<AApiResponse<DatabasePapEconomique>> getByCodePap(@PathVariable String codePap) {
+        DatabasePapEconomique papEconomique = service.getByCodePap(codePap);
+        AApiResponse<DatabasePapEconomique> response = new AApiResponse<>(
+                200, // responseCode
+                List.of(papEconomique), // data
+                0, // offset
+                1, // max
+                "Success", // message
+                1L // length
+        );
+        return ResponseEntity.ok(response);
     }
 }

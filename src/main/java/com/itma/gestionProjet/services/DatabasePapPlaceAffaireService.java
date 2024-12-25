@@ -2,6 +2,7 @@ package com.itma.gestionProjet.services;
 
 import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireRequestDTO;
 import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireResponseDTO;
+import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface DatabasePapPlaceAffaireService {
     void deleteDatabasePapPlaceAffaire(Long id);
 
     long getTotalCount();
+
+    DatabasePapPlaceAffaire getByCodePap(String codePap);
 }

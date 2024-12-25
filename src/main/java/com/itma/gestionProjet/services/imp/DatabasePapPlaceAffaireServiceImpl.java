@@ -10,6 +10,7 @@ import com.itma.gestionProjet.entities.Project;
 import com.itma.gestionProjet.repositories.DatabasePapPlaceAffaireRepository;
 import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.services.DatabasePapPlaceAffaireService;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -96,5 +97,10 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
         }
         return dto;
 
+    }
+
+    public DatabasePapPlaceAffaire getByCodePap(String codePap) {
+        return repository.findByCodePap(codePap)
+                .orElseThrow(() -> new EntityNotFoundException("DatabasePapPlaceAffaire avec codePap " + codePap + " introuvable"));
     }
 }

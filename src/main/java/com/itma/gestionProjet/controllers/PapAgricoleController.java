@@ -47,7 +47,7 @@ public class PapAgricoleController {
     @GetMapping
     public AApiResponse<DatabasePapAgricoleResponseDTO> getAll(
             @RequestParam(defaultValue = "0") int offset, // Valeur par défaut 0 pour la page
-            @RequestParam(defaultValue = "100") int max) { // Valeur par défaut 10 pour la taille
+            @RequestParam(defaultValue = "100000000") int max) { // Valeur par défaut 10 pour la taille
         try {
             // Appel au service pour récupérer les données
             List<DatabasePapAgricoleResponseDTO> data = databasePapAgricoleService.getAllDatabasePapAgricole(offset, max);
@@ -159,6 +159,21 @@ public class PapAgricoleController {
             errorResponse.setMessage("Error deleting entity: " + e.getMessage());
             return errorResponse;
         }
+    }
+
+
+    @GetMapping("/byCodePap/{codePap}")
+    public ResponseEntity<AApiResponse<DatabasePapAgricole>> getByCodePap(@PathVariable String codePap) {
+        DatabasePapAgricole papAgricole = databasePapAgricoleService.getByCodePap(codePap);
+        AApiResponse<DatabasePapAgricole> response = new AApiResponse<>(
+                200, // responseCode
+                List.of(papAgricole), // data
+                0, // offset
+                1, // max
+                "Success", // message
+                1L // length
+        );
+        return ResponseEntity.ok(response);
     }
 }
 
