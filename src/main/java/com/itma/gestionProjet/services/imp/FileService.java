@@ -50,11 +50,15 @@ public class FileService implements IFileService {
         return null;
     }
 
+
+    /*
     @Override
     public List<File> getFilesParProj(Long ProjId) {
         Project p = projectRepository.findById(ProjId).get();
         return p.getFiles();
     }
+
+     */
 
     @Override
     public File uplaodFileProj(MultipartFile file, Long idProd) throws IOException {

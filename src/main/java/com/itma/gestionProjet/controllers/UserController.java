@@ -9,6 +9,7 @@ import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.entities.VerificationToken;
 import com.itma.gestionProjet.events.RegistrationCompleteEvent;
 import com.itma.gestionProjet.events.listenner.RegistrationCompleteEventListener;
+import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
 import com.itma.gestionProjet.repositories.UserRepository;
 import com.itma.gestionProjet.repositories.VerificationTokenRepository;
 import com.itma.gestionProjet.requests.ConsultantRequest;
@@ -76,6 +77,24 @@ public class UserController {
         publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
         return   new ApiResponse<>(HttpStatus.OK.value(), "User cree avec succés",user);
     }
+
+    @RequestMapping(path = "/updateUser/{userId}", method = RequestMethod.PUT)
+    public ApiResponse<User> updateUser(@PathVariable Long userId, @RequestBody UserRequest userRequest, final HttpServletRequest request) {
+        try {
+            // Call the service layer to update the user
+            User user = userService.updateUser(userId, userRequest);
+
+            // Return the success response with updated user details
+            return new ApiResponse<>(HttpStatus.OK.value(), "User mis à jour avec succès", user);
+        } catch (EmailAlreadyExistsException e) {
+            // Handle case where the email already exists
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        } catch (Exception e) {
+            // Handle any other unexpected exceptions
+            return new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Une erreur est survenue", null);
+        }
+    }
+
 
 
     @GetMapping("/{id}")

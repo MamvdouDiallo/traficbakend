@@ -20,7 +20,7 @@ public interface IFileService {
 
     File uplaodFile(MultipartFile file, Long idProj) throws IOException;
 
-    List<File> getFilesParProj(Long prodId);
+   // List<File> getFilesParProj(Long prodId);
 
 
     List<File> updateFiles(MultipartFile[] files, Long idProd) throws IOException;

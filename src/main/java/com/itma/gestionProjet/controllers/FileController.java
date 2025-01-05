@@ -41,11 +41,14 @@ public class FileController {
             throw new RuntimeException("Failed to upload files", e);
         }
     }
+    /*
     public List<File> getImagesProd(@PathVariable("idProd") Long idProd)
             throws IOException {
         return fileService.getFilesParProj(idProd);
     }
 
+
+     */
 
     @RequestMapping(value = "/delete/{projectId}" )
     public List<File> deletefiles(@PathVariable("projectId") Long projectId) {

@@ -21,7 +21,7 @@ public class ProjectDTO {
     private Image image;
     private  String imageUrl;
    // private List<File> files;
-    private List<Fichier> fichiers;
+   // private List<Fichier> fichiers;
     private  List<MoDTO> users;
     private  List<NormeProjet> normeProjets;
 }

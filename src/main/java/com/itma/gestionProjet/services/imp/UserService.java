@@ -474,6 +474,61 @@ public class UserService  implements IUserService {
     }
 
 
+    public User updateUser(Long userId, UserRequest p) {
+        // Retrieve the user by ID
+        Optional<User> optionalUser = Optional.ofNullable(userRepository.findById(userId));
+
+        if (!optionalUser.isPresent()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = optionalUser.get();  // Get the User object safely after the check
+
+        // Check if the new email is already in use, but skip if the email is the same as the current one
+        if (!user.getEmail().equals(p.getEmail())) {
+            // Look for a user with the new email
+            Optional<User> optionalNewEmailUser = userRepository.findByEmail(p.getEmail());
+            if (optionalNewEmailUser.isPresent()) {
+                // If email exists, throw an exception
+                throw new EmailAlreadyExistsException("Email déjà existant!");
+            }
+            // Set new email if no conflicts
+            user.setEmail(p.getEmail());
+        }
+
+        // Update other fields without the need for 'orElseThrow' since we're directly modifying the current user
+        user.setLastname(p.getLastname());
+        user.setFirstname(p.getFirstname());
+        user.setContact(p.getContact());
+        user.setLocality(p.getLocality());
+        user.setImageUrl(p.getImageUrl());
+
+        // Role update (check if the role exists)
+        Role role = roleRepository.findById(Math.toIntExact(p.getRole_id())).orElse(null);
+        if (role == null) {
+            throw new RuntimeException("Role not found");
+        }
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        user.setRoles(roles);
+
+        // Fonction update (check if the fonction exists)
+        Fonction fonction = fonctionRepository.findById(p.getFonction_id()).orElse(null);
+        if (fonction == null) {
+            throw new RuntimeException("Fonction not found");
+        }
+        user.setFonction(fonction);
+
+        // Categorie update (check if the categorie exists)
+        Categorie categorie = categorieRepository.findById(p.getCategorie_id()).orElse(null);
+        if (categorie == null) {
+            throw new RuntimeException("Categorie not found");
+        }
+        user.setCategorie(categorie);
+
+        // Save the updated user
+        return userRepository.save(user);
+    }
 
 
 

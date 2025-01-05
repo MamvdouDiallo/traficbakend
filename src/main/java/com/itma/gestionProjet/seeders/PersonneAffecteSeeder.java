@@ -24,6 +24,7 @@ public class PersonneAffecteSeeder implements CommandLineRunner {
 
 
     public void run(String... args) throws Exception {
+        /*
         // Clear existing data
        // personneAffecteRepository.deleteAll();
 
@@ -83,5 +84,8 @@ public class PersonneAffecteSeeder implements CommandLineRunner {
 
           // personneAffecteRepository.save(personneAffecte);
         }
+
+         */
     }
+
 }

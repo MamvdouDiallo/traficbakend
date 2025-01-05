@@ -44,11 +44,14 @@ public class Project {
     private  Image image;
 
      */
+    /*
     @OneToMany(mappedBy = "project")
     private List<File> files;
 
     @OneToMany(mappedBy = "project")
     private List<Fichier> fichiers;
+
+     */
 
     @OneToMany(mappedBy = "project")
     private List<NormeProjet> normeProjets;
@@ -65,8 +68,6 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PartieInteresse> partiesInteressees ;
-
-
 
     public void addUser(User user) {
         this.users.add(user);
