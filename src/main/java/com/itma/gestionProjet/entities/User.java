@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Entity
 public class User {
     @Id
@@ -47,6 +46,10 @@ public class User {
     private  Image image;
     @ManyToMany(mappedBy = "users", cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     private List<Project> projects;
+
+    @ManyToOne
+    private PartieInteresse partieInteresse;
+
 
 
     public void addProject(Project project) {

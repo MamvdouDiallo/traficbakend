@@ -63,7 +63,7 @@ public class PartieInteresseController {
     }
 
     @PostMapping
-    public ResponseEntity<AApiResponse<PartieInteresseResponseDTO>> create(@RequestBody PartieInteresseDTO partieInteresseDTO) {
+    public ResponseEntity<AApiResponse<PartieInteresseResponseDTO>> create(@RequestBody PartieInteresseResponseDTO partieInteresseDTO) {
         AApiResponse<PartieInteresseResponseDTO> response = new AApiResponse<>();
         try {
             PartieInteresse savedPartieInteresse = service.save(partieInteresseDTO);
@@ -84,7 +84,7 @@ public class PartieInteresseController {
     @PutMapping("/{id}")
     public ResponseEntity<AApiResponse<PartieInteresseResponseDTO>> update(
             @PathVariable Long id,
-            @RequestBody PartieInteresseDTO partieInteresse) {
+            @RequestBody PartieInteresseResponseDTO partieInteresse) {
         AApiResponse<PartieInteresseResponseDTO> response = new AApiResponse<>();
         try {
             PartieInteresse updatedPip = service.update(id, partieInteresse);
@@ -137,20 +137,20 @@ public class PartieInteresseController {
         PartieInteresseResponseDTO dto = new PartieInteresseResponseDTO();
         dto.setId(partieInteresse.getId());
         dto.setAdresse(partieInteresse.getAdresse());
-        dto.setAdresseContactPrincipal(partieInteresse.getUser().getLocality());
+       // dto.setAdresseContactPrincipal(partieInteresse.getUser().getLocality());
         dto.setCategoriePartieInteresse(partieInteresse.getCategoriePartieInteresse().getId());
         dto.setCourielPrincipal(partieInteresse.getCourrielPrincipal());
-        dto.setDateNaissanceContactPrincipal(partieInteresse.getUser().getDate_of_birth());
-        dto.setEmailContactPrincipal(partieInteresse.getUser().getEmail());
+        //dto.setDateNaissanceContactPrincipal(partieInteresse.getUser().getDate_of_birth());
+        //dto.setEmailContactPrincipal(partieInteresse.getUser().getEmail());
         dto.setLibelle(partieInteresse.getLibelle());
-        dto.setLieuNaisasnceContactPrincipal(partieInteresse.getUser().getPlace_of_birth());
+        //dto.setLieuNaisasnceContactPrincipal(partieInteresse.getUser().getPlace_of_birth());
         dto.setLocalisation(partieInteresse.getLocalisation());
-        dto.setNomContactPrincipal(partieInteresse.getUser().getLastname());
+        //dto.setNomContactPrincipal(partieInteresse.getUser().getLastname());
         dto.setNormes(partieInteresse.getNormes());
-        dto.setPrenomContactPrincipal(partieInteresse.getUser().getFirstname());
-        dto.setSexeContactPrincipal(partieInteresse.getUser().getSexe());
+        //dto.setPrenomContactPrincipal(partieInteresse.getUser().getFirstname());
+        //dto.setSexeContactPrincipal(partieInteresse.getUser().getSexe());
         dto.setStatut(partieInteresse.getStatut());
-        dto.setTelephoneContactPrincipal(partieInteresse.getUser().getContact());
+        //dto.setTelephoneContactPrincipal(partieInteresse.getUser().getContact());
         dto.setProject_id((long) partieInteresse.getProject().getId());
         return dto;
     }

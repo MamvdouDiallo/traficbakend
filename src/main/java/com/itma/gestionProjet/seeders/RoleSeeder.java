@@ -20,13 +20,9 @@ public class RoleSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Liste des rôles à insérer
-        String[] roles = { "Super Admin" };
-
-        // Pour chaque rôle, on vérifie s'il existe, sinon on l'ajoute
+        String[] roles = { "Super Admin", "Representant principal" };
         for (String roleName : roles) {
             if (!roleRepository.existsByName(roleName)) {
-                // Créer et sauvegarder le rôle s'il n'existe pas
                 Role role = new Role();
                 role.setName(roleName);
                 roleRepository.save(role);
@@ -37,4 +33,5 @@ public class RoleSeeder implements CommandLineRunner {
         }
     }
 }
+
 
