@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,9 +28,9 @@ public class PartieInteresse {
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partieInteresse")
+    private List<User> contacts;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")

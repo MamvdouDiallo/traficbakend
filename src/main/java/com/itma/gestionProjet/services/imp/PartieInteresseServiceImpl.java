@@ -1,7 +1,9 @@
 package com.itma.gestionProjet.services.imp;
 
 
+import com.itma.gestionProjet.dtos.ContactDTO;
 import com.itma.gestionProjet.dtos.PartieInteresseDTO;
+import com.itma.gestionProjet.dtos.PartieInteresseResponseDTO;
 import com.itma.gestionProjet.entities.*;
 import com.itma.gestionProjet.exceptions.ContactMobileAlreadyExistsException;
 import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
@@ -54,43 +56,17 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
 
     @Transactional
     @Override
-    public PartieInteresse save(PartieInteresseDTO partieInteresse) {
+    public PartieInteresse save(PartieInteresseResponseDTO partieInteresse) {
         // Vérifier si une PartieInteresse avec le même libellé existe déjà
         Optional<PartieInteresse> optionalPip = repository.findByLibelle(partieInteresse.getLibelle());
         if (optionalPip.isPresent()) {
             throw new PartieInteresseAlreadyExistsException("Partie intéressée avec ce même libellé existe déjà !");
         }
 
-        Project defaultProject = projectRepository.findById((long) partieInteresse.getProject_id()).orElseThrow(() -> new RuntimeException("Project not found"));
-        // Vérifier si un utilisateur avec le même email existe déjà
+        Project defaultProject = projectRepository.findById((long) partieInteresse.getProject_id())
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
-
-        // Vérifier si un utilisateur avec le même numéro de contact existe déjà
-
-
-        // Créer et sauvegarder le nouvel utilisateur
-        User newUser = new User();
-        newUser.setEmail(partieInteresse.getEmailContactPrincipal());
-        newUser.setLastname(partieInteresse.getNomContactPrincipal());
-        newUser.setFirstname(partieInteresse.getPrenomContactPrincipal());
-        newUser.setContact(partieInteresse.getTelephoneContactPrincipal());
-        newUser.setLocality(partieInteresse.getAdresseContactPrincipal());
-        newUser.setDate_of_birth(partieInteresse.getDateNaissanceContactPrincipal());
-        newUser.setPlace_of_birth(partieInteresse.getLieuNaisasnceContactPrincipal());
-        newUser.setSexe(partieInteresse.getSexeContactPrincipal());
-        newUser.setEnabled(true);
-        newUser.setPassword(bCryptPasswordEncoder.encode("P@sser123"));
-
-        // Assigner le rôle à l'utilisateur
-        Role role = roleRepository.findRoleByName("Representant principal");
-        List<Role> roles = new ArrayList<>();
-        roles.add(role);
-        newUser.setRoles(roles);
-
-        // Sauvegarder l'utilisateur
-        userRepository.save(newUser);
-
-        // Créer et sauvegarder la nouvelle PartieInteresse
+        // Créer la nouvelle PartieInteresse
         PartieInteresse pip = new PartieInteresse();
         pip.setLibelle(partieInteresse.getLibelle());
         pip.setAdresse(partieInteresse.getAdresse());
@@ -98,13 +74,49 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         pip.setCourrielPrincipal(partieInteresse.getCourielPrincipal());
         pip.setStatut(partieInteresse.getStatut());
         pip.setNormes(partieInteresse.getNormes());
+
+        // Assigner la catégorie
         Optional<CategoriePartieInteresse> cpip = categoriePartieInteresseRepository.findById(partieInteresse.getCategoriePartieInteresse());
         cpip.ifPresent(pip::setCategoriePartieInteresse);
-        pip.setUser(newUser);
+
         pip.setProject(defaultProject);
 
+        // Parcourir les contacts dans la clé contacts
+        List<ContactDTO> contacts = partieInteresse.getContacts();
+        List<User> users = new ArrayList<>();
+
+        for (ContactDTO contact : contacts) {
+            // Créer un utilisateur pour chaque contact
+            User newUser = new User();
+            newUser.setEmail(contact.getEmailContactPrincipal());
+            newUser.setLastname(contact.getNomContactPrincipal());
+            newUser.setFirstname(contact.getPrenomContactPrincipal());
+            newUser.setContact(contact.getTelephoneContactPrincipal());
+            newUser.setLocality(contact.getAdresseContactPrincipal());
+            newUser.setSexe(contact.getSexeContactPrincipal());
+            newUser.setEnabled(true);
+            newUser.setPassword(bCryptPasswordEncoder.encode("P@sser123"));
+
+            // Assigner le rôle à l'utilisateur
+            Role role = roleRepository.findRoleByName("Representant");
+            List<Role> roles = new ArrayList<>();
+            roles.add(role);
+            newUser.setRoles(roles);
+
+            // Sauvegarder l'utilisateur
+            userRepository.save(newUser);
+
+            // Ajouter l'utilisateur à la liste des utilisateurs
+            users.add(newUser);
+        }
+
+        // Assigner les contacts à la PartieInteresse
+        pip.setContacts(users);
+
+        // Sauvegarder la PartieInteresse avec ses contacts
         return repository.save(pip);
     }
+
 
 
     /*
@@ -126,47 +138,76 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
 
 
     @Override
-    public PartieInteresse update(Long id, PartieInteresseDTO partieInteresse) {
+    public PartieInteresse update(Long id, PartieInteresseResponseDTO partieInteresseDTO) {
+        // Vérification si la PartieInteresse existe
         Optional<PartieInteresse> optionalPip = repository.findById(id);
         if (!optionalPip.isPresent()) {
-            throw new PartieInteresseNotFoundException("Partie interéssée avec ID " + id + " n'existe pas.");
+            throw new PartieInteresseNotFoundException("Partie intéressée avec ID " + id + " n'existe pas.");
         }
         PartieInteresse pip = optionalPip.get();
-        // Update user
-        User user = pip.getUser();
-        if (user == null) {
-            user = new User();
-        }
-        user.setEmail(partieInteresse.getEmailContactPrincipal());
-        user.setLastname(partieInteresse.getNomContactPrincipal());
-        user.setFirstname(partieInteresse.getPrenomContactPrincipal());
-        user.setContact(partieInteresse.getTelephoneContactPrincipal());
-        user.setLocality(partieInteresse.getAdresseContactPrincipal());
-        user.setDate_of_birth(partieInteresse.getDateNaissanceContactPrincipal());
-        user.setPlace_of_birth(partieInteresse.getLieuNaisasnceContactPrincipal());
-        user.setSexe(partieInteresse.getSexeContactPrincipal());
-        user.setEnabled(true);
-        // Password handling should be implemented properly
-        user.setPassword(bCryptPasswordEncoder.encode("P@sser123"));
-        Role role = roleRepository.findRoleByName("Representant principal");
-        List<Role> roles = new ArrayList<>();
-        roles.add(role);
-        user.setRoles(roles);
-        userRepository.save(user);
-        // Update PartieInteresse
-        pip.setLibelle(partieInteresse.getLibelle());
-        pip.setAdresse(partieInteresse.getAdresse());
-        pip.setLocalisation(partieInteresse.getLocalisation());
-        pip.setCourrielPrincipal(partieInteresse.getCourielPrincipal());
-        pip.setNormes(partieInteresse.getNormes());
-        pip.setStatut(partieInteresse.getStatut());
 
-        Optional<CategoriePartieInteresse> cpip = categoriePartieInteresseRepository.findById(partieInteresse.getCategoriePartieInteresse());
+        // Mise à jour des informations de PartieInteresse (informations générales)
+        pip.setLibelle(partieInteresseDTO.getLibelle());
+        pip.setAdresse(partieInteresseDTO.getAdresse());
+        pip.setLocalisation(partieInteresseDTO.getLocalisation());
+        pip.setCourrielPrincipal(partieInteresseDTO.getCourielPrincipal());
+        pip.setNormes(partieInteresseDTO.getNormes());
+        pip.setStatut(partieInteresseDTO.getStatut());
+
+        // Mise à jour de la catégorie
+        Optional<CategoriePartieInteresse> cpip = categoriePartieInteresseRepository.findById(partieInteresseDTO.getCategoriePartieInteresse());
         cpip.ifPresent(pip::setCategoriePartieInteresse);
-        pip.setUser(user);
 
+        // Gestion des contacts
+        List<User> contacts = new ArrayList<>(); // Liste des contacts (représentants)
+
+        // Si des contacts existent dans le DTO, les traiter
+        if (partieInteresseDTO.getContacts() != null && !partieInteresseDTO.getContacts().isEmpty()) {
+            for (ContactDTO contactDTO : partieInteresseDTO.getContacts()) {
+                // Rechercher si un contact existe déjà (par exemple via l'email ou un autre identifiant unique)
+                Optional<User> existingContactOpt = userRepository.findByEmail(contactDTO.getEmailContactPrincipal());
+                User user;
+                if (existingContactOpt.isPresent()) {
+                    user = existingContactOpt.get();
+                    user.setEmail(contactDTO.getEmailContactPrincipal());
+                    user.setLastname(contactDTO.getNomContactPrincipal());
+                    user.setFirstname(contactDTO.getPrenomContactPrincipal());
+                    user.setContact(contactDTO.getTelephoneContactPrincipal());
+                    user.setLocality(contactDTO.getAdresseContactPrincipal());
+                    user.setSexe(contactDTO.getSexeContactPrincipal());
+                    user.setEnabled(true);  // Activer le contact
+                    user.setPassword(bCryptPasswordEncoder.encode("P@sser123")); // Nouveau mot de passe par défaut
+
+                    // Mise à jour des rôles
+                    Role role = roleRepository.findRoleByName("Representant principal");
+                    List<Role> roles = new ArrayList<>();
+                    roles.add(role);
+                    user.setRoles(roles);
+                    userRepository.save(user);
+                } else {
+                    // Si le contact n'existe pas, créer un nouveau contact
+                    user = new User();
+                    user.setEmail(contactDTO.getEmailContactPrincipal());
+                    user.setLastname(contactDTO.getNomContactPrincipal());
+                    user.setFirstname(contactDTO.getPrenomContactPrincipal());
+                    user.setContact(contactDTO.getTelephoneContactPrincipal());
+                    user.setLocality(contactDTO.getAdresseContactPrincipal());
+                    user.setSexe(contactDTO.getSexeContactPrincipal());
+                    user.setEnabled(true);
+                    Role role = roleRepository.findRoleByName("Representant principal");
+                    List<Role> roles = new ArrayList<>();
+                    roles.add(role);
+                    user.setRoles(roles);
+                    userRepository.save(user);
+                }
+                contacts.add(user);
+            }
+        }
+        pip.setContacts(contacts);
         return repository.save(pip);
     }
+
+
 
 
     @Override
