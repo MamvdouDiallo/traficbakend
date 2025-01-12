@@ -13,21 +13,29 @@ public class PlainteDto {
     private String numeroDossier;
     private String lieuEnregistrement;
     private Date dateEnregistrement;
-    private Boolean isRecensed;
-    private String lieuNaissance;
-    private String nom;
-    private String prenom;
-    private String numeroIdentification;
-    private String placeOfBirth;
-    private String recommandation;
-    private String situationMatrimoniale;
-    private String typeIdentification;
-    private String vulnerabilite;
     private  String libelleProjet;
-    private  String descriptionObjet;
-    private  String codePap;
-    private  String etat;
-    private Long projectId;
-    private List<String> documentUrls;
+    private Boolean isRecensed;
+    private Boolean isSignedFileRecensement;  // Correspond à la classe Entity
+    private Date dateRecensement;  // Correspond à la classe Entity
+    private String natureBienAffecte;  // Correspond à la classe Entity
+    private String emplacementBienAffecte;  // Correspond à la classe Entity
+    private String typeIdentification;
+    private String numeroIdentification;
+    private Long projectId;  // Correspond à l'identifiant du projet
+    private String contact;  // Correspond à la classe Entity
+    private String prenom;
+    private String nom;
+    private String codePap;
+    private String vulnerabilite;
+    private String email;  // Correspond à la classe Entity
+    private String situationMatrimoniale;
+    private String descriptionObjet;
+    private Boolean hasDocument;  // Correspond à la classe Entity
+    private String recommandation;
+    private String etat;
 
+    private List<String> documentUrls;  // Liste des URL des documents associés
+
+    private String urlSignaturePap;  // Correspond à la classe Entity
+    private String urlSignatureResponsable;  // Correspond à la classe Entity
 }

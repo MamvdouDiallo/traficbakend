@@ -15,30 +15,40 @@ public class Plainte {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String libelleProjet;
     private String numeroDossier;
     private String lieuEnregistrement;
     private Date dateEnregistrement;
     private Boolean isRecensed;
-    private String lieuNaissance;
-    private String nom;
-    private String prenom;
-    private String numeroIdentification;
-    private String placeOfBirth;
-    private String recommandation;
-    private String situationMatrimoniale;
+    private Boolean isSignedFileRecensement;
+    private Date dateRecensement;
+    private String natureBienAffecte;
+    private String emplacementBienAffecte;
     private String typeIdentification;
-    private String vulnerabilite;
+    private String numeroIdentification;
+    private String contact;
+    private String prenom;
+    private String nom;
     private String codePap;
-    private  String descriptionObjet;
-    private  String libelleProjet;
-    private  String etat;
-    @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project projet;
+    private String vulnerabilite;
+    private String email;
+    private String situationMatrimoniale;
+    private String descriptionObjet;
+    private Boolean hasDocument;
+    private String recommandation;
+    private String etat;
 
+    // Liste des URLs des documents
     @ElementCollection
     @Column(name = "document_url")
     private List<String> documentUrls;
 
-    // Getters and Setters
+    // Signature des papiers
+    private String urlSignaturePap;
+    private String urlSignatureResponsable;
+
+    // Relation avec l'entité Project
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project projet;
 }
