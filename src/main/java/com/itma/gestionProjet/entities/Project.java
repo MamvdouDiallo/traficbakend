@@ -30,10 +30,13 @@ public class Project {
     @NotBlank(message = "La description est obligatoire et ne peut pas être vide")
     @Column(nullable = false)
     private String description;
+    /*
     @NotNull
     @NotBlank(message = "La catégorie est obligatoire et ne peut pas être vide")
     @Column(nullable = false)
     private String categorie;
+
+     */
 
     private String status;
     private String imageUrl;

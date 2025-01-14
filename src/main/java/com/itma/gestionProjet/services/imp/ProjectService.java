@@ -67,7 +67,7 @@ public class ProjectService implements IProjectService {
         existingProject.setLibelle(p.getLibelle());
         existingProject.setDescription(p.getDescription());
         existingProject.setStatus(p.getStatus());
-        existingProject.setCategorie(p.getCategorie());
+       // existingProject.setCategorie(p.getCategorie());
 
         // Mise à jour de la date de début et de fin
         existingProject.setDatedebut(p.getDatedebut());

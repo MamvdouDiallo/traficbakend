@@ -33,18 +33,19 @@ public class PlainteServiceImpl implements PlainteService {
     @Override
     public PlainteDto createPlainte(PlainteRequest plainteRequest) {
         Plainte plainte = new Plainte();
+
         Project projet = projetRepository.findById(plainteRequest.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Projet non trouvé"));
+
         plainte.setProjet(projet);
         plainte.setNumeroDossier(plainteRequest.getNumeroDossier());
+        plainte.setLibelleProjet(plainteRequest.getLibelleProjet());
         plainte.setLieuEnregistrement(plainteRequest.getLieuEnregistrement());
         plainte.setDateEnregistrement(plainteRequest.getDateEnregistrement());
         plainte.setIsRecensed(plainteRequest.getIsRecensed());
-        plainte.setLieuNaissance(plainteRequest.getLieuNaissance());
         plainte.setNom(plainteRequest.getNom());
         plainte.setPrenom(plainteRequest.getPrenom());
         plainte.setNumeroIdentification(plainteRequest.getNumeroIdentification());
-        plainte.setPlaceOfBirth(plainteRequest.getPlaceOfBirth());
         plainte.setRecommandation(plainteRequest.getRecommandation());
         plainte.setSituationMatrimoniale(plainteRequest.getSituationMatrimoniale());
         plainte.setTypeIdentification(plainteRequest.getTypeIdentification());
@@ -52,12 +53,23 @@ public class PlainteServiceImpl implements PlainteService {
         plainte.setVulnerabilite(plainteRequest.getVulnerabilite());
         plainte.setEtat(plainteRequest.getEtat());
         plainte.setDocumentUrls(plainteRequest.getDocumentUrls());
-        plainte.setLibelleProjet(plainteRequest.getLibelleProjet());
         plainte.setDescriptionObjet(plainteRequest.getDescriptionObjet());
+
+        plainte.setIsSignedFileRecensement(plainteRequest.getIsSignedFileRecensement());
+        plainte.setDateRecensement(plainteRequest.getDateRecensement());
+        plainte.setNatureBienAffecte(plainteRequest.getNatureBienAffecte());
+        plainte.setEmplacementBienAffecte(plainteRequest.getEmplacementBienAffecte());
+        plainte.setContact(plainteRequest.getContact());
+        plainte.setEmail(plainteRequest.getEmail());
+        plainte.setHasDocument(plainteRequest.getHasDocument());
+        plainte.setUrlSignaturePap(plainteRequest.getUrlSignaturePap());
+        plainte.setUrlSignatureResponsable(plainteRequest.getUrlSignatureResponsable());
+
         plainte = plainteRepository.save(plainte);
 
         return convertEntityToDto(plainte);
     }
+
 
     @Override
     public Page<PlainteDto> getAllPlaintes(Pageable pageable) {
@@ -75,8 +87,10 @@ public class PlainteServiceImpl implements PlainteService {
 
     @Override
     public PlainteDto updatePlainte(Long id, PlainteRequest plainteRequest) {
+        // Recherche de la plainte par son ID
         Plainte plainte = plainteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Plainte non trouvée"));
+
         Project projet = projetRepository.findById(plainteRequest.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Projet non trouvé"));
 
@@ -85,22 +99,34 @@ public class PlainteServiceImpl implements PlainteService {
         plainte.setLieuEnregistrement(plainteRequest.getLieuEnregistrement());
         plainte.setDateEnregistrement(plainteRequest.getDateEnregistrement());
         plainte.setIsRecensed(plainteRequest.getIsRecensed());
-        plainte.setLieuNaissance(plainteRequest.getLieuNaissance());
         plainte.setNom(plainteRequest.getNom());
         plainte.setPrenom(plainteRequest.getPrenom());
         plainte.setNumeroIdentification(plainteRequest.getNumeroIdentification());
-        plainte.setPlaceOfBirth(plainteRequest.getPlaceOfBirth());
         plainte.setRecommandation(plainteRequest.getRecommandation());
         plainte.setSituationMatrimoniale(plainteRequest.getSituationMatrimoniale());
         plainte.setTypeIdentification(plainteRequest.getTypeIdentification());
-        plainte.setVulnerabilite(plainteRequest.getVulnerabilite());
         plainte.setCodePap(plainteRequest.getCodePap());
-        plainte.setDocumentUrls(plainteRequest.getDocumentUrls());
+        plainte.setVulnerabilite(plainteRequest.getVulnerabilite());
         plainte.setEtat(plainteRequest.getEtat());
+        plainte.setDocumentUrls(plainteRequest.getDocumentUrls());
+        plainte.setLibelleProjet(plainteRequest.getLibelleProjet());
+        plainte.setDescriptionObjet(plainteRequest.getDescriptionObjet());
+
+        plainte.setIsSignedFileRecensement(plainteRequest.getIsSignedFileRecensement());
+        plainte.setDateRecensement(plainteRequest.getDateRecensement());
+        plainte.setNatureBienAffecte(plainteRequest.getNatureBienAffecte());
+        plainte.setEmplacementBienAffecte(plainteRequest.getEmplacementBienAffecte());
+        plainte.setContact(plainteRequest.getContact());
+        plainte.setEmail(plainteRequest.getEmail());
+        plainte.setHasDocument(plainteRequest.getHasDocument());
+        plainte.setUrlSignaturePap(plainteRequest.getUrlSignaturePap());
+        plainte.setUrlSignatureResponsable(plainteRequest.getUrlSignatureResponsable());
+
         plainte = plainteRepository.save(plainte);
 
         return convertEntityToDto(plainte);
     }
+
 
     @Override
     public void deletePlainte(Long id) {
@@ -146,28 +172,38 @@ public class PlainteServiceImpl implements PlainteService {
 
     private PlainteDto convertEntityToDto(Plainte plainte) {
         PlainteDto plainteDto = new PlainteDto();
+
         plainteDto.setId(plainte.getId());
         plainteDto.setNumeroDossier(plainte.getNumeroDossier());
         plainteDto.setLieuEnregistrement(plainte.getLieuEnregistrement());
         plainteDto.setDateEnregistrement(plainte.getDateEnregistrement());
         plainteDto.setIsRecensed(plainte.getIsRecensed());
-        plainteDto.setLieuNaissance(plainte.getLieuNaissance());
         plainteDto.setNom(plainte.getNom());
         plainteDto.setPrenom(plainte.getPrenom());
         plainteDto.setNumeroIdentification(plainte.getNumeroIdentification());
-        plainteDto.setPlaceOfBirth(plainte.getPlaceOfBirth());
         plainteDto.setRecommandation(plainte.getRecommandation());
         plainteDto.setSituationMatrimoniale(plainte.getSituationMatrimoniale());
         plainteDto.setTypeIdentification(plainte.getTypeIdentification());
         plainteDto.setVulnerabilite(plainte.getVulnerabilite());
-        plainteDto.setProjectId((long) plainte.getProjet().getId());
         plainteDto.setCodePap(plainte.getCodePap());
         plainteDto.setEtat(plainte.getEtat());
         plainteDto.setDescriptionObjet(plainte.getDescriptionObjet());
         plainteDto.setLibelleProjet(plainte.getLibelleProjet());
         plainteDto.setDocumentUrls(plainte.getDocumentUrls());
+
+        plainteDto.setIsSignedFileRecensement(plainte.getIsSignedFileRecensement());
+        plainteDto.setDateRecensement(plainte.getDateRecensement());
+        plainteDto.setNatureBienAffecte(plainte.getNatureBienAffecte());
+        plainteDto.setEmplacementBienAffecte(plainte.getEmplacementBienAffecte());
+        plainteDto.setContact(plainte.getContact());
+        plainteDto.setEmail(plainte.getEmail());
+        plainteDto.setHasDocument(plainte.getHasDocument());
+        plainteDto.setUrlSignaturePap(plainte.getUrlSignaturePap());
+        plainteDto.setUrlSignatureResponsable(plainte.getUrlSignatureResponsable());
+
         return plainteDto;
     }
+
 
     @Override
     public AApiResponse<PlainteDto> getPlainteByCodePap(String codePap, int page, int size) {
