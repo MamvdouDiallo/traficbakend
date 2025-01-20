@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -24,6 +25,9 @@ public class UserSeeder implements CommandLineRunner {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    PasswordEncoder bCryptPasswordEncoder;
+
     @Override
     @Transactional
     public void run(String... args) throws Exception {
@@ -36,7 +40,7 @@ public class UserSeeder implements CommandLineRunner {
             return;
         }
 
-        String email = "salioufereya19@gmail.com.com";
+        String email = "salioufereya19@gmail.com";
 
         if (!userRepository.existsByEmail(email)) {
             User user = new User();
@@ -44,7 +48,7 @@ public class UserSeeder implements CommandLineRunner {
             user.setLastname("Diallo");
             user.setEmail(email);
             user.setEnabled(true);
-            user.setPassword("Passer@123");  // Utiliser un mot de passe sécurisé en vrai
+            user.setPassword(bCryptPasswordEncoder.encode("Passer@123"));  // Utiliser un mot de passe sécurisé en vrai
             user.setLocality("Locality Example");
             user.setContact("773417360");
             user.setSous_role("Administrateur principal");
