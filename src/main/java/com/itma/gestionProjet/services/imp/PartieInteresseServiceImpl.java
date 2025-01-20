@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PartieInteresseServiceImpl implements PartieInteresseService {
@@ -54,10 +55,9 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         return repository.findById(id);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public PartieInteresse save(PartieInteresseResponseDTO partieInteresse) {
-        // Vérifier si une PartieInteresse avec le même libellé existe déjà
         Optional<PartieInteresse> optionalPip = repository.findByLibelle(partieInteresse.getLibelle());
         if (optionalPip.isPresent()) {
             throw new PartieInteresseAlreadyExistsException("Partie intéressée avec ce même libellé existe déjà !");
@@ -74,11 +74,7 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         pip.setCourrielPrincipal(partieInteresse.getCourielPrincipal());
         pip.setStatut(partieInteresse.getStatut());
         pip.setNormes(partieInteresse.getNormes());
-
-        // Assigner la catégorie
-        Optional<CategoriePartieInteresse> cpip = categoriePartieInteresseRepository.findById(partieInteresse.getCategoriePartieInteresse());
-        cpip.ifPresent(pip::setCategoriePartieInteresse);
-
+        pip.setCategorie(partieInteresse.getCategorie());
         pip.setProject(defaultProject);
 
         // Parcourir les contacts dans la clé contacts
@@ -98,16 +94,20 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
             newUser.setPassword(bCryptPasswordEncoder.encode("P@sser123"));
 
             // Assigner le rôle à l'utilisateur
-            Role role = roleRepository.findRoleByName("Representant");
+            Role role = roleRepository.findRoleByName("Representant Principal");
             List<Role> roles = new ArrayList<>();
             roles.add(role);
             newUser.setRoles(roles);
+
+            // Assigner la PartieInteresse à l'utilisateur
+            newUser.setPartieInteresse(pip);  // Set the PartieInteresse here
 
             // Sauvegarder l'utilisateur
             userRepository.save(newUser);
 
             // Ajouter l'utilisateur à la liste des utilisateurs
             users.add(newUser);
+
         }
 
         // Assigner les contacts à la PartieInteresse
@@ -116,6 +116,7 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         // Sauvegarder la PartieInteresse avec ses contacts
         return repository.save(pip);
     }
+
 
 
 
@@ -132,9 +133,6 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
     }
 
 
-    public Page<PartieInteresse> findByCategoriePartieInteresseLibelle(String libelle, Pageable pageable) {
-        return repository.findByCategoriePartieInteresseLibelle(libelle, pageable);
-    }
 
 
     @Override
@@ -153,10 +151,8 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         pip.setCourrielPrincipal(partieInteresseDTO.getCourielPrincipal());
         pip.setNormes(partieInteresseDTO.getNormes());
         pip.setStatut(partieInteresseDTO.getStatut());
+        pip.setCategorie(partieInteresseDTO.getCategorie());
 
-        // Mise à jour de la catégorie
-        Optional<CategoriePartieInteresse> cpip = categoriePartieInteresseRepository.findById(partieInteresseDTO.getCategoriePartieInteresse());
-        cpip.ifPresent(pip::setCategoriePartieInteresse);
 
         // Gestion des contacts
         List<User> contacts = new ArrayList<>(); // Liste des contacts (représentants)
@@ -222,5 +218,61 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
             throw new PartieInteresseNotFoundException("Partie intéressée non trouvée avec l'ID : " + id);
         }
     }
+
+
+
+    public List<PartieInteresseResponseDTO> getAllPartieInteresseWithContacts() {
+        // Récupérer toutes les instances de PartieInteresse avec leurs contacts
+        List<PartieInteresse> partieInteresseList = repository.findAllWithContacts();
+
+        // Mapper chaque PartieInteresse en DTO
+        return partieInteresseList.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Mapper PartieInteresse vers PartieInteresseResponseDTO
+
+    private PartieInteresseResponseDTO convertToDTO(PartieInteresse partieInteresse) {
+        PartieInteresseResponseDTO responseDTO = new PartieInteresseResponseDTO();
+        responseDTO.setId(partieInteresse.getId());
+        responseDTO.setAdresse(partieInteresse.getAdresse());
+      //  responseDTO.setCourielPrincipal(partieInteresse.getCourielPrincipal());
+        responseDTO.setLibelle(partieInteresse.getLibelle());
+        responseDTO.setCategorie(partieInteresse.getCategorie());
+        responseDTO.setLocalisation(partieInteresse.getLocalisation());
+        responseDTO.setNormes(partieInteresse.getNormes());
+        responseDTO.setStatut(partieInteresse.getStatut());
+       // responseDTO.setProject_id(partieInteresse.getProject().getId());
+
+        // Mapper les utilisateurs (contacts) vers ContactDTO
+        List<ContactDTO> contactDTOs = partieInteresse.getContacts().stream()
+                .map(this::toContactDTO)  // Utilisation de la méthode de mappage interne
+                .collect(Collectors.toList());
+        responseDTO.setContacts(contactDTOs);
+
+        return responseDTO;
+    }
+
+
+    private ContactDTO toContactDTO(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        ContactDTO contactDTO = new ContactDTO();
+      //  contactDTO.setId(user.getId());
+        contactDTO.setNomContactPrincipal(user.getFirstname());
+        contactDTO.setPrenomContactPrincipal(user.getLastname());
+        contactDTO.setEmailContactPrincipal(user.getEmail());
+        //contactDTO.setLocality(user.getLocality());
+        //contactDTO.setContact(user.getContact());
+        //contactDTO.setImageUrl(user.getImageUrl());
+        contactDTO.setSexeContactPrincipal(user.getSexe());
+        // Autres propriétés du User si nécessaire
+
+        return contactDTO;
+    }
+
 }
 

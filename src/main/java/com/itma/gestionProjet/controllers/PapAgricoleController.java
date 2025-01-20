@@ -46,8 +46,8 @@ public class PapAgricoleController {
 
     @GetMapping
     public AApiResponse<DatabasePapAgricoleResponseDTO> getAll(
-            @RequestParam(defaultValue = "0") int offset, // Valeur par défaut 0 pour la page
-            @RequestParam(defaultValue = "100000000") int max) { // Valeur par défaut 10 pour la taille
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "100000000") int max) {
         try {
             // Appel au service pour récupérer les données
             List<DatabasePapAgricoleResponseDTO> data = databasePapAgricoleService.getAllDatabasePapAgricole(offset, max);

@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Transactional
     @Query(value = "DELETE FROM user_project WHERE user_id = :userId", nativeQuery = true)
     void deleteUserAssociations(@Param("userId") Long userId);
+
+    boolean existsByEmail(String email);
 }

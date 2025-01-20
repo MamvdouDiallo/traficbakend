@@ -20,20 +20,21 @@ public class PartieInteresse {
     private String statut;
     private String courrielPrincipal;
     private String adresse;
-    private  String normes;
+    private String normes;
     private String localisation;
-    @ManyToOne
-    @JoinColumn(name = "categorie_id")
-    private CategoriePartieInteresse categoriePartieInteresse;
+    private String categorie;
+
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partieInteresse")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partieInteresse", cascade = CascadeType.ALL)
     private List<User> contacts;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
 }
+

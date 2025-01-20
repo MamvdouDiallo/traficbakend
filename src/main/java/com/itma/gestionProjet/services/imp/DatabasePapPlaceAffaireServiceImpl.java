@@ -13,7 +13,9 @@ import com.itma.gestionProjet.services.DatabasePapPlaceAffaireService;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,6 +49,7 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
     }
 
     @Override
+    /*
     public List<DatabasePapPlaceAffaireResponseDTO> getAllDatabasePapPlaceAffaire(int page, int size) {
         var pageRequest = PageRequest.of(page, size);
         var pageResult = repository.findAll(pageRequest);
@@ -55,6 +58,22 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
                 .map(this::convertEntityToResponseDTO)
                 .collect(Collectors.toList());
     }
+
+
+     */
+
+
+
+    public List<DatabasePapPlaceAffaireResponseDTO> getAllDatabasePapPlaceAffaire(int page, int size) {
+        var pageRequest = PageRequest.of(page, size);
+        var pageResult = repository.findAll(pageRequest);
+        List<DatabasePapPlaceAffaireResponseDTO> data = pageResult.getContent().stream()
+                .map(this::convertEntityToResponseDTO)
+                .collect(Collectors.toList());
+
+        return data;
+    }
+
 
     @Override
     public DatabasePapPlaceAffaireResponseDTO getDatabasePapPlaceAffaireById(Long id) {

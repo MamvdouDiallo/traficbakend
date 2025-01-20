@@ -1,9 +1,11 @@
 package com.itma.gestionProjet.controllers;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
+import com.itma.gestionProjet.dtos.ContactDTO;
 import com.itma.gestionProjet.dtos.PartieInteresseDTO;
 import com.itma.gestionProjet.dtos.PartieInteresseResponseDTO;
 import com.itma.gestionProjet.entities.PartieInteresse;
+import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.exceptions.PartieInteresseNotFoundException;
 import com.itma.gestionProjet.services.PartieInteresseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +36,17 @@ public class PartieInteresseController {
 
         Pageable pageable = PageRequest.of(offset, max);
         Page<PartieInteresse> partieInteressePage;
-
-        if (categorieLibelle != null) {
-            partieInteressePage = service.findByCategoriePartieInteresseLibelle(categorieLibelle, pageable);
-        } else {
             partieInteressePage = service.getPartieInteresses(pageable);
-        }
 
         AApiResponse<PartieInteresseResponseDTO> response = new AApiResponse<>();
         response.setResponseCode(200);
 
         // Convertir les entités PartieInteresse en DTO
         List<PartieInteresseResponseDTO> dtoList = partieInteressePage.getContent().stream()
-                .map(this::mapToDTO)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
+
+
 
         response.setData(dtoList);
         response.setOffset(offset);
@@ -67,7 +66,7 @@ public class PartieInteresseController {
         AApiResponse<PartieInteresseResponseDTO> response = new AApiResponse<>();
         try {
             PartieInteresse savedPartieInteresse = service.save(partieInteresseDTO);
-            PartieInteresseResponseDTO dto = this.mapToDTO(savedPartieInteresse);
+            PartieInteresseResponseDTO dto = this.convertToDTO(savedPartieInteresse);
             response.setResponseCode(200);
             response.setMessage("Partie intéressée créée avec succès");
             response.setData(Collections.singletonList(dto)); // Encapsulez le DTO dans une liste
@@ -88,7 +87,7 @@ public class PartieInteresseController {
         AApiResponse<PartieInteresseResponseDTO> response = new AApiResponse<>();
         try {
             PartieInteresse updatedPip = service.update(id, partieInteresse);
-            PartieInteresseResponseDTO dto = this.mapToDTO(updatedPip);
+            PartieInteresseResponseDTO dto = this.convertToDTO(updatedPip);
             response.setResponseCode(200);
             response.setMessage("Partie intéressée mise à jour avec succès");
             response.setData(Collections.singletonList(dto));  // Assurez-vous que setData accepte un objet unique
@@ -133,28 +132,44 @@ public class PartieInteresseController {
 
 
 
-     PartieInteresseResponseDTO mapToDTO(PartieInteresse partieInteresse) {
-        PartieInteresseResponseDTO dto = new PartieInteresseResponseDTO();
-        dto.setId(partieInteresse.getId());
-        dto.setAdresse(partieInteresse.getAdresse());
-       // dto.setAdresseContactPrincipal(partieInteresse.getUser().getLocality());
-        dto.setCategoriePartieInteresse(partieInteresse.getCategoriePartieInteresse().getId());
-        dto.setCourielPrincipal(partieInteresse.getCourrielPrincipal());
-        //dto.setDateNaissanceContactPrincipal(partieInteresse.getUser().getDate_of_birth());
-        //dto.setEmailContactPrincipal(partieInteresse.getUser().getEmail());
-        dto.setLibelle(partieInteresse.getLibelle());
-        //dto.setLieuNaisasnceContactPrincipal(partieInteresse.getUser().getPlace_of_birth());
-        dto.setLocalisation(partieInteresse.getLocalisation());
-        //dto.setNomContactPrincipal(partieInteresse.getUser().getLastname());
-        dto.setNormes(partieInteresse.getNormes());
-        //dto.setPrenomContactPrincipal(partieInteresse.getUser().getFirstname());
-        //dto.setSexeContactPrincipal(partieInteresse.getUser().getSexe());
-        dto.setStatut(partieInteresse.getStatut());
-        //dto.setTelephoneContactPrincipal(partieInteresse.getUser().getContact());
-        dto.setProject_id((long) partieInteresse.getProject().getId());
-        return dto;
+
+    private PartieInteresseResponseDTO convertToDTO(PartieInteresse partieInteresse) {
+        PartieInteresseResponseDTO responseDTO = new PartieInteresseResponseDTO();
+        responseDTO.setId(partieInteresse.getId());
+        responseDTO.setAdresse(partieInteresse.getAdresse());
+        //  responseDTO.setCourielPrincipal(partieInteresse.getCourielPrincipal());
+        responseDTO.setLibelle(partieInteresse.getLibelle());
+        responseDTO.setCategorie(partieInteresse.getCategorie());
+        responseDTO.setLocalisation(partieInteresse.getLocalisation());
+        responseDTO.setNormes(partieInteresse.getNormes());
+        responseDTO.setStatut(partieInteresse.getStatut());
+        // responseDTO.setProject_id(partieInteresse.getProject().getId());
+
+        // Mapper les utilisateurs (contacts) vers ContactDTO
+        List<ContactDTO> contactDTOs = partieInteresse.getContacts().stream()
+                .map(this::toContactDTO)  // Utilisation de la méthode de mappage interne
+                .collect(Collectors.toList());
+        responseDTO.setContacts(contactDTOs);
+
+        return responseDTO;
     }
 
+
+    private ContactDTO toContactDTO(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        ContactDTO contactDTO = new ContactDTO();
+        contactDTO.setNomContactPrincipal(user.getLastname());
+        contactDTO.setPrenomContactPrincipal(user.getFirstname());
+        contactDTO.setEmailContactPrincipal(user.getEmail());
+        contactDTO.setAdresseContactPrincipal(user.getLocality());
+        contactDTO.setTelephoneContactPrincipal(user.getContact());
+        contactDTO.setSexeContactPrincipal(user.getSexe());
+
+        return contactDTO;
+    }
 
 
 }
