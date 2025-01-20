@@ -47,9 +47,9 @@ public class User {
     @ManyToMany(mappedBy = "users", cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     private List<Project> projects;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partie_interesse_id")
     private PartieInteresse partieInteresse;
-
 
 
     public void addProject(Project project) {

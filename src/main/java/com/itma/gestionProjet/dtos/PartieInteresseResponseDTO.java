@@ -11,7 +11,7 @@ public class PartieInteresseResponseDTO {
     private String adresse;
     private String courielPrincipal;
     private String libelle;
-    private Long categoriePartieInteresse;
+    private String categorie;
     private String localisation;
     private String normes;
     private String statut;
