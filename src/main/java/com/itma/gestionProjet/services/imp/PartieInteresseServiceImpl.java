@@ -38,6 +38,10 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private CategorieRepository categorieRepository;
+
+
 
     @Autowired
     private CategoriePartieInteresseRepository categoriePartieInteresseRepository;
@@ -98,6 +102,9 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
             List<Role> roles = new ArrayList<>();
             roles.add(role);
             newUser.setRoles(roles);
+
+            Categorie categorie =categorieRepository.findByLibelle("Niveau 2");
+            newUser.setCategorie(categorie);
 
             // Assigner la PartieInteresse à l'utilisateur
             newUser.setPartieInteresse(pip);  // Set the PartieInteresse here

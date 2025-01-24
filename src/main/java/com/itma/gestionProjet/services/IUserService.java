@@ -13,12 +13,14 @@ public interface IUserService {
     Optional<User> findUserByEmail(String email);
     User saveUser(UserRequest p);
 
-    UserDTO saveMo(MoRequest p);
+    User saveMo(MoRequest p);
+
+    User saveConsultant(UserRequest p);
 
     Optional<User> findById(Long id);
-    UserDTO updateMo(MoRequest p);
+    User updateMo(MoRequest p);
     UserDTO getUser(Long id);
-    List<UserDTO> getAllUsers();
+    List<User> getAllUsers();
 
 
 List<UserDTO> getUsersByRoleName(String username);

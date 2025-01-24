@@ -19,6 +19,7 @@ import com.itma.gestionProjet.security.JWTGenerator;
 import com.itma.gestionProjet.services.imp.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -53,7 +54,7 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
     private  final ApplicationEventPublisher publisher;
-@Autowired
+    @Autowired
     private  RegistrationCompleteEventListener eventListener;
 
     @Autowired
@@ -67,12 +68,12 @@ public class UserController {
 
     @RequestMapping(path = "/all", method = RequestMethod.GET)
     public ApiResponse<List<UserDTO>> getUsers() {
-        List<UserDTO> users = userService.getAllUsers();
+        List<User> users = userService.getAllUsers();
         return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
     }
 
     @RequestMapping(path = "/createUser", method = RequestMethod.POST)
-    public  ApiResponse<User> createUser(@RequestBody UserRequest userRequest, final HttpServletRequest request) {
+    public  ApiResponse<User> createUser(@Valid @RequestBody UserRequest userRequest, final HttpServletRequest request) {
         User user = userService.saveUser(userRequest);
         publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
         return   new ApiResponse<>(HttpStatus.OK.value(), "User cree avec succés",user);
@@ -200,13 +201,22 @@ public class UserController {
 
 
 //creation des maitres d'ouvrages
-    @RequestMapping(path = "/createMo", method = RequestMethod.POST)
+    @RequestMapping(path = "/createMaitreOuvrage", method = RequestMethod.POST)
     public  ApiResponse<User> createMO(@RequestBody MoRequest userRequest, final HttpServletRequest request) {
       //  ProjectDTO projectDTO = projectService.saveProject(projectRequest);
-        UserDTO user = userService.saveMo(userRequest);
+        User user = userService.saveMo(userRequest);
 
        //publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
-        return  new ApiResponse<>(HttpStatus.OK.value(), "Maitres d'ouvrtages  crée avec succés",user);
+        return  new ApiResponse<>(HttpStatus.OK.value(), "Maitre d'ouvrtage  crée avec succés",user);
+    }
+
+    @RequestMapping(path = "/createConsultant", method = RequestMethod.POST)
+    public  ApiResponse<User> createConsultant(@RequestBody UserRequest userRequest, final HttpServletRequest request) {
+        //  ProjectDTO projectDTO = projectService.saveProject(projectRequest);
+        User user = userService.saveConsultant(userRequest);
+
+        //publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
+        return  new ApiResponse<>(HttpStatus.OK.value(), "Consultant  crée avec succés",user);
     }
 
 //liste des maitres d'ouvrages
@@ -217,14 +227,10 @@ public class UserController {
     }
 
 
-    @RequestMapping(path = "/by_sous_role", method = RequestMethod.GET)
-    public ApiResponse<List<UserDTO>> getConsultantBySousRole(@RequestParam String roleName) {
-        List<UserDTO> users = userService.getUsersBySousRoleName(roleName);
-        return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
-    }
 
 
-    @DeleteMapping("/deleteMo/{id}")
+
+    @DeleteMapping("/deleteMaitreOuvrage/{id}")
     public ApiResponse<?> deleteUser(@PathVariable Long id) throws Exception {
         try {
             userService.deleteUserById(id);
@@ -234,10 +240,10 @@ public class UserController {
         }
     }
 
-    @PostMapping("/updateMo")
+    @PostMapping("/updateMaitreOuvrage")
     public ApiResponse<UserDTO> updateMo(@RequestBody MoRequest moRequest) throws Exception {
         try{
-            UserDTO updatedUser = userService.updateMo(moRequest);
+            User updatedUser = userService.updateMo(moRequest);
             return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully", updatedUser);
         }catch (Exception e){
             throw new Exception("An error ocuured while deleting the user "+e);
@@ -247,6 +253,7 @@ public class UserController {
 
 
 //creation des consultants
+   /*
     @RequestMapping(path = "/createConsultant", method = RequestMethod.POST)
     public  ApiResponse<User> createConsultant(@RequestBody ConsultantRequest userRequest, final HttpServletRequest request) {
         UserDTO user = userService.saveConsultant(userRequest);
@@ -254,6 +261,8 @@ public class UserController {
         //  publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
         return  new ApiResponse<>(HttpStatus.OK.value(), "Consultant   crée avec succés",user);
     }
+
+    */
 
 
     @PutMapping("/updateConsultant/{id}")

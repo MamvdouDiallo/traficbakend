@@ -93,7 +93,7 @@ public class PlainteController {
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int max) {
 
-        Pageable pageable = (Pageable) PageRequest.of(offset, max);
+        Pageable pageable = PageRequest.of(offset, max);
         Page<PlainteDto> plaintePage = plainteService.getAllPlaintes(pageable);
         AApiResponse<PlainteDto> response = new AApiResponse<>();
         response.setResponseCode(200);

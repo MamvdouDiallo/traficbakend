@@ -20,7 +20,7 @@ public class RoleSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        String[] roles = { "Super Admin", "Representant principal" };
+        String[] roles = { "Super Admin", "Representant principal","Admin","User","Maitre d'ouvrage","Consultant" };
         for (String roleName : roles) {
             if (!roleRepository.existsByName(roleName)) {
                 Role role = new Role();
