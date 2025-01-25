@@ -203,9 +203,19 @@ public class UserService  implements IUserService {
     }
 
     @Override
-    public User updateMo(MoRequest p) {
-        User existingUser = userRepository.findById(p.getId())
+    public User updateMo(MoRequest p,Long id) {
+
+        User existingUser = userRepository.findById((long)(id))
                 .orElseThrow(() -> new UserNotFoundException("User not found with id " + p.getId()));
+
+        // Check if the email is being changed and if the new email already exists
+        // Vérification de l'email
+        userRepository.findByEmail(p.getEmail()).ifPresent(user -> {
+            if (!Objects.equals(user.getId(), existingUser.getId())) {
+                throw new EmailAlreadyExistsException("Email déjà existant!");
+            }
+
+        });
 
         existingUser.setEmail(p.getEmail());
         existingUser.setLastname(p.getLastname());
@@ -214,10 +224,9 @@ public class UserService  implements IUserService {
       //  existingUser.setDate_of_birth(p.getDate_of_birth());
         existingUser.setLocality(p.getLocality());
         //existingUser.setPlace_of_birth(p.getPlace_of_birth()); // Assuming this should be 'getPlaceOfBirth'
-        existingUser.setEnabled(false);
-        existingUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
+        //existingUser.setEnabled(false);
+       // existingUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
         existingUser.setImageUrl(p.getImageUrl());
-
         return  userRepository.save(existingUser);
 
     }
@@ -233,12 +242,9 @@ public class UserService  implements IUserService {
     }
 
     @Override
-    public List<UserDTO> getUsersByRoleName(String roleName) {
-        return userRepository.findUsersByRoleName(roleName).stream().map(this::convertEntityToDto).collect(Collectors.toList())    ;
+    public List<User> getUsersByRoleName(String roleName) {
+        return new ArrayList<>(userRepository.findUsersByRoleName(roleName));
     }
-
-
-
 
 
     @Override
@@ -374,55 +380,12 @@ public class UserService  implements IUserService {
         return bCryptPasswordEncoder.matches(oldPassword, user.getPassword());
     }
 
-    @Override
-    public UserDTO saveConsultant(ConsultantRequest p) {
-        if (userRepository.findByEmail(p.getEmail()).isPresent()) {
-            throw new EmailAlreadyExistsException("Email déjà existant!");
-        }
-
-        // Check if a user with the given contact number already exists
-        if (userRepository.findByContact(p.getContact()).isPresent()) {
-            throw new ContactMobileAlreadyExistsException("Ce numero téléphone est dejà utilisé");
-        }
-
-        // Create a new Mo
-        User newUser = new User();
-        newUser.setEmail(p.getEmail());
-        newUser.setImageUrl(p.getImageUrl());
-        newUser.setLastname(p.getLastname());
-        newUser.setFirstname(p.getFirstname());
-        newUser.setContact(p.getContact());
-        newUser.setLocality(p.getLocality());
-       // newUser.setSous_role(p.getSous_role());
-        newUser.setEnabled(false);
-        newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
-        // Assign roles to the new user
-        /*
-
-        Role r = roleRepository.findRoleByName("Consultant");
-        List<Role> roles = new ArrayList<>();
-        roles.add(r);
-        newUser.setRoles(roles);
-
-         */
-        // Assign projects to the new user
-        List<Long> projectIds = Collections.singletonList(p.getProject_id());
-        List<Project> projects = projectRepository.findAllById(projectIds);
-        newUser.setProjects(projects);// Update each project with the new user
-        for (Project project : projects) {
-            project.getUsers().add(newUser);
-        }
-        // Save the new user
-        return    convertEntityToDto(userRepository.save(newUser));
-    }
-
-
 
 
 
 
     @Override
-    public UserDTO updateConsultant(Long id, ConsultantRequest p) {
+    public User updateConsultant(Long id, UserRequest p) {
         // Find the user by ID
         User existingUser = userRepository.findById((long)(id))
                 .orElseThrow(() -> new UserNotFoundException("User not found with id " + p.getId()));
@@ -430,16 +393,13 @@ public class UserService  implements IUserService {
         // Check if the email is being changed and if the new email already exists
         // Vérification de l'email
         userRepository.findByEmail(p.getEmail()).ifPresent(user -> {
-
             if (!Objects.equals(user.getId(), existingUser.getId())) {
                 throw new EmailAlreadyExistsException("Email déjà existant!");
             }
 
         });
 
-
         // Vérification du numéro de contact
-
         userRepository.findByContact(p.getContact()).ifPresent(user -> {
 
             if (!Objects.equals(user.getId(), existingUser.getId())) {
@@ -454,17 +414,10 @@ public class UserService  implements IUserService {
         existingUser.setFirstname(p.getFirstname());
         existingUser.setContact(p.getContact());
         existingUser.setLocality(p.getLocality());
-      //  existingUser.setSous_role(p.getSous_role());
         existingUser.setImageUrl(p.getImageUrl());
-        List<Long> projectIds = Collections.singletonList(p.getProject_id());
-        List<Project> projects = projectRepository.findAllById(projectIds);
-        existingUser.setProjects(projects);// Update each project with the new user
-        for (Project project : projects) {
-            project.getUsers().add(existingUser);
-        }
 
         // Save the updated user
-        return convertEntityToDto(userRepository.save(existingUser));
+        return userRepository.save(existingUser);
     }
 
 

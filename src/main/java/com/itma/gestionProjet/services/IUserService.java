@@ -17,13 +17,15 @@ public interface IUserService {
 
     User saveConsultant(UserRequest p);
 
+
+
     Optional<User> findById(Long id);
-    User updateMo(MoRequest p);
+    User updateMo(MoRequest p,Long id);
     UserDTO getUser(Long id);
     List<User> getAllUsers();
 
 
-List<UserDTO> getUsersByRoleName(String username);
+List<User> getUsersByRoleName(String username);
 
     void saveUserVerificationToken(User theUser, String verificationToken);
     void deleteUser(User p);
@@ -51,6 +53,6 @@ List<UserDTO> getUsersByRoleName(String username);
 
 
 
-    UserDTO saveConsultant(ConsultantRequest p);
-    UserDTO updateConsultant(Long id,ConsultantRequest p);
+   // UserDTO saveConsultant(ConsultantRequest p);
+    User updateConsultant(Long id,UserRequest p);
 }

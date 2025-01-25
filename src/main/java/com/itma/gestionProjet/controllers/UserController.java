@@ -221,8 +221,8 @@ public class UserController {
 
 //liste des maitres d'ouvrages
     @RequestMapping(path = "/by_role", method = RequestMethod.GET)
-    public ApiResponse<List<UserDTO>> getMaitresOuvrages(@RequestParam String roleName) {
-        List<UserDTO> users = userService.getUsersByRoleName(roleName);
+    public ApiResponse<List<User>> getMaitresOuvrages(@RequestParam String roleName) {
+        List<User> users = userService.getUsersByRoleName(roleName);
         return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
     }
 
@@ -240,35 +240,20 @@ public class UserController {
         }
     }
 
-    @PostMapping("/updateMaitreOuvrage")
-    public ApiResponse<UserDTO> updateMo(@RequestBody MoRequest moRequest) throws Exception {
+    @PutMapping("/updateMaitreOuvrage/{id}")
+    public ApiResponse<User> updateMo(@RequestBody MoRequest moRequest,@PathVariable Long id) throws Exception {
         try{
-            User updatedUser = userService.updateMo(moRequest);
+            User updatedUser = userService.updateMo(moRequest, id);
             return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully", updatedUser);
         }catch (Exception e){
             throw new Exception("An error ocuured while deleting the user "+e);
         }
     }
 
-
-
-//creation des consultants
-   /*
-    @RequestMapping(path = "/createConsultant", method = RequestMethod.POST)
-    public  ApiResponse<User> createConsultant(@RequestBody ConsultantRequest userRequest, final HttpServletRequest request) {
-        UserDTO user = userService.saveConsultant(userRequest);
-
-        //  publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
-        return  new ApiResponse<>(HttpStatus.OK.value(), "Consultant   crée avec succés",user);
-    }
-
-    */
-
-
     @PutMapping("/updateConsultant/{id}")
-    public  ApiResponse<User> updateConsultant(@RequestBody ConsultantRequest userRequest,@PathVariable Long id) {
+    public  ApiResponse<User> updateConsultant(@RequestBody UserRequest userRequest,@PathVariable Long id) {
         try {
-            UserDTO user = userService.updateConsultant(id, userRequest);
+            User user = userService.updateConsultant(id, userRequest);
             return new ApiResponse<>(HttpStatus.OK.value(), "Consultant mis à jour avec succès", user);
         } catch (Exception e) {
             return new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Erreur interne du serveur", null);

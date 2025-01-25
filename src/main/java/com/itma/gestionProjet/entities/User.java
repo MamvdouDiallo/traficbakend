@@ -18,6 +18,7 @@ public class User {
     private String lastname;
     private String email;
     private Boolean enabled;
+    @JsonIgnore
     private String password;
     private String locality;
     private String contact;
