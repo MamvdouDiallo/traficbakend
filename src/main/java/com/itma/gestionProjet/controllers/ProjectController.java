@@ -47,7 +47,7 @@ public class ProjectController {
 
 
     @RequestMapping(path = "/createProject", method = RequestMethod.POST)
-    public ApiResponse<User> createProject(@Valid @RequestBody Project projectRequest) {
+    public ApiResponse<User> createProject(@Valid @RequestBody ProjectRequest projectRequest) {
         Optional<Project> projectOptional= projectRepository.findByLibelle(projectRequest.getLibelle());
         if(projectOptional.isPresent()){
             throw  new ProjectAlreadyExistException("Un projet avec ce nom existe déja!!!");
@@ -59,7 +59,7 @@ public class ProjectController {
     }
 
     @PostMapping("/updateProject")
-    public ApiResponse<Project> updateProject(@RequestBody Project projectRequest) {
+    public ApiResponse<Project> updateProject(@RequestBody ProjectRequest projectRequest) {
         try {
             ProjectDTO projectDTO = projectService.updateProject(projectRequest);
             return new ApiResponse<>(HttpStatus.OK.value(), "Projet mis à jour avec succès", projectDTO);

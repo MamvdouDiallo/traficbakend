@@ -15,13 +15,9 @@ public class ProjectDTO {
     private  String libelle;
     private String description;
     private  String status;
-   // private String categorie;
     private Date datedebut;
     private  Date datefin;
-    private Image image;
     private  String imageUrl;
-   // private List<File> files;
-   // private List<Fichier> fichiers;
     private  List<MoDTO> users;
-    private  List<NormeProjet> normeProjets;
+    private  List<NormeProjet> normes;
 }

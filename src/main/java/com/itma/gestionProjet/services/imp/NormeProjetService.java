@@ -11,7 +11,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,8 +88,8 @@ public class NormeProjetService  implements INormeProjet {
     }
 
     @Override
-    public List<NormeProjetDTO> getAllNormeProjets() {
-        return null;
+    public List<NormeProjet> getAllNormeProjets() {
+        return normeProjectRepository.findAll();
     }
 
     @Override

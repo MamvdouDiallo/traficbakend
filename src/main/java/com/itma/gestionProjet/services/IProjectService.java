@@ -11,8 +11,8 @@ import java.util.Optional;
 public interface IProjectService {
     Optional<Project> findProjectByName(String name);
 
-    ProjectDTO saveProject(Project p);
-    ProjectDTO updateProject(Project p);
+    ProjectDTO saveProject(ProjectRequest p);
+    ProjectDTO updateProject(ProjectRequest p);
     Optional<ProjectDTO> findProjectById(Long id);
 
 
