@@ -6,17 +6,16 @@ import com.itma.gestionProjet.dtos.ProjectDTOUSER;
 import com.itma.gestionProjet.dtos.RoleDTO;
 import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.*;
-import com.itma.gestionProjet.exceptions.ContactMobileAlreadyExistsException;
-import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
-import com.itma.gestionProjet.exceptions.UserNotFoundException;
+import com.itma.gestionProjet.exceptions.*;
+import com.itma.gestionProjet.exceptions.FonctionNotFoundException;
 import com.itma.gestionProjet.repositories.*;
 import com.itma.gestionProjet.requests.ConsultantRequest;
 import com.itma.gestionProjet.requests.MoRequest;
 import com.itma.gestionProjet.requests.UserRequest;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +49,8 @@ public class UserService  implements IUserService {
     private FonctionRepository fonctionRepository;
 
     @Autowired
+    private PartieInteresseRepository partieInteresseRepository;
+    @Autowired
     private CategorieRepository categorieRepository;
 
 
@@ -65,33 +66,53 @@ public class UserService  implements IUserService {
     @Override
     public User saveUser(UserRequest p) {
 
+        // Vérification de l'unicité de l'email
         Optional<User> optionalUser = userRepository.findByEmail(p.getEmail());
         if (optionalUser.isPresent()) {
             throw new EmailAlreadyExistsException("Email déjà existant!");
-        } else {
-            User newUser = new User();
-            newUser.setEmail(p.getEmail());
-            newUser.setLastname(p.getLastname());
-            newUser.setFirstname(p.getFirstname());
-            newUser.setContact(p.getContact());
-            newUser.setLocality(p.getLocality());
-            newUser.setImageUrl(p.getImageUrl());
-            newUser.setEnabled(false);
-            newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
-             Role role = roleRepository.findById(Math.toIntExact(p.getRole_id())).orElseThrow(() -> new RuntimeException("Role not found"));
-            List<Role> roles = new ArrayList<>();
-            roles.add(role);
-            newUser.setRoles(roles);
-             Fonction fonction = fonctionRepository.findById(p.getFonction_id()).orElseThrow(() -> new RuntimeException("Fonction not found"));
-             Categorie categorie = categorieRepository.findById(p.getCategorie_id()).orElseThrow(() -> new RuntimeException("Categorie not found"));
-           newUser.setFonction(fonction);
-            newUser.setCategorie(categorie);
-            return  userRepository.save(newUser) ;
         }
+
+        // Vérification de l'unicité du contact
+        Optional<User> optionalContact = userRepository.findByContact(p.getContact());
+        if (optionalContact.isPresent()) {
+            throw new ContactMobileAlreadyExistsException("Contact déjà existant!");
+        }
+
+        // Création de l'utilisateur
+        User newUser = new User();
+        newUser.setEmail(p.getEmail());
+        newUser.setLastname(p.getLastname());
+        newUser.setFirstname(p.getFirstname());
+        newUser.setContact(p.getContact());
+        newUser.setLocality(p.getLocality());
+        newUser.setImageUrl(p.getImageUrl());
+        newUser.setEnabled(false);
+        newUser.setPassword(bCryptPasswordEncoder.encode(p.getPassword())); // Dynamique
+
+        // Assignation des rôles
+        Role role = roleRepository.findById(Math.toIntExact(p.getRole_id()))
+                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        newUser.setRoles(roles);
+
+        // Assignation de la fonction et de la catégorie
+        Fonction fonction = fonctionRepository.findById(p.getFonction_id())
+                .orElseThrow(() -> new FonctionNotFoundException("Fonction not found"));
+        Categorie categorie = categorieRepository.findById(p.getCategorie_id())
+                .orElseThrow(() -> new CategorieNotFoundException("Categorie not found"));
+
+        newUser.setFonction(fonction);
+        newUser.setCategorie(categorie);
+
+        // Sauvegarde de l'utilisateur
+        return userRepository.save(newUser);
     }
 
+
+    @Transactional
     @Override
-    public UserDTO saveMo(MoRequest p) {
+    public User saveMo(MoRequest p) {
         // Check if a user with the given email already exists
         if (userRepository.findByEmail(p.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Email déjà existant!");
@@ -99,7 +120,7 @@ public class UserService  implements IUserService {
 
         // Check if a user with the given contact number already exists
         if (userRepository.findByContact(p.getContact()).isPresent()) {
-            throw new ContactMobileAlreadyExistsException("Ce numero téléphone est dejà utilisé");
+            throw new ContactMobileAlreadyExistsException("Ce numero téléphone est déjà utilisé");
         }
 
         // Create a new Mo
@@ -108,36 +129,71 @@ public class UserService  implements IUserService {
         newUser.setLastname(p.getLastname());
         newUser.setFirstname(p.getFirstname());
         newUser.setContact(p.getContact());
-        newUser.setDate_of_birth(p.getDate_of_birth());
         newUser.setLocality(p.getLocality());
-        newUser.setPlace_of_birth(p.getPlace_of_birth()); // Assuming this should be 'getPlaceOfBirth'
         newUser.setEnabled(false);
         newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
-         newUser.setImage(p.getImage());
-        // Assign roles to the new user
-        /*
-        Role r = roleRepository.findRoleByName("Maitre d'ouvrage");
-        List<Role> roles = new ArrayList<>();
-        roles.add(r);
-        newUser.setRoles(roles);
-         */
+        newUser.setImageUrl(p.getImageUrl());
 
-        // Assign projects to the new user
-        List<Long> projectIds = p.getProject_ids();
-        List<Project> projects = projectRepository.findAllById(projectIds);
-        newUser.setProjects(projects);
-        // Update each project with the new user
-        for (Project project : projects) {
-            project.getUsers().add(newUser);
-        }
-        // Save the new user
-        return    convertEntityToDto(userRepository.save(newUser));
+        Role role = roleRepository.findRoleByName("Maitre d'ouvrage");
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        newUser.setRoles(roles);
+
+        Categorie categorie = categorieRepository.findByLibelle("Niveau 1");
+        newUser.setCategorie(categorie);
+
+        return userRepository.save(newUser);
     }
+
+
+
+    @Transactional
+    @Override
+    public User saveConsultant(UserRequest p) {
+        // Vérification de l'unicité avec une transaction pour garantir l'intégrité des données
+        if (userRepository.findByEmail(p.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email déjà existant!");
+        }
+
+        if (userRepository.findByContact(p.getContact()).isPresent()) {
+            throw new ContactMobileAlreadyExistsException("Ce numéro de téléphone est déjà utilisé");
+        }
+
+        // Création de l'utilisateur
+        User newUser = new User();
+        newUser.setEmail(p.getEmail());
+        newUser.setLastname(p.getLastname());
+        newUser.setFirstname(p.getFirstname());
+        newUser.setContact(p.getContact());
+        newUser.setLocality(p.getLocality());
+        newUser.setEnabled(false);
+        newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
+        newUser.setImageUrl(p.getImageUrl());
+
+        // Attribuer le rôle et la catégorie
+        Role role = roleRepository.findRoleByName("Consultant");
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        newUser.setRoles(roles);
+
+        Categorie categorie = categorieRepository.findByLibelle("Niveau 2");
+        newUser.setCategorie(categorie);
+
+        PartieInteresse partieInteresse = partieInteresseRepository.findById(p.getPartieInteresse_id())
+                .orElseThrow(() -> new EntityNotFoundException("PartieInteresse introuvable avec l'ID " + p.getPartieInteresse_id()));
+        newUser.setPartieInteresse(partieInteresse);
+
+
+        // Sauvegarder l'utilisateur
+        return  userRepository.save(newUser);
+    }
+
+
 
     @Override
     public Optional<User> findById(Long id) {
         try {
-            Optional<User> user = userRepository.findById(Math.toIntExact(id));
+            Optional<User> user = userRepository.findById((long) Math.toIntExact(id));
             return user;
 
         } catch (Exception e) {
@@ -147,43 +203,31 @@ public class UserService  implements IUserService {
     }
 
     @Override
-    public UserDTO updateMo(MoRequest p) {
-        User existingUser = userRepository.findById(Math.toIntExact(p.getId()))
+    public User updateMo(MoRequest p,Long id) {
+
+        User existingUser = userRepository.findById((long)(id))
                 .orElseThrow(() -> new UserNotFoundException("User not found with id " + p.getId()));
+
+        // Check if the email is being changed and if the new email already exists
+        // Vérification de l'email
+        userRepository.findByEmail(p.getEmail()).ifPresent(user -> {
+            if (!Objects.equals(user.getId(), existingUser.getId())) {
+                throw new EmailAlreadyExistsException("Email déjà existant!");
+            }
+
+        });
 
         existingUser.setEmail(p.getEmail());
         existingUser.setLastname(p.getLastname());
         existingUser.setFirstname(p.getFirstname());
         existingUser.setContact(p.getContact());
-        existingUser.setDate_of_birth(p.getDate_of_birth());
+      //  existingUser.setDate_of_birth(p.getDate_of_birth());
         existingUser.setLocality(p.getLocality());
-        existingUser.setPlace_of_birth(p.getPlace_of_birth()); // Assuming this should be 'getPlaceOfBirth'
-        existingUser.setEnabled(false);
-        existingUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
-        existingUser.setImage(p.getImage());
-
-        for (Project project : existingUser.getProjects()) {
-            project.getUsers().remove(existingUser);
-        }
-        existingUser.getProjects().clear();
-
-        // Assign projects to the new user
-       List<Long> projectIds = p.getProject_ids();
-        List<Project> projects = projectRepository.findAllById(projectIds);
-        existingUser.setProjects(projects);
-        // Update each project with the new user
-        for (Project project : projects) {
-            project.getUsers().add(existingUser);
-        }
-/*
-        // Assign roles to the new user
-        Role r = roleRepository.findRoleByName("Maitre d'ouvrage");
-        List<Role> roles = new ArrayList<>();
-        roles.add(r);
-        existingUser.setRoles(roles);
-
- */
-        return  convertEntityToDto(userRepository.save(existingUser));
+        //existingUser.setPlace_of_birth(p.getPlace_of_birth()); // Assuming this should be 'getPlaceOfBirth'
+        //existingUser.setEnabled(false);
+       // existingUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
+        existingUser.setImageUrl(p.getImageUrl());
+        return  userRepository.save(existingUser);
 
     }
 
@@ -193,20 +237,13 @@ public class UserService  implements IUserService {
     }
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        return   userRepository.findAll().stream()
-                .map(this::convertEntityToDto)
-                .collect(Collectors.toList());
+    public List<User> getAllUsers() {
+        return   userRepository.findAll();
     }
 
     @Override
-    public List<UserDTO> getUsersByRoleName(String roleName) {
-        return userRepository.findUsersByRoleName(roleName).stream().map(this::convertEntityToDto).collect(Collectors.toList())    ;
-    }
-
-
-    public List<UserDTO> getUsersBySousRoleName(String roleName) {
-        return userRepository.findUsersBySousRoleName(roleName).stream().map(this::convertEntityToDto).collect(Collectors.toList())    ;
+    public List<User> getUsersByRoleName(String roleName) {
+        return new ArrayList<>(userRepository.findUsersByRoleName(roleName));
     }
 
 
@@ -217,7 +254,7 @@ public class UserService  implements IUserService {
     @Override
     @Transactional
     public void deleteUserById(Long id) {
-        User user = userRepository.findById(Math.toIntExact(id))
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
 
         // Remove the user's associations in user_project
@@ -236,7 +273,7 @@ public class UserService  implements IUserService {
  */
 
         // Delete the user
-        userRepository.deleteById(Math.toIntExact(id));
+        userRepository.deleteById((id));
     }
 
     @Override
@@ -257,7 +294,7 @@ public class UserService  implements IUserService {
         userDTO.setLocality(user.getLocality());
         userDTO.setEnabled(user.getEnabled());
         userDTO.setImageUrl(user.getImageUrl());
-        userDTO.setImage(user.getImage());
+      //  userDTO.setImage(user.getImage());
         userDTO.setCategorie(user.getCategorie());
 
         // Convert Fonction entity to DtoFonction
@@ -274,7 +311,7 @@ public class UserService  implements IUserService {
         List<ProjectDTOUSER> projects = user.getProjects().stream()
                 .map(this::convertProjectEntityToDto)
                 .collect(Collectors.toList());
-        userDTO.setProjects(projects);
+      //  userDTO.setProjects(projects);
 
         return userDTO;
     }
@@ -343,75 +380,26 @@ public class UserService  implements IUserService {
         return bCryptPasswordEncoder.matches(oldPassword, user.getPassword());
     }
 
-    @Override
-    public UserDTO saveConsultant(ConsultantRequest p) {
-        if (userRepository.findByEmail(p.getEmail()).isPresent()) {
-            throw new EmailAlreadyExistsException("Email déjà existant!");
-        }
-
-        // Check if a user with the given contact number already exists
-        if (userRepository.findByContact(p.getContact()).isPresent()) {
-            throw new ContactMobileAlreadyExistsException("Ce numero téléphone est dejà utilisé");
-        }
-
-        // Create a new Mo
-        User newUser = new User();
-        newUser.setEmail(p.getEmail());
-        newUser.setImageUrl(p.getImageUrl());
-        newUser.setLastname(p.getLastname());
-        newUser.setFirstname(p.getFirstname());
-        newUser.setContact(p.getContact());
-        newUser.setDate_of_birth(p.getDate_of_birth());
-        newUser.setLocality(p.getLocality());
-        newUser.setSous_role(p.getSous_role());
-        newUser.setPlace_of_birth(p.getPlace_of_birth()); // Assuming this should be 'getPlaceOfBirth'
-        newUser.setEnabled(false);
-        newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
-        newUser.setImage(p.getImage());
-        // Assign roles to the new user
-        /*
-
-        Role r = roleRepository.findRoleByName("Consultant");
-        List<Role> roles = new ArrayList<>();
-        roles.add(r);
-        newUser.setRoles(roles);
-
-         */
-        // Assign projects to the new user
-        List<Long> projectIds = Collections.singletonList(p.getProject_id());
-        List<Project> projects = projectRepository.findAllById(projectIds);
-        newUser.setProjects(projects);// Update each project with the new user
-        for (Project project : projects) {
-            project.getUsers().add(newUser);
-        }
-        // Save the new user
-        return    convertEntityToDto(userRepository.save(newUser));
-    }
-
-
 
 
 
 
     @Override
-    public UserDTO updateConsultant(Long id, ConsultantRequest p) {
+    public User updateConsultant(Long id, UserRequest p) {
         // Find the user by ID
-        User existingUser = userRepository.findById(Math.toIntExact(id))
+        User existingUser = userRepository.findById((long)(id))
                 .orElseThrow(() -> new UserNotFoundException("User not found with id " + p.getId()));
 
         // Check if the email is being changed and if the new email already exists
         // Vérification de l'email
         userRepository.findByEmail(p.getEmail()).ifPresent(user -> {
-
             if (!Objects.equals(user.getId(), existingUser.getId())) {
                 throw new EmailAlreadyExistsException("Email déjà existant!");
             }
 
         });
 
-
         // Vérification du numéro de contact
-
         userRepository.findByContact(p.getContact()).ifPresent(user -> {
 
             if (!Objects.equals(user.getId(), existingUser.getId())) {
@@ -425,21 +413,11 @@ public class UserService  implements IUserService {
         existingUser.setLastname(p.getLastname());
         existingUser.setFirstname(p.getFirstname());
         existingUser.setContact(p.getContact());
-        existingUser.setDate_of_birth(p.getDate_of_birth());
         existingUser.setLocality(p.getLocality());
-        existingUser.setPlace_of_birth(p.getPlace_of_birth());
-        existingUser.setImage(p.getImage());
-        existingUser.setSous_role(p.getSous_role());
         existingUser.setImageUrl(p.getImageUrl());
-        List<Long> projectIds = Collections.singletonList(p.getProject_id());
-        List<Project> projects = projectRepository.findAllById(projectIds);
-        existingUser.setProjects(projects);// Update each project with the new user
-        for (Project project : projects) {
-            project.getUsers().add(existingUser);
-        }
 
         // Save the updated user
-        return convertEntityToDto(userRepository.save(existingUser));
+        return userRepository.save(existingUser);
     }
 
 
@@ -476,7 +454,7 @@ public class UserService  implements IUserService {
 
     public User updateUser(Long userId, UserRequest p) {
         // Retrieve the user by ID
-        Optional<User> optionalUser = Optional.ofNullable(userRepository.findById(userId));
+        Optional<User> optionalUser = (userRepository.findById(userId));
 
         if (!optionalUser.isPresent()) {
             throw new RuntimeException("User not found");

@@ -1,8 +1,11 @@
 package com.itma.gestionProjet.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.List;
 
 
 @Data
@@ -19,6 +22,11 @@ public class Fonction {
     @JoinColumn(name = "categorie_id", nullable = false)
     @NotNull
     private Categorie categorieRattache;
+
+    @JsonIgnore
+    // Relation OneToMany avec User
+    @OneToMany(mappedBy = "fonction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User> users;
     /*
     @OneToOne(mappedBy = "fonction")
     private User user;

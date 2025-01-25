@@ -24,7 +24,7 @@ public class storageConfig {
     private String region;
 
     @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;  // Vous pouvez aussi injecter directement le nom du bucket ici si nécessaire.
+    private String bucketName;
 
     @Bean
     public AmazonS3 s3Client() {

@@ -81,16 +81,13 @@ public class TacheServiceImpl implements ITacheService {
 
     private ConsultantResponse convertConsultantToDto(User consultant) {
         ConsultantResponse consultantDTO = new ConsultantResponse();
-        consultantDTO.setId(consultant.getId());
+        consultantDTO.setId(Math.toIntExact(consultant.getId()));
         consultantDTO.setLastname(consultant.getLastname());
         consultantDTO.setFirstname(consultant.getFirstname());
         consultantDTO.setEmail(consultant.getEmail());
-        consultantDTO.setDate_of_birth(consultant.getDate_of_birth());
-        consultantDTO.setPlace_of_birth(consultant.getDate_of_birth());
         consultantDTO.setContact(consultant.getContact());
         consultantDTO.setLocality(consultant.getLocality());
         consultantDTO.setEnabled(consultant.getEnabled());
-        consultantDTO.setImage(consultant.getImage());
         return consultantDTO;
     }
 

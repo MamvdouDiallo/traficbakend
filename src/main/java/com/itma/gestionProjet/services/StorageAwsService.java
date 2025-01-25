@@ -34,7 +34,11 @@ public class StorageAwsService {
     public FileUploadResponse uploadFile(MultipartFile file) {
         try {
             File fileObj = convertMultiPartFileToFile(file);
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String originalFileName = file.getOriginalFilename();
+            if (originalFileName != null) {
+                originalFileName = originalFileName.replace(" ", "_");
+            }
+            String fileName = System.currentTimeMillis() + "_" + originalFileName;
             s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
             fileObj.delete();
             return new FileUploadResponse(200, "Fichier téléchargé avec succès", fileName);
@@ -42,6 +46,7 @@ public class StorageAwsService {
             return new FileUploadResponse(500, "Erreur lors du téléchargement du fichier : " + e.getMessage(), null);
         }
     }
+
 
 
 

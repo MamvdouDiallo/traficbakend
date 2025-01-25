@@ -19,6 +19,7 @@ import com.itma.gestionProjet.security.JWTGenerator;
 import com.itma.gestionProjet.services.imp.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -53,7 +54,7 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
     private  final ApplicationEventPublisher publisher;
-@Autowired
+    @Autowired
     private  RegistrationCompleteEventListener eventListener;
 
     @Autowired
@@ -67,12 +68,12 @@ public class UserController {
 
     @RequestMapping(path = "/all", method = RequestMethod.GET)
     public ApiResponse<List<UserDTO>> getUsers() {
-        List<UserDTO> users = userService.getAllUsers();
+        List<User> users = userService.getAllUsers();
         return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
     }
 
     @RequestMapping(path = "/createUser", method = RequestMethod.POST)
-    public  ApiResponse<User> createUser(@RequestBody UserRequest userRequest, final HttpServletRequest request) {
+    public  ApiResponse<User> createUser(@Valid @RequestBody UserRequest userRequest, final HttpServletRequest request) {
         User user = userService.saveUser(userRequest);
         publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
         return   new ApiResponse<>(HttpStatus.OK.value(), "User cree avec succés",user);
@@ -200,31 +201,36 @@ public class UserController {
 
 
 //creation des maitres d'ouvrages
-    @RequestMapping(path = "/createMo", method = RequestMethod.POST)
+    @RequestMapping(path = "/createMaitreOuvrage", method = RequestMethod.POST)
     public  ApiResponse<User> createMO(@RequestBody MoRequest userRequest, final HttpServletRequest request) {
       //  ProjectDTO projectDTO = projectService.saveProject(projectRequest);
-        UserDTO user = userService.saveMo(userRequest);
+        User user = userService.saveMo(userRequest);
 
        //publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
-        return  new ApiResponse<>(HttpStatus.OK.value(), "Maitres d'ouvrtages  crée avec succés",user);
+        return  new ApiResponse<>(HttpStatus.OK.value(), "Maitre d'ouvrtage  crée avec succés",user);
+    }
+
+    @RequestMapping(path = "/createConsultant", method = RequestMethod.POST)
+    public  ApiResponse<User> createConsultant(@RequestBody UserRequest userRequest, final HttpServletRequest request) {
+        //  ProjectDTO projectDTO = projectService.saveProject(projectRequest);
+        User user = userService.saveConsultant(userRequest);
+
+        //publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
+        return  new ApiResponse<>(HttpStatus.OK.value(), "Consultant  crée avec succés",user);
     }
 
 //liste des maitres d'ouvrages
     @RequestMapping(path = "/by_role", method = RequestMethod.GET)
-    public ApiResponse<List<UserDTO>> getMaitresOuvrages(@RequestParam String roleName) {
-        List<UserDTO> users = userService.getUsersByRoleName(roleName);
+    public ApiResponse<List<User>> getMaitresOuvrages(@RequestParam String roleName) {
+        List<User> users = userService.getUsersByRoleName(roleName);
         return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
     }
 
 
-    @RequestMapping(path = "/by_sous_role", method = RequestMethod.GET)
-    public ApiResponse<List<UserDTO>> getConsultantBySousRole(@RequestParam String roleName) {
-        List<UserDTO> users = userService.getUsersBySousRoleName(roleName);
-        return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
-    }
 
 
-    @DeleteMapping("/deleteMo/{id}")
+
+    @DeleteMapping("/deleteMaitreOuvrage/{id}")
     public ApiResponse<?> deleteUser(@PathVariable Long id) throws Exception {
         try {
             userService.deleteUserById(id);
@@ -234,32 +240,20 @@ public class UserController {
         }
     }
 
-    @PostMapping("/updateMo")
-    public ApiResponse<UserDTO> updateMo(@RequestBody MoRequest moRequest) throws Exception {
+    @PutMapping("/updateMaitreOuvrage/{id}")
+    public ApiResponse<User> updateMo(@RequestBody MoRequest moRequest,@PathVariable Long id) throws Exception {
         try{
-            UserDTO updatedUser = userService.updateMo(moRequest);
+            User updatedUser = userService.updateMo(moRequest, id);
             return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully", updatedUser);
         }catch (Exception e){
             throw new Exception("An error ocuured while deleting the user "+e);
         }
     }
 
-
-
-//creation des consultants
-    @RequestMapping(path = "/createConsultant", method = RequestMethod.POST)
-    public  ApiResponse<User> createConsultant(@RequestBody ConsultantRequest userRequest, final HttpServletRequest request) {
-        UserDTO user = userService.saveConsultant(userRequest);
-
-        //  publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
-        return  new ApiResponse<>(HttpStatus.OK.value(), "Consultant   crée avec succés",user);
-    }
-
-
     @PutMapping("/updateConsultant/{id}")
-    public  ApiResponse<User> updateConsultant(@RequestBody ConsultantRequest userRequest,@PathVariable Long id) {
+    public  ApiResponse<User> updateConsultant(@RequestBody UserRequest userRequest,@PathVariable Long id) {
         try {
-            UserDTO user = userService.updateConsultant(id, userRequest);
+            User user = userService.updateConsultant(id, userRequest);
             return new ApiResponse<>(HttpStatus.OK.value(), "Consultant mis à jour avec succès", user);
         } catch (Exception e) {
             return new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Erreur interne du serveur", null);
