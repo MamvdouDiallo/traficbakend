@@ -45,7 +45,7 @@ public class User {
     private List<Role> roles;
 
     // Relation ManyToMany avec Project
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Project> projects;
 

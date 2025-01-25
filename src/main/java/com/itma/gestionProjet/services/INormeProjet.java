@@ -21,7 +21,7 @@ public interface INormeProjet {
 
     NormeProjetDTO updateNormeProjet(NormeProjetDTO p);
     NormeProjetDTO getNormeProjetById(Long id);
-    List<NormeProjetDTO> getAllNormeProjets();
+    List<NormeProjet> getAllNormeProjets();
     void deleteNormeProjet(NormeProjet p);
 
 

@@ -30,35 +30,15 @@ public class Project {
     @NotBlank(message = "La description est obligatoire et ne peut pas être vide")
     @Column(nullable = false)
     private String description;
-    /*
-    @NotNull
-    @NotBlank(message = "La catégorie est obligatoire et ne peut pas être vide")
-    @Column(nullable = false)
-    private String categorie;
-
-     */
-
     private String status;
     private String imageUrl;
     private Date datedebut;
     private Date datefin;
-    /*
-    @OneToOne
-    private  Image image;
-
-     */
-    /*
-    @OneToMany(mappedBy = "project")
-    private List<File> files;
 
     @OneToMany(mappedBy = "project")
-    private List<Fichier> fichiers;
-
-     */
-
-    @OneToMany(mappedBy = "project")
-    private List<NormeProjet> normeProjets;
+    private List<NormeProjet> normes;
    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "user_project",
@@ -67,18 +47,12 @@ public class Project {
     )
     private List<User> users;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<PersonneAffecte> personnesAffectees ;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<PartieInteresse> partiesInteressees ;
 
-    public void addUser(User user) {
-        this.users.add(user);
-        user.getProjects().add(this);
-    }
 
-    public void removeUser(User user) {
-        this.users.remove(user);
-        user.getProjects().remove(this);
-    }
 }
