@@ -18,7 +18,6 @@ public class ProjectDTOUSER {
   //  private String categorie;
     private Date datedebut;
     private  Date datefin;
-    private Image image;
-    private List<File> files;
-    private  List<NormeProjet> normeProjets;
+    private String imageUrl;
+    private  List<NormeProjet> normes;
 }
