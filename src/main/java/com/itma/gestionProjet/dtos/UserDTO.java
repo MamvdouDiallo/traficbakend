@@ -5,6 +5,7 @@ import com.itma.gestionProjet.entities.Image;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class UserDTO {
@@ -19,6 +20,6 @@ public class UserDTO {
     private List<RoleDTO> role;
     private Categorie categorie;
     private DtoFonction fonction;
-    //private  List<ProjectDTOUSER> projects;
-  //  private Set<ProjectDTO> projects;
+   // private  List<ProjectDTOUSER> projects;
+   private Set<ProjectDTO> projects;
 }

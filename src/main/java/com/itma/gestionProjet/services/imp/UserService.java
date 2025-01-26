@@ -1,10 +1,7 @@
 package com.itma.gestionProjet.services.imp;
 
 import com.itma.gestionProjet.Password.PasswordResetTokenService;
-import com.itma.gestionProjet.dtos.DtoFonction;
-import com.itma.gestionProjet.dtos.ProjectDTOUSER;
-import com.itma.gestionProjet.dtos.RoleDTO;
-import com.itma.gestionProjet.dtos.UserDTO;
+import com.itma.gestionProjet.dtos.*;
 import com.itma.gestionProjet.entities.*;
 import com.itma.gestionProjet.exceptions.*;
 import com.itma.gestionProjet.exceptions.FonctionNotFoundException;
@@ -308,11 +305,10 @@ public class UserService  implements IUserService {
         userDTO.setRole(roles);
 
         // Convert projects from entity to DTO
-        List<ProjectDTOUSER> projects = user.getProjects().stream()
+        Set<ProjectDTO> projects = user.getProjects().stream()
                 .map(this::convertProjectEntityToDto)
-                .collect(Collectors.toList());
-      //  userDTO.setProjects(projects);
-
+                .collect(Collectors.toSet());
+        userDTO.setProjects(projects);;
         return userDTO;
     }
 
@@ -431,13 +427,13 @@ public class UserService  implements IUserService {
         return roleDTO;
     }
 
-    public ProjectDTOUSER convertProjectEntityToDto(Project project) {
-        ProjectDTOUSER projectDTOUSER = new ProjectDTOUSER();
-        projectDTOUSER.setId(String.valueOf(project.getId()));
-        projectDTOUSER.setLibelle(project.getLibelle());
-        projectDTOUSER.setDescription(project.getDescription());
+    public ProjectDTO convertProjectEntityToDto(Project project) {
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setId(String.valueOf(project.getId()));
+        projectDTO.setLibelle(project.getLibelle());
+        projectDTO.setDescription(project.getDescription());
         // Add any other necessary fields to be mapped
-        return projectDTOUSER;
+        return projectDTO;
     }
 
     public DtoFonction convertFonctionEntityToDto(Fonction fonction) {
