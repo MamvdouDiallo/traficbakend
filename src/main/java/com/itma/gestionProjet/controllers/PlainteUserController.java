@@ -1,30 +1,33 @@
 package com.itma.gestionProjet.controllers;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
+import com.itma.gestionProjet.dtos.MailRequestDto;
 import com.itma.gestionProjet.dtos.PlainteUserDTO;
 import com.itma.gestionProjet.entities.PlainteUser;
 import com.itma.gestionProjet.services.PlainteUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.itma.gestionProjet.utils.EmailService;
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/complaints")
+@RequiredArgsConstructor
 public class PlainteUserController {
 
     private final PlainteUserService plainteUserService;
+    private final EmailService emailService;
 
-    @Autowired
-    public PlainteUserController(PlainteUserService plainteUserService) {
-        this.plainteUserService = plainteUserService;
-    }
+
 
     @PostMapping
-    public ResponseEntity<AApiResponse<PlainteUserDTO>> createComplaint(@RequestBody PlainteUserDTO plainteUserDTO) {
+    public ResponseEntity<AApiResponse<PlainteUserDTO>> createComplaint(@RequestBody PlainteUserDTO plainteUserDTO)  {
         PlainteUser plainteUser = plainteUserService.createComplaint(plainteUserDTO);
 
         // Convertir l'entité en DTO
@@ -45,6 +48,42 @@ public class PlainteUserController {
         response.setLength(1);
         response.setOffset(0);
         response.setMax(1);
+
+        String messagePlainte = "" +
+                "<strong>Nom complet</strong>: "+dto.getFirstName()+' '+dto.getLastName()+"<br/>" +
+                "<strong>Email</strong>: "+dto.getEmail()+"<br/>" +
+                "<strong>Numéro de téléphone</strong>: "+dto.getPhone()+"<br/>"+
+                "<strong>Type de plainte</strong>:"+dto.getComplaintType()+"<br/>" +
+                "<strong>Description</strong>: "+dto.getComplaintDescription()+"<br/>";
+
+        /*Information mail admin ------------*/
+        MailRequestDto mailRequestDto = new MailRequestDto();
+        mailRequestDto.setSubject(dto.getComplaintType());
+        mailRequestDto.setToEmail("babacar77979204@gmail.com");
+        mailRequestDto.setMessage(messagePlainte);
+        mailRequestDto.setTemplate("reclamation_emails");
+        /* ---------------fin info mail admin*/
+        /* info replay mail*/
+        MailRequestDto request = new MailRequestDto();
+        request.setToEmail(dto.getEmail());
+
+        request.setSubject("Accusé de réception de votre plainte du type : "+dto.getComplaintType());
+        String message = "Bonjour "+dto.getFirstName()+' '+dto.getLastName()+",<br>" +
+                "Nous vous confirmons la réception de votre plainte envoyée le "+new Date() +".<br/>" +
+                "Ceci est un message automatique pour vous informer que votre requête a bien été enregistrée. Notre équipe l’examinera et reviendra vers vous dans les plus brefs délais si nécessaire.<br/>" +
+                "Veuillez noter qu’il n’est pas nécessaire de répondre à cet email.<br/>" +
+                "Merci de votre confiance.<br/>";
+        request.setMessage(message);
+        request.setTemplate("replay_mail");
+        /* fin info replay mail*/
+        try{
+            emailService.sendMail(mailRequestDto);
+            emailService.sendMailReception(request );
+        }catch (MessagingException e){
+            e.printStackTrace();
+        }
+
+
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
