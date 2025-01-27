@@ -1,25 +1,34 @@
 package com.itma.gestionProjet.services.imp;
 
+import com.itma.gestionProjet.dtos.MailRequestDto;
 import com.itma.gestionProjet.dtos.MailUserDTO;
 import com.itma.gestionProjet.entities.MailUser;
 import com.itma.gestionProjet.repositories.MailUserRepository;
 import com.itma.gestionProjet.services.MailUserService;
+import com.itma.gestionProjet.utils.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class MailUserServiceImpl implements MailUserService {
 
     @Autowired
     private MailUserRepository mailUserRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<MailUserDTO> getAllMailUsers(int offset, int max) {
@@ -96,27 +105,44 @@ public class MailUserServiceImpl implements MailUserService {
     }
 
     private void sendMailToAdmin(MailUserDTO mailUserDTO) throws MessagingException, UnsupportedEncodingException {
+        log.info("Sending mail to {}", mailUserDTO.getEmail());
         String subject = "New Complaint/Message from: " + mailUserDTO.getNomComplet();
         String senderName = "Application - Support Team";
 
         // Contenu de l'email
-        String mailContent = "<p><b>Nom Complet:</b> " + mailUserDTO.getNomComplet() + "</p>"
-                + "<p><b>Email:</b> " + mailUserDTO.getEmail() + "</p>"
-                + "<p><b>Numéro de téléphone:</b> " + mailUserDTO.getNumeroTelephone() + "</p>"
-                + "<p><b>Objet:</b> " + mailUserDTO.getObject() + "</p>"
-                + "<p><b>Motif:</b> " + mailUserDTO.getMotif() + "</p>"
-                + "<p><b>Contenu:</b></p>"
-                + "<p>" + mailUserDTO.getContenu() + "</p>"
-                + "<p><i>Date de réclamation:</i> " + mailUserDTO.getDateCreation() + "</p>";
-        // Créer un message MIME
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper messageHelper = new MimeMessageHelper(message);
-        // Paramètres du message
-        messageHelper.setFrom(mailUserDTO.getEmail(), mailUserDTO.getNomComplet());
-        messageHelper.setTo("salioufereya19@gmail.com");
-        messageHelper.setSubject(subject);
-        messageHelper.setText(mailContent, true);
-        mailSender.send(message);
+        String mailContent = "<strong>Nom Complet:</strong> " + mailUserDTO.getNomComplet() + "<br/>"
+                + "<strong>Email:</strong> " + mailUserDTO.getEmail() + "<br/>"
+                + "<strong>Numéro de téléphone:</strong> " + mailUserDTO.getNumeroTelephone() + "<br/>"
+                + "<strong>Objet:</strong> " + mailUserDTO.getObject() + "<br/>"
+                + "<strong>Motif:</strong> " + mailUserDTO.getMotif() + "<br/>"
+                + "<strong>Contenu:</strong> "+mailUserDTO.getContenu() + "<br/>"
+                + "<strong>Date de réclamation: </strong>" + mailUserDTO.getDateCreation();
+
+        MailRequestDto mailRequestDto = new MailRequestDto();
+        mailRequestDto.setSubject(subject);
+        mailRequestDto.setToEmail("babacar77979204@gmail.com");
+        mailRequestDto.setMessage(mailContent);
+        mailRequestDto.setTemplate("contact_email");
+        emailService.sendMail(mailRequestDto);
+
+
+
+        //replay email
+        /* ---------------fin info mail admin*/
+        /* info replay mail*/
+        MailRequestDto request = new MailRequestDto();
+        request.setToEmail(mailUserDTO.getEmail());
+
+        request.setSubject("Accusé de réception");
+        String message = "Bonjour "+mailUserDTO.getNomComplet()+",<br>" +
+                "Nous vous confirmons la réception de votre demande envoyée le "+new Date() +".<br/>" +
+                "Ceci est un message automatique pour vous informer que votre requête a bien été enregistrée. Notre équipe l’examinera et reviendra vers vous dans les plus brefs délais si nécessaire.<br/>" +
+                "Veuillez noter qu’il n’est pas nécessaire de répondre à cet email.<br/>" +
+                "Merci de votre confiance.<br/>";
+        request.setMessage(message);
+        request.setTemplate("replay_mail");
+        emailService.sendMailReception(request);
+        /* fin info replay mail*/
     }
     @Override
     public void deleteMailUser(Long id) {

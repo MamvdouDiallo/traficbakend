@@ -2,14 +2,15 @@ package com.itma.gestionProjet.dtos;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Data
-public class PersonneAffecteDto {
+public class PersonneAffecteDTO {
     private Long id;
     private String idPap;
     private String idParcelle;
-    private Integer nombreParcelle;
+    private int nombreParcelle;
     private String categorie;
     private String prenom;
     private String nom;
@@ -17,7 +18,7 @@ public class PersonneAffecteDto {
     private String lieuNaissance;
     private String sexe;
     private String pays;
-    private Integer age;
+    private int age;
     private String nationalite;
     private String departement;
     private String typeIdentification;
@@ -32,11 +33,14 @@ public class PersonneAffecteDto {
     private String situationMatrimoniale;
     private String prenomExploitant;
     private String nomExploitant;
-    private Double superficieAffecte;
+    private double superficieAffecte;
     private String typeCulture;
     private String typeEquipement;
-    private Double superficieCultive;
+    private double superficieCultive;
     private String descriptionBienAffecte;
-    private Long projectId;
+    private int project_id;
     private String signaturePath;
+    private  String imagePath;
+    @NotBlank(message = "Le code su Pap est obligatoire")
+    private  String codePap;
 }

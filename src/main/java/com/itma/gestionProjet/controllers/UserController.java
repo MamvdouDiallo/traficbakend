@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -60,6 +59,9 @@ public class UserController {
     @Autowired
     private  HttpServletRequest servletRequest;
     private  final  VerificationTokenRepository tokenRepository;
+
+    @Value("${app.front.url}")
+    private String urlFront;
 
     public UserController(ApplicationEventPublisher publisher, VerificationTokenRepository tokenRepository) {
         this.publisher = publisher;
@@ -137,7 +139,7 @@ public class UserController {
         Optional<User> user = userService.findUserByEmail(passwordRequest.getEmail());
         if (user.isPresent()) {
             String passwordResetToken = UUID.randomUUID().toString();
-            String passwordResetUrl = passwordResetEmailLink(user.get(), applicationUrl(servletRequest), passwordResetToken);
+            String passwordResetUrl = passwordResetEmailLink(user.get(), urlFront+"/#/auth/login-2?token="+passwordResetToken, passwordResetToken);
             userService.createPasswordResetTokenForUser(user.get(), passwordResetToken);
             return new ApiResponse(HttpStatus.OK.value(), "Un mail vous est envoyé pour réinitialiser votre mot de passe", null);
         } else {
@@ -145,12 +147,8 @@ public class UserController {
         }
     }
 
-    private String passwordResetEmailLink(User user, String applicationUrl, String passwordToken) throws MessagingException, UnsupportedEncodingException {
-       // String url = applicationUrl+"/users/reset-password?token="+passwordToken;
-        String url = "http://localhost:4200/auth/login-2?token=" + passwordToken;
-        http://localhost:4200/auth/login-2
+    private String passwordResetEmailLink(User user, String url, String passwordToken) throws MessagingException, UnsupportedEncodingException {
         eventListener.sendPasswordResetVerificationEmail(url,user);
-        log.info("Click the link to reset your password :  {}", url);
         return url;
     }
 
