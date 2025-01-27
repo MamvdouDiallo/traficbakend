@@ -40,6 +40,7 @@ public class DatabasePapPlaceAffaire {
     private String membreFoyerHandicape;
     @Column(columnDefinition = "LONGTEXT")
     private String informationsEtendues;
+    @Column(columnDefinition = "LONGTEXT")
     private String evaluationPerte;
     private String statutPap;
     private String vulnerabilite;
