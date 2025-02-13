@@ -1,0 +1,142 @@
+package com.itma.gestionProjet.controllers;
+
+import com.itma.gestionProjet.dtos.AApiResponse;
+import com.itma.gestionProjet.dtos.EntenteCompensationPapDto;
+import com.itma.gestionProjet.requests.EntenteCompensationPapRequest;
+import com.itma.gestionProjet.services.EntenteCompensationPapService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+
+@RestController
+@RequestMapping("/ententes")
+public class EntenteCompensationPapController {
+
+    @Autowired
+    private EntenteCompensationPapService ententeService;
+
+    /*
+    @GetMapping
+    public ResponseEntity<Page<EntenteCompensationPapDto>> getAllEntentes(
+            @RequestParam Long projectId,
+            Pageable pageable) {
+        Page<EntenteCompensationPapDto> ententes = ententeService.getAllEntentes(pageable, projectId);
+        return ResponseEntity.ok(ententes);
+    }
+     */
+    @GetMapping
+    public ResponseEntity<AApiResponse<EntenteCompensationPapDto>> getAllEntentes(
+            @RequestParam Long projectId,
+            Pageable pageable) {
+
+        // Appel au service pour récupérer les entités paginées
+        Page<EntenteCompensationPapDto> ententes = ententeService.getAllEntentes(pageable, projectId);
+        // Construction de la réponse AApiResponse
+        AApiResponse<EntenteCompensationPapDto> response = new AApiResponse<>();
+        response.setResponseCode(200);  // Code de réussite
+        response.setData(ententes.getContent());  // Les données (liste d'entités DTO)
+        response.setOffset(ententes.getPageable().getPageNumber());  // Numéro de la page actuelle
+        response.setMax(ententes.getPageable().getPageSize());  // Taille de la page
+        response.setLength(ententes.getTotalElements());  // Nombre total d'éléments
+        response.setMessage("Successfully retrieved data.");  // Message de succès
+        // Retourner la réponse enveloppée dans un ResponseEntity
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+    /*
+    @PostMapping
+    public ResponseEntity<EntenteCompensationPapDto> createEntente(@RequestBody EntenteCompensationPapRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ententeService.createEntente(request));
+    }
+
+     */
+    @PostMapping
+    public ResponseEntity<AApiResponse<EntenteCompensationPapDto>> createEntente(@RequestBody EntenteCompensationPapRequest request) {
+        try {
+            // Appel au service pour créer l'entité
+            EntenteCompensationPapDto createdEntente = ententeService.createEntente(request);
+            // Construction de la réponse AApiResponse
+            AApiResponse<EntenteCompensationPapDto> response = new AApiResponse<>();
+            response.setResponseCode(201);  // Code de réussite pour la création
+            response.setData(Collections.singletonList(createdEntente));  // Nous mettons l'entité créée dans la liste
+            response.setOffset(0);  // Pas de pagination ici, donc on met 0
+            response.setMax(1);  // Une seule entité a été créée
+            response.setLength(1);  // La longueur est de 1
+            response.setMessage("Entente successfully created.");  // Message de succès
+
+            // Retourner la réponse enveloppée dans un ResponseEntity
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            // Gérer les erreurs
+            AApiResponse<EntenteCompensationPapDto> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);  // Code d'erreur
+            errorResponse.setMessage("Error creating entente: " + e.getMessage());  // Message d'erreur
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+
+    /*
+    @PutMapping("/{id}")
+    public ResponseEntity<EntenteCompensationPapDto> updateEntente(
+            @PathVariable Long id,
+            @RequestBody EntenteCompensationPapRequest request) {
+        return ResponseEntity.ok(ententeService.updateEntente(id, request));
+    }
+
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<AApiResponse<EntenteCompensationPapDto>> updateEntente(
+            @PathVariable Long id,
+            @RequestBody EntenteCompensationPapRequest request) {
+        try {
+            EntenteCompensationPapDto updatedEntente = ententeService.updateEntente(id, request);
+            AApiResponse<EntenteCompensationPapDto> response = new AApiResponse<>();
+            response.setResponseCode(200);  // Code de réussite pour la mise à jour
+            response.setData(Collections.singletonList(updatedEntente));  // Nous mettons l'entité mise à jour dans la liste
+            response.setOffset(0);  // Pas de pagination ici, donc on met 0
+            response.setMax(1);  // Une seule entité a été mise à jour
+            response.setLength(1);  // La longueur est de 1
+            response.setMessage("Entente successfully updated.");  // Message de succès
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            AApiResponse<EntenteCompensationPapDto> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);  // Code d'erreur
+            errorResponse.setMessage("Error updating entente: " + e.getMessage());  // Message d'erreur
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AApiResponse<Void>> deleteEntente(@PathVariable Long id) {
+        try {
+            ententeService.deleteEntente(id);
+            AApiResponse<Void> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setMessage("Entente successfully deleted.");
+
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException e) {
+            AApiResponse<Void> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(404);
+            errorResponse.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        } catch (Exception e) {
+            AApiResponse<Void> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error deleting entente: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+}
+
