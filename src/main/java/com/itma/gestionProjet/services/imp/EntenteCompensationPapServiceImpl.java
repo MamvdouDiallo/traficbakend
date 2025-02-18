@@ -46,6 +46,9 @@ public class EntenteCompensationPapServiceImpl implements EntenteCompensationPap
     @Override
     public EntenteCompensationPapDto createEntente(EntenteCompensationPapRequest request) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        // Ignorer le mapping de l'ID pour éviter que l'ID soit mappé à partir de la requête.
+        modelMapper.typeMap(EntenteCompensationPapRequest.class, EntenteCompensationPap.class)
+                .addMappings(mapper -> mapper.skip(EntenteCompensationPap::setId));
 
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));

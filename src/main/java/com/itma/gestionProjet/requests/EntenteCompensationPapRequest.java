@@ -3,7 +3,6 @@ package com.itma.gestionProjet.requests;
 
 import lombok.Data;
 
-import lombok.Data;
 
 @Data
 public class EntenteCompensationPapRequest {
