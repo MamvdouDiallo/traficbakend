@@ -1,6 +1,8 @@
 package com.itma.gestionProjet.dtos;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import lombok.Data;
 
 @Data
@@ -41,4 +43,9 @@ public class DatabasePapAgricoleRequestDTO {
     private String pj5;
     private String infos_complemenataires;
     private Long projectId;
+    private  String perteTerre;
+    private  String perteArbreJeune;
+    private  String perteArbreAdulte;
+    private  String perteArbreEquipement;
+    private Double perteTotale;
 }

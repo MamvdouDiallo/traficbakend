@@ -57,4 +57,25 @@ public class DatabasePapPlaceAffaire {
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PAPPLACEAFFAIRE'")
     private String type = "PAPPLACEAFFAIRE";
+
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteArbreJeune;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteArbreAdulte;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteEquipement;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteRevenue;
+    private Double appuieRelocalisation;
+    private Double perteTotale;
+    private Double fraisDeplacement;
+
+
+
+
 }

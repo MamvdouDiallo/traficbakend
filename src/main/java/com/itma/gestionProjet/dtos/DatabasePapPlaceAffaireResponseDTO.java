@@ -45,4 +45,12 @@ public class DatabasePapPlaceAffaireResponseDTO {
     private Long projectId;
     private  String type;
 
+    private  String perteArbreJeune;
+    private  String perteArbreAdulte;
+    private  String perteEquipement;
+    private  String perteRevenue;
+    private Double appuieRelocalisation;
+    private Double perteTotale;
+    private Double fraisDeplacement;
+
 }

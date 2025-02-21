@@ -72,5 +72,22 @@ public class DatabasePapAgricole {
     @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PAPAGRICOLE'")
     private String type = "PAPAGRICOLE";
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteTerre;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteArbreJeune;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteArbreAdulte;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteArbreEquipement;
+
+    private Double perteTotale;
 }
 
