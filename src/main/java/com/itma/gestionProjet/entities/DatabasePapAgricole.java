@@ -89,5 +89,9 @@ public class DatabasePapAgricole {
     private  String perteArbreEquipement;
 
     private Double perteTotale;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteBatiment;
 }
 

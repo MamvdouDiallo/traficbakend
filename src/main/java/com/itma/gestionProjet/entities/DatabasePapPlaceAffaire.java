@@ -76,6 +76,16 @@ public class DatabasePapPlaceAffaire {
     private Double fraisDeplacement;
 
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteBatiment;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteLoyer;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private  String perteCloture;
 
 
 }

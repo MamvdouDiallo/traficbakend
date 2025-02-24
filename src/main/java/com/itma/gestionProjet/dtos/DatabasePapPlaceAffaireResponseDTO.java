@@ -52,5 +52,8 @@ public class DatabasePapPlaceAffaireResponseDTO {
     private Double appuieRelocalisation;
     private Double perteTotale;
     private Double fraisDeplacement;
+    private  String perteBatiment;
+    private  String perteLoyer;
+    private  String perteCloture;
 
 }
