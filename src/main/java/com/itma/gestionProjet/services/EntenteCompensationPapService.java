@@ -13,4 +13,6 @@ public interface EntenteCompensationPapService {
     EntenteCompensationPapDto updateEntente(Long id, EntenteCompensationPapRequest request);
 
     void deleteEntente(Long id);
+
+    EntenteCompensationPapDto getEntenteByCodePap(String codePap);
 }

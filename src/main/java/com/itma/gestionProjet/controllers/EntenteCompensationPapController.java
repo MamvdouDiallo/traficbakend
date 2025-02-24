@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ententes")
@@ -135,6 +136,34 @@ public class EntenteCompensationPapController {
             errorResponse.setResponseCode(500);
             errorResponse.setMessage("Error deleting entente: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+
+    @GetMapping("/byCodePap")
+    public ResponseEntity<AApiResponse<EntenteCompensationPapDto>> getEntenteByCodePap(@RequestParam String codePap) {
+        try {
+            EntenteCompensationPapDto entente = ententeService.getEntenteByCodePap(codePap);
+            List<EntenteCompensationPapDto> data = Collections.singletonList(entente);
+            AApiResponse<EntenteCompensationPapDto> response = new AApiResponse<>(
+                    200,
+                    data,
+                    0,
+                    1,
+                    "Entente récupérée avec succès",
+                    1
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            AApiResponse<EntenteCompensationPapDto> response = new AApiResponse<>(
+                    404,
+                    Collections.emptyList(),
+                    0,
+                    0,
+                    e.getMessage(),
+                    0
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 

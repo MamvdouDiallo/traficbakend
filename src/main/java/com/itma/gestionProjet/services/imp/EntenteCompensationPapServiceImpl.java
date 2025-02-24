@@ -45,6 +45,10 @@ public class EntenteCompensationPapServiceImpl implements EntenteCompensationPap
 
     @Override
     public EntenteCompensationPapDto createEntente(EntenteCompensationPapRequest request) {
+        if (repository.existsByCodePap(request.getCodePap())) {
+            throw new RuntimeException("Une entente avec le codePap " + request.getCodePap() + " existe déjà.");
+        }
+
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         // Ignorer le mapping de l'ID pour éviter que l'ID soit mappé à partir de la requête.
         modelMapper.typeMap(EntenteCompensationPapRequest.class, EntenteCompensationPap.class)
@@ -93,6 +97,13 @@ public class EntenteCompensationPapServiceImpl implements EntenteCompensationPap
         EntenteCompensationPap entente = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Entente not found with ID: " + id));
         repository.delete(entente);
+    }
+
+    @Override
+    public EntenteCompensationPapDto getEntenteByCodePap(String codePap) {
+        EntenteCompensationPap entente = repository.findByCodePap(codePap)
+                .orElseThrow(() -> new RuntimeException("Entente not found with codePap: " + codePap));
+        return modelMapper.map(entente, EntenteCompensationPapDto.class);
     }
 }
 
