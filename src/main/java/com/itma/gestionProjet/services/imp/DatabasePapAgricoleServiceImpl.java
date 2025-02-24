@@ -2,7 +2,9 @@ package com.itma.gestionProjet.services.imp;
 
 import com.itma.gestionProjet.dtos.DatabasePapAgricoleRequestDTO;
 import com.itma.gestionProjet.dtos.DatabasePapAgricoleResponseDTO;
+import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireRequestDTO;
 import com.itma.gestionProjet.entities.DatabasePapAgricole;
+import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
 import com.itma.gestionProjet.entities.Project;
 import com.itma.gestionProjet.repositories.DatabasePapAgricoleRepository;
 import com.itma.gestionProjet.repositories.ProjectRepository;
@@ -52,6 +54,9 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
 
     @Override
     public void createDatabasePapAgricole(List<DatabasePapAgricoleRequestDTO> requestDTOs) {
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        modelMapper.typeMap(DatabasePapAgricoleRequestDTO.class, DatabasePapAgricole.class)
+                .addMappings(mapper -> mapper.skip(DatabasePapAgricole::setId));
         List<DatabasePapAgricole> entities = requestDTOs.stream().map(dto -> {
             DatabasePapAgricole entity = modelMapper.map(dto, DatabasePapAgricole.class);
             if (entity.getType() == null || entity.getType().isEmpty()) {

@@ -6,9 +6,11 @@ import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireRequestDTO;
 import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireResponseDTO;
 import com.itma.gestionProjet.entities.DatabasePapAgricole;
 import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
+import com.itma.gestionProjet.entities.EntenteCompensationPap;
 import com.itma.gestionProjet.entities.Project;
 import com.itma.gestionProjet.repositories.DatabasePapPlaceAffaireRepository;
 import com.itma.gestionProjet.repositories.ProjectRepository;
+import com.itma.gestionProjet.requests.EntenteCompensationPapRequest;
 import com.itma.gestionProjet.services.DatabasePapPlaceAffaireService;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -35,9 +37,15 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
 
     @Override
     public void createDatabasePapPlaceAffaire(List<DatabasePapPlaceAffaireRequestDTO> requestDTOs) {
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        modelMapper.typeMap(DatabasePapPlaceAffaireRequestDTO.class, DatabasePapPlaceAffaire.class)
+                .addMappings(mapper -> mapper.skip(DatabasePapPlaceAffaire::setId));
+
         List<DatabasePapPlaceAffaire> entities = requestDTOs.stream().map(dto -> {
             DatabasePapPlaceAffaire entity = modelMapper.map(dto, DatabasePapPlaceAffaire.class);
+            if (entity.getType() == null || entity.getType().isEmpty()) {
                 entity.setType("PAPPLACEAFFAIRE");
+            }
             if (dto.getProjectId() != null) {
                 Project project = projectRepository.findById(dto.getProjectId())
                         .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
@@ -47,6 +55,7 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
         }).collect(Collectors.toList());
         repository.saveAll(entities);
     }
+
 
     @Override
     /*
