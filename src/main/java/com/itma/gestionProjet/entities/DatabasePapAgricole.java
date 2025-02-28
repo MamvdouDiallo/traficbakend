@@ -86,7 +86,7 @@ public class DatabasePapAgricole {
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")
-    private  String perteArbreEquipement;
+    private  String perteEquipement;
 
     private Double perteTotale;
 

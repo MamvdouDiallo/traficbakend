@@ -46,7 +46,7 @@ public class DatabasePapAgricoleRequestDTO {
     private  String perteTerre;
     private  String perteArbreJeune;
     private  String perteArbreAdulte;
-    private  String perteArbreEquipement;
+    private  String perteEquipement;
     private Double perteTotale;
     private  String perteBatiment;
 }
