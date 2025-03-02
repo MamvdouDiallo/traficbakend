@@ -38,6 +38,8 @@ public class UserRequest {
 
     @NotNull(message = "Le role_id ne peut pas être nul.")
     private Long role_id;
+
+    private  Long project_id;
     private  String password;
 }
 

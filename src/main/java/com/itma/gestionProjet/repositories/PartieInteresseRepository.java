@@ -1,5 +1,6 @@
 package com.itma.gestionProjet.repositories;
 
+import com.itma.gestionProjet.entities.DatabasePapAgricole;
 import com.itma.gestionProjet.entities.PartieInteresse;
 import com.itma.gestionProjet.entities.User;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,6 @@ public interface PartieInteresseRepository extends JpaRepository<PartieInteresse
     @Query("SELECT p FROM PartieInteresse p LEFT JOIN FETCH p.contacts")
     List<PartieInteresse> findAllWithContacts();
 
-
+    Page<PartieInteresse> findByProjectId(Long projectId, Pageable pageable);
 
 }

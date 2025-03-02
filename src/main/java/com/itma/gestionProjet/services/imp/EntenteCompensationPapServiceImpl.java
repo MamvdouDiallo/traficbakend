@@ -38,9 +38,15 @@ public class EntenteCompensationPapServiceImpl implements EntenteCompensationPap
     private ModelMapper modelMapper;
 
     @Override
-    public Page<EntenteCompensationPapDto> getAllEntentes(Pageable pageable, Long projectId) {
-        Page<EntenteCompensationPap> ententes = repository.findByProjectId(projectId, pageable);
+    public Page<EntenteCompensationPapDto> getAllEntentes(Pageable pageable) {
+        Page<EntenteCompensationPap> ententes = repository.findAll(pageable);
         return ententes.map(this::convertEntityToDto);
+    }
+
+    @Override
+    public Page<EntenteCompensationPapDto> getEntentesByProjectId(Long projectId, Pageable pageable) {
+        Page<EntenteCompensationPap> ententesPage = repository.findByProjectId(projectId, pageable);
+        return ententesPage.map(entente -> modelMapper.map(entente, EntenteCompensationPapDto.class));
     }
 
     @Override

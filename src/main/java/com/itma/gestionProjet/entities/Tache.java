@@ -36,4 +36,8 @@ public class Tache {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> utilisateurs;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
 }

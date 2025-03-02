@@ -1,8 +1,10 @@
 package com.itma.gestionProjet.services.imp;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
+import com.itma.gestionProjet.dtos.EntenteCompensationPapDto;
 import com.itma.gestionProjet.dtos.PlainteDto;
 import com.itma.gestionProjet.dtos.PlainteInvalidDto;
+import com.itma.gestionProjet.entities.EntenteCompensationPap;
 import com.itma.gestionProjet.entities.Plainte;
 import com.itma.gestionProjet.entities.Project;
 import com.itma.gestionProjet.repositories.PlainteRepository;
@@ -37,7 +39,7 @@ public class PlainteServiceImpl implements PlainteService {
         Project projet = projetRepository.findById(plainteRequest.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Projet non trouvé"));
 
-        plainte.setProjet(projet);
+        plainte.setProject(projet);
         plainte.setNumeroDossier(plainteRequest.getNumeroDossier());
         plainte.setLibelleProjet(plainteRequest.getLibelleProjet());
         plainte.setLieuEnregistrement(plainteRequest.getLieuEnregistrement());
@@ -74,8 +76,14 @@ public class PlainteServiceImpl implements PlainteService {
     @Override
     public Page<PlainteDto> getAllPlaintes(Pageable pageable) {
         return plainteRepository.findAll(pageable)
-                .map(this::convertEntityToDto);  // Utilisation de map() sur Page<Plainte>
+                .map(this::convertEntityToDto);
     }
+    @Override
+    public Page<PlainteDto> getPlaintesByProjectId(Long projectId, Pageable pageable) {
+       return  plainteRepository.findByProjectId(projectId, pageable)
+        .map(this::convertEntityToDto);
+    }
+
 
 
     @Override
@@ -94,7 +102,7 @@ public class PlainteServiceImpl implements PlainteService {
         Project projet = projetRepository.findById(plainteRequest.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Projet non trouvé"));
 
-        plainte.setProjet(projet);
+        plainte.setProject(projet);
         plainte.setNumeroDossier(plainteRequest.getNumeroDossier());
         plainte.setLieuEnregistrement(plainteRequest.getLieuEnregistrement());
         plainte.setDateEnregistrement(plainteRequest.getDateEnregistrement());

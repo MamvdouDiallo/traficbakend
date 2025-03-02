@@ -64,6 +64,16 @@ public class TacheServiceImpl implements ITacheService {
         return new PageImpl<>(tacheDTOs, pageRequest, tachePage.getTotalElements());
     }
 
+
+    @Override
+    public Page<TacheDTO> getTachesByProjectId(Long projectId,PageRequest pageRequest) {
+        Page<Tache> tachePage = tacheRepository.findByProjectId(projectId,pageRequest);
+        List<TacheDTO> tacheDTOs = tachePage.stream()
+                .map(this::convertEntityToDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(tacheDTOs, pageRequest, tachePage.getTotalElements());
+    }
+
     private TacheDTO convertEntityToDto(Tache tache) {
         TacheDTO dto = new TacheDTO();
         dto.setId(tache.getId());

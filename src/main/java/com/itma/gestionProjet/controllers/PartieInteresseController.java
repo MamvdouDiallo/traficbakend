@@ -1,9 +1,6 @@
 package com.itma.gestionProjet.controllers;
 
-import com.itma.gestionProjet.dtos.AApiResponse;
-import com.itma.gestionProjet.dtos.ContactDTO;
-import com.itma.gestionProjet.dtos.PartieInteresseDTO;
-import com.itma.gestionProjet.dtos.PartieInteresseResponseDTO;
+import com.itma.gestionProjet.dtos.*;
 import com.itma.gestionProjet.entities.PartieInteresse;
 import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.exceptions.PartieInteresseNotFoundException;
@@ -27,7 +24,8 @@ public class PartieInteresseController {
 
     @Autowired
     private PartieInteresseService service;
-
+    
+    /*
     @GetMapping
     public ResponseEntity<AApiResponse<PartieInteresseResponseDTO>> getAll(
             @RequestParam(defaultValue = "0") int offset,
@@ -46,8 +44,6 @@ public class PartieInteresseController {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-
-
         response.setData(dtoList);
         response.setOffset(offset);
         response.setMax(max);
@@ -55,6 +51,56 @@ public class PartieInteresseController {
 
         return ResponseEntity.ok().body(response);
     }
+
+
+     */
+
+
+    @GetMapping
+    public ResponseEntity<AApiResponse<PartieInteresseResponseDTO>> getAll(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int max,
+            @RequestParam(required = false) String categorieLibelle,
+            @RequestParam(required = false) Long projectId) {
+
+        try {
+            Pageable pageable = PageRequest.of(offset, max);
+            Page<PartieInteresse> partieInteressePage;
+
+            // Vérifier si projectId est fourni
+            if (projectId != null) {
+                // Appeler la méthode pour récupérer les PartieInteresse par projectId
+                partieInteressePage = service.getPartieInteressesByProjectId(projectId, pageable);
+            } else {
+                // Appeler la méthode pour récupérer toutes les PartieInteresse
+                partieInteressePage = service.getPartieInteresses(pageable);
+            }
+
+            // Convertir les entités PartieInteresse en DTO
+            List<PartieInteresseResponseDTO> dtoList = partieInteressePage.getContent().stream()
+                    .map(this::convertToDTO) // Assurez-vous que cette méthode est définie
+                    .collect(Collectors.toList());
+
+            // Construire la réponse AApiResponse
+            AApiResponse<PartieInteresseResponseDTO> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(dtoList);
+            response.setOffset(offset);
+            response.setMax(max);
+            response.setLength(partieInteressePage.getTotalElements());
+            response.setMessage("Données récupérées avec succès.");
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            // Gestion des erreurs
+            AApiResponse<PartieInteresseResponseDTO> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Erreur lors de la récupération des données : " + e.getMessage());
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+
+
 
     @GetMapping("/{id}")
     public Optional<PartieInteresse> getById(@PathVariable Long id) {

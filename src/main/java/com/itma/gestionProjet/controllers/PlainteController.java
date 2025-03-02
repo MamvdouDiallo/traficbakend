@@ -87,24 +87,30 @@ public class PlainteController {
 
 
 
-
     @GetMapping
     public ResponseEntity<AApiResponse<PlainteDto>> getAllPlaintes(
+            @RequestParam(required = false) Long projectId,
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int max) {
-
         Pageable pageable = PageRequest.of(offset, max);
-        Page<PlainteDto> plaintePage = plainteService.getAllPlaintes(pageable);
+        Page<PlainteDto> plaintePage;
+        if (projectId != null) {
+            plaintePage = plainteService.getPlaintesByProjectId(projectId, pageable);
+        } else {
+            plaintePage = plainteService.getAllPlaintes(pageable);
+        }
         AApiResponse<PlainteDto> response = new AApiResponse<>();
         response.setResponseCode(200);
         response.setMessage("Liste des plaintes récupérée avec succès");
-        response.setData(((plaintePage.getContent())));// Ne pas encapsuler dans une liste supplémentaire
+        response.setData(plaintePage.getContent());
         response.setOffset(offset);
         response.setMax(max);
         response.setLength(plaintePage.getTotalElements());
-
         return ResponseEntity.ok(response);
     }
+
+
+
 
 
     @GetMapping("/{id}")

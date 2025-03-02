@@ -8,10 +8,13 @@ import com.itma.gestionProjet.repositories.CategorieDocumentRepository;
 import com.itma.gestionProjet.repositories.DocumentRepository;
 import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.requests.DocumentRequest;
+import com.itma.gestionProjet.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DocumentServiceImpl implements DocumentService {
@@ -25,6 +28,13 @@ public class DocumentServiceImpl implements DocumentService {
     @Autowired
     private CategorieDocumentRepository categorieDocumentRepository;
 
+    @Autowired
+    private DocumentRepository dossierRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+
     @Override
     public DocumentDTO createDocument(DocumentRequest documentRequest) {
         Document document = new Document();
@@ -33,7 +43,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         Project projet = projetRepository.findById(documentRequest.getProjetId())
                 .orElseThrow(() -> new RuntimeException("Projet not found"));
-        document.setProjet(projet);
+        document.setProject(projet);
 
         CategorieDocument categorieDocument = categorieDocumentRepository.findById(documentRequest.getCategorieDocumentId())
                 .orElseThrow(() -> new RuntimeException("CategorieDocument not found"));
@@ -53,7 +63,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         Project projet = projetRepository.findById(documentRequest.getProjetId())
                 .orElseThrow(() -> new RuntimeException("Projet not found"));
-        document.setProjet(projet);
+        document.setProject(projet);
 
         CategorieDocument categorieDocument = categorieDocumentRepository.findById(documentRequest.getCategorieDocumentId())
                 .orElseThrow(() -> new RuntimeException("CategorieDocument not found"));
@@ -80,9 +90,31 @@ public class DocumentServiceImpl implements DocumentService {
         return documentRepository.findAll(pageable).map(this::mapToDTO);
     }
 
+
+    public Page<DocumentDTO> getDocumentsByProjectId(Long projectId, Pageable pageable) {
+        return documentRepository.findByProjectId(projectId, pageable)
+                .map(this::mapToDTO);
+    }
+
     // Helper method to map Document entity to DocumentDTO
     private DocumentDTO mapToDTO(Document document) {
         return new DocumentDTO(document.getId(), document.getLibelle(), document.getUrlDocument(),
                document.getCategorieDocument());
     }
+
+/*
+    public List<Document> getDossiersByUser(String token) {
+        List<String> roles = jwtUtil.extractRoles(token); // Récupère les rôles
+
+        // Si l'utilisateur est Super Admin, il voit tout
+        if (roles.contains("SUPER_ADMIN")) {
+            return documentRepository.findAll();
+        }
+
+        // Sinon, on filtre selon ses projets
+      //  List<Long> projetIds = jwtUtil.extractProjectIds(token);
+        return documentRepository.findByProjetIdIn(projetIds);
+    }
+
+ */
 }

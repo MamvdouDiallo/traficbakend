@@ -12,7 +12,6 @@ import lombok.Data;
 
 @Data
 public class PlainteRequest {
-
     private String numeroDossier;
     private  String libelleProjet;
     private String lieuEnregistrement;

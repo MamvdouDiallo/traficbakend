@@ -11,4 +11,6 @@ public interface DocumentService {
     void deleteDocument(Long id);
     DocumentDTO getDocumentById(Long id);
     Page<DocumentDTO> getAllDocuments(Pageable pageable);
+
+    Page<DocumentDTO> getDocumentsByProjectId(Long projectId, Pageable pageable);
 }

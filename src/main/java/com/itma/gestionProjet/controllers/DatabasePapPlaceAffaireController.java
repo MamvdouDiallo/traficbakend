@@ -65,13 +65,16 @@ public class DatabasePapPlaceAffaireController {
 
     @GetMapping
     public AApiResponse<DatabasePapPlaceAffaireResponseDTO> getAll(
+            @RequestParam(required = false) Long projectId,
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "100000000") int max) {
         try {
-            // Appel au service pour récupérer les données
-            List<DatabasePapPlaceAffaireResponseDTO> data = databasePapPlaceAffaireService.getAllDatabasePapPlaceAffaire(offset, max);
-
-            // Création de la réponse AApiResponse
+            List<DatabasePapPlaceAffaireResponseDTO> data;
+            if (projectId != null) {
+                data = databasePapPlaceAffaireService.getDatabasePapPlaceAffaireByProjectId(projectId, offset, max);
+            } else {
+                data = databasePapPlaceAffaireService.getAllDatabasePapPlaceAffaire(offset, max);
+            }
             AApiResponse<DatabasePapPlaceAffaireResponseDTO> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(data);
@@ -79,10 +82,8 @@ public class DatabasePapPlaceAffaireController {
             response.setLength(databasePapPlaceAffaireService.getTotalCount());
             response.setMax(max);
             response.setMessage("Successfully retrieved data.");
-
             return response;
         } catch (Exception e) {
-            // Gérer les erreurs et renvoyer un message d'erreur avec le code approprié
             AApiResponse<DatabasePapPlaceAffaireResponseDTO> errorResponse = new AApiResponse<>();
             errorResponse.setResponseCode(500);
             errorResponse.setMessage("Error retrieving data: " + e.getMessage());

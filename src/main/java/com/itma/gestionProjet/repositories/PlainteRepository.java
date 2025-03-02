@@ -1,6 +1,7 @@
 package com.itma.gestionProjet.repositories;
 
 import com.itma.gestionProjet.dtos.PlainteDto;
+import com.itma.gestionProjet.entities.EntenteCompensationPap;
 import com.itma.gestionProjet.entities.Plainte;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ public interface PlainteRepository extends JpaRepository<Plainte, Long> {
 
     Optional<List<Plainte>> findByCodePap(String codePap);
 
-
+    Page<Plainte> findByProjectId(Long projectId, Pageable pageable);
     Page<Plainte> findByCodePap(String codePap, Pageable pageable);
 
 }

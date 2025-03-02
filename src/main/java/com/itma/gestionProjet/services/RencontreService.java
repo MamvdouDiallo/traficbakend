@@ -9,6 +9,8 @@ public interface RencontreService {
     // Récupérer toutes les rencontres d'un projet avec pagination
     Page<RencontreDTO> getRencontresByProjectId(Long projectId, Pageable pageable);
 
+    Page<RencontreDTO> getAllRencontres(Pageable pageable);
+
     // Créer une nouvelle rencontre
     RencontreDTO createRencontre(RencontreDTO rencontreDTO);
 

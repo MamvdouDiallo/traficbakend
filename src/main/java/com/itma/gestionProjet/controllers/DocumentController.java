@@ -101,6 +101,7 @@ public class DocumentController {
         }
     }
 
+    /*
     @GetMapping
     public ResponseEntity<AApiResponse<DocumentDTO>> getAllDocuments(
             @RequestParam(defaultValue = "0") int page,
@@ -122,4 +123,41 @@ public class DocumentController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+     */
+
+    @GetMapping
+    public ResponseEntity<AApiResponse<DocumentDTO>> getAllDocuments(
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        AApiResponse<DocumentDTO> response = new AApiResponse<>();
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+
+            // Déclarer la variable documentsPage en dehors des blocs conditionnels
+            Page<DocumentDTO> documentsPage;
+
+            if (projectId != null) {
+                documentsPage = documentService.getDocumentsByProjectId(projectId, pageable);
+            } else {
+                documentsPage = documentService.getAllDocuments(pageable);
+            }
+            response.setResponseCode(HttpStatus.OK.value());
+            response.setData(documentsPage.getContent());
+            response.setOffset(page);
+            response.setMax(size);
+            response.setMessage("Documents retrieved successfully");
+            response.setLength(documentsPage.getTotalElements());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage("Error retrieving Documents: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }

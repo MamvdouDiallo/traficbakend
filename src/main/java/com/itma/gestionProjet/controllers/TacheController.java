@@ -49,9 +49,15 @@ public class TacheController {
     @GetMapping
     public ResponseEntity<AApiResponse<TacheDTO>> getTaches(
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int max) {
+            @RequestParam(defaultValue = "10") int max, @RequestParam(required = false) Long projectId) {
+
         PageRequest pageRequest = PageRequest.of(offset, max);
-        Page<TacheDTO> tachesPage = tacheService.getAllTaches(pageRequest);
+        Page<TacheDTO> tachesPage;
+        if (projectId != null) {
+            tachesPage = tacheService.getTachesByProjectId(projectId, pageRequest);
+        } else {
+            tachesPage = tacheService.getAllTaches(pageRequest);
+        }
         AApiResponse<TacheDTO> response = new AApiResponse<>();
         response.setResponseCode(200);
         response.setData(tachesPage.getContent());

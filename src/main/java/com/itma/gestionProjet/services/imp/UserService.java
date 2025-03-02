@@ -61,20 +61,17 @@ public class UserService  implements IUserService {
     PasswordEncoder bCryptPasswordEncoder;
 
     @Override
+    @Transactional
     public User saveUser(UserRequest p) {
-
-        // Vérification de l'unicité de l'email
+        // Vérification de l'unicité de l'email et du contact
         Optional<User> optionalUser = userRepository.findByEmail(p.getEmail());
         if (optionalUser.isPresent()) {
             throw new EmailAlreadyExistsException("Email déjà existant!");
         }
-
-        // Vérification de l'unicité du contact
         Optional<User> optionalContact = userRepository.findByContact(p.getContact());
         if (optionalContact.isPresent()) {
             throw new ContactMobileAlreadyExistsException("Contact déjà existant!");
         }
-
         // Création de l'utilisateur
         User newUser = new User();
         newUser.setEmail(p.getEmail());
@@ -83,11 +80,10 @@ public class UserService  implements IUserService {
         newUser.setContact(p.getContact());
         newUser.setLocality(p.getLocality());
         newUser.setImageUrl(p.getImageUrl());
-        newUser.setEnabled(false);
-        newUser.setPassword(bCryptPasswordEncoder.encode(p.getPassword())); // Dynamique
-
+        newUser.setEnabled(true);
+        newUser.setPassword(bCryptPasswordEncoder.encode(p.getPassword()));
         // Assignation des rôles
-        Role role = roleRepository.findById(Math.toIntExact(p.getRole_id()))
+        Role role = roleRepository.findById((p.getRole_id()))
                 .orElseThrow(() -> new RoleNotFoundException("Role not found"));
         List<Role> roles = new ArrayList<>();
         roles.add(role);
@@ -98,9 +94,19 @@ public class UserService  implements IUserService {
                 .orElseThrow(() -> new FonctionNotFoundException("Fonction not found"));
         Categorie categorie = categorieRepository.findById(p.getCategorie_id())
                 .orElseThrow(() -> new CategorieNotFoundException("Categorie not found"));
-
         newUser.setFonction(fonction);
         newUser.setCategorie(categorie);
+        // Assignation du projet (si project_id est présent dans la requête)
+        if (p.getProject_id() != null) {
+            Project project = projectRepository.findById(p.getProject_id())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+
+            // Synchronise les deux côtés de la relation
+            newUser.getProjects().add(project);
+            project.getUsers().add(newUser);
+        } else {
+            newUser.setProjects(new ArrayList<>()); // Aucun projet associé
+        }
 
         // Sauvegarde de l'utilisateur
         return userRepository.save(newUser);
@@ -478,7 +484,7 @@ public class UserService  implements IUserService {
         user.setImageUrl(p.getImageUrl());
 
         // Role update (check if the role exists)
-        Role role = roleRepository.findById(Math.toIntExact(p.getRole_id())).orElse(null);
+        Role role = roleRepository.findById((p.getRole_id())).orElse(null);
         if (role == null) {
             throw new RuntimeException("Role not found");
         }

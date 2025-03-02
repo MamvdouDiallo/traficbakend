@@ -7,7 +7,11 @@ import org.springframework.data.domain.Pageable;
 
 
 public interface EntenteCompensationPapService {
-    Page<EntenteCompensationPapDto> getAllEntentes(Pageable pageable, Long projectId);
+    Page<EntenteCompensationPapDto> getAllEntentes(Pageable pageable);
+
+
+    Page<EntenteCompensationPapDto> getEntentesByProjectId(Long projectId, Pageable pageable);
+
 
     EntenteCompensationPapDto createEntente(EntenteCompensationPapRequest request);
     EntenteCompensationPapDto updateEntente(Long id, EntenteCompensationPapRequest request);

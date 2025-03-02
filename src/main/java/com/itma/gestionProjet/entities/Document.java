@@ -17,8 +17,8 @@ public class Document {
     private String urlDocument;
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "projet_id", nullable = false)
-    private Project projet;
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
     @ManyToOne
     @JoinColumn(name = "categorie_document_id", nullable = false)

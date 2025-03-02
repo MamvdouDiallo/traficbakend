@@ -2,11 +2,14 @@ package com.itma.gestionProjet.controllers;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.RencontreDTO;
+import com.itma.gestionProjet.dtos.TacheDTO;
 import com.itma.gestionProjet.services.RencontreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -38,11 +41,32 @@ public class RencontreController {
         return response;
     }
 
+
+    @GetMapping
+    public ResponseEntity<AApiResponse<RencontreDTO>> getRencontresByProject(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int max, @RequestParam(required = false) Long projectId) {
+        PageRequest pageRequest = PageRequest.of(offset, max);
+        Page<RencontreDTO> rencontresPages;
+        if (projectId != null) {
+            rencontresPages = rencontreService.getRencontresByProjectId(projectId, pageRequest);
+        } else {
+            rencontresPages = rencontreService.getAllRencontres(pageRequest);
+        }
+        AApiResponse<RencontreDTO> response = new AApiResponse<>();
+        response.setResponseCode(200);
+        response.setData(rencontresPages.getContent());
+        response.setOffset(offset);
+        response.setMax(max);
+        response.setLength(rencontresPages.getTotalElements());
+        return ResponseEntity.ok().body(response);
+    }
+
+
     // Créer une nouvelle rencontre
     @PostMapping
     public AApiResponse<RencontreDTO> createRencontre(@RequestBody RencontreDTO rencontreDTO) {
         RencontreDTO createdRencontre = rencontreService.createRencontre(rencontreDTO);
-
         AApiResponse<RencontreDTO> response = new AApiResponse<>();
         response.setResponseCode(HttpStatus.CREATED.value());
         response.setData(List.of(createdRencontre));

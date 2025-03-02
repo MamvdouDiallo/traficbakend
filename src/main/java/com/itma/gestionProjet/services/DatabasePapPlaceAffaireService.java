@@ -9,6 +9,8 @@ import java.util.List;
 public interface DatabasePapPlaceAffaireService {
     void createDatabasePapPlaceAffaire(List<DatabasePapPlaceAffaireRequestDTO> requestDTOs);
     List<DatabasePapPlaceAffaireResponseDTO> getAllDatabasePapPlaceAffaire(int page, int size);
+
+    List<DatabasePapPlaceAffaireResponseDTO> getDatabasePapPlaceAffaireByProjectId(Long projectId, int page, int size);
     DatabasePapPlaceAffaireResponseDTO getDatabasePapPlaceAffaireById(Long id);
     void updateDatabasePapPlaceAffaire(Long id, DatabasePapPlaceAffaireRequestDTO requestDTO);
     void deleteDatabasePapPlaceAffaire(Long id);

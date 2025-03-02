@@ -3,6 +3,7 @@ package com.itma.gestionProjet.controllers;
 import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.DatabasePapAgricoleRequestDTO;
 import com.itma.gestionProjet.dtos.DatabasePapAgricoleResponseDTO;
+import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireResponseDTO;
 import com.itma.gestionProjet.entities.DatabasePapAgricole;
 import com.itma.gestionProjet.services.DatabasePapAgricoleService;
 import com.itma.gestionProjet.services.imp.ExcelImportDatabasePapAgricoleService;
@@ -44,6 +45,7 @@ public class PapAgricoleController {
         }
     }
 
+    /*
     @GetMapping
     public AApiResponse<DatabasePapAgricoleResponseDTO> getAll(
             @RequestParam(defaultValue = "0") int offset,
@@ -70,6 +72,39 @@ public class PapAgricoleController {
             return errorResponse;
         }
     }
+
+     */
+
+    @GetMapping
+    public AApiResponse<DatabasePapAgricoleResponseDTO> getAll(
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "100000000") int max) {
+        try {
+            List<DatabasePapAgricoleResponseDTO> data;
+            if (projectId != null) {
+                data = databasePapAgricoleService.getDatabasePapAgricoleByProjectId(projectId, offset, max);
+            } else {
+                data = databasePapAgricoleService.getAllDatabasePapAgricole(offset, max);
+            }
+            AApiResponse<DatabasePapAgricoleResponseDTO> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(data);
+            response.setOffset(offset);
+            response.setLength(databasePapAgricoleService.getTotalCount());
+            response.setMax(max);
+            response.setMessage("Successfully retrieved data.");
+            return response;
+        } catch (Exception e) {
+            AApiResponse<DatabasePapAgricoleResponseDTO> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error retrieving data: " + e.getMessage());
+            return errorResponse;
+        }
+    }
+
+
+
 
     // Méthode GET pour récupérer une entité par ID
     @GetMapping("/{id}")

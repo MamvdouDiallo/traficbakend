@@ -63,7 +63,7 @@ public class FileService implements IFileService {
     @Override
     public File uplaodFileProj(MultipartFile file, Long idProd) throws IOException {
         Project p = new Project();
-        p.setId(Math.toIntExact(idProd));
+        p.setId((long) Math.toIntExact(idProd));
         return fileRepository.save(File.builder()
                 .name(file.getOriginalFilename())
                 .type(file.getContentType())
@@ -78,7 +78,7 @@ public class FileService implements IFileService {
     @Override
     public List<File> updateFiles(MultipartFile[] files, Long idProd) throws IOException {
         Project p = new Project();
-        p.setId(Math.toIntExact(idProd));
+        p.setId((long) Math.toIntExact(idProd));
 
         // Supprimer les fichiers existants associés au projet
         fileRepository.deleteByProjectId(idProd);

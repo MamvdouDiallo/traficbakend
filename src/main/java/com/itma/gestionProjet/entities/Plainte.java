@@ -50,5 +50,5 @@ public class Plainte {
     // Relation avec l'entité Project
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
-    private Project projet;
+    private Project project;
 }

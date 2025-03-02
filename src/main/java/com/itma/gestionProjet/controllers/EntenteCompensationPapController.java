@@ -33,20 +33,21 @@ public class EntenteCompensationPapController {
      */
     @GetMapping
     public ResponseEntity<AApiResponse<EntenteCompensationPapDto>> getAllEntentes(
-            @RequestParam Long projectId,
+            @RequestParam(required = false) Long projectId,
             Pageable pageable) {
-
-        // Appel au service pour récupérer les entités paginées
-        Page<EntenteCompensationPapDto> ententes = ententeService.getAllEntentes(pageable, projectId);
-        // Construction de la réponse AApiResponse
+        Page<EntenteCompensationPapDto> ententes;
+        if (projectId != null) {
+            ententes = ententeService.getEntentesByProjectId(projectId, pageable);
+        } else {
+            ententes = ententeService.getAllEntentes(pageable);
+        }
         AApiResponse<EntenteCompensationPapDto> response = new AApiResponse<>();
-        response.setResponseCode(200);  // Code de réussite
-        response.setData(ententes.getContent());  // Les données (liste d'entités DTO)
-        response.setOffset(ententes.getPageable().getPageNumber());  // Numéro de la page actuelle
-        response.setMax(ententes.getPageable().getPageSize());  // Taille de la page
-        response.setLength(ententes.getTotalElements());  // Nombre total d'éléments
-        response.setMessage("Successfully retrieved data.");  // Message de succès
-        // Retourner la réponse enveloppée dans un ResponseEntity
+        response.setResponseCode(200);
+        response.setData(ententes.getContent());
+        response.setOffset(ententes.getPageable().getPageNumber());
+        response.setMax(ententes.getPageable().getPageSize());
+        response.setLength(ententes.getTotalElements());
+        response.setMessage("Successfully retrieved data.");
         return ResponseEntity.ok(response);
     }
 

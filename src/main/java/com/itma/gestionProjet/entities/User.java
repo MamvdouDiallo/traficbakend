@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -44,10 +45,19 @@ public class User {
     )
     private List<Role> roles;
 
-    // Relation ManyToMany avec Project
     //@JsonIgnore
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Project> projects;
+    // Relation ManyToMany avec Project
+    /*
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Project> projects = new ArrayList<>();
+     */
+
+
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Project> projects = new ArrayList<>();
+
 
     // Relation ManyToOne avec PartieInteresse
     @JsonIgnore

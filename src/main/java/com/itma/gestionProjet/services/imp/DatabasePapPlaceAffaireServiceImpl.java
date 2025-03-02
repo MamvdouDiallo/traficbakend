@@ -57,7 +57,6 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
     }
 
 
-    @Override
     /*
     public List<DatabasePapPlaceAffaireResponseDTO> getAllDatabasePapPlaceAffaire(int page, int size) {
         var pageRequest = PageRequest.of(page, size);
@@ -72,7 +71,7 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
      */
 
 
-
+    @Override
     public List<DatabasePapPlaceAffaireResponseDTO> getAllDatabasePapPlaceAffaire(int page, int size) {
         var pageRequest = PageRequest.of(page, size);
         var pageResult = repository.findAll(pageRequest);
@@ -82,6 +81,17 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
 
         return data;
     }
+
+    @Override
+    public List<DatabasePapPlaceAffaireResponseDTO> getDatabasePapPlaceAffaireByProjectId(Long projectId,int page, int size) {
+        var pageRequest = PageRequest.of(page, size);
+        var pageResult = repository.findByProjectId(projectId,pageRequest);
+        List<DatabasePapPlaceAffaireResponseDTO> data = pageResult.getContent().stream()
+                .map(this::convertEntityToResponseDTO)
+                .collect(Collectors.toList());
+        return data;
+    }
+
 
 
     @Override
@@ -97,12 +107,15 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
                 .addMappings(mapper -> mapper.skip(DatabasePapPlaceAffaire::setId));
         modelMapper.map(requestDTO, entity);
         entity.setType("PAPPLACEAFFAIRE");
+        /*
         if (requestDTO.getProjectId() != null) {
             Project project = projectRepository.findById(requestDTO.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project not found with ID: " + requestDTO.getProjectId()));
             entity.setProject(project);
         }
 
+
+         */
 
         repository.save(entity);
     }

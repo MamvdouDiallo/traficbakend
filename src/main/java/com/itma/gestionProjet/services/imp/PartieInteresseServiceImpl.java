@@ -2,6 +2,7 @@ package com.itma.gestionProjet.services.imp;
 
 
 import com.itma.gestionProjet.dtos.ContactDTO;
+import com.itma.gestionProjet.dtos.DatabasePapAgricoleResponseDTO;
 import com.itma.gestionProjet.dtos.PartieInteresseDTO;
 import com.itma.gestionProjet.dtos.PartieInteresseResponseDTO;
 import com.itma.gestionProjet.entities.*;
@@ -14,6 +15,7 @@ import com.itma.gestionProjet.services.PartieInteresseService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -139,12 +141,14 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         return repository.findAll(pageable);
     }
 
-
+    @Override
+    public Page<PartieInteresse> getPartieInteressesByProjectId(Long projectId, Pageable pageable) {
+        return repository.findByProjectId(projectId, pageable);
+    }
 
 
     @Override
     public PartieInteresse update(Long id, PartieInteresseResponseDTO partieInteresseDTO) {
-        // Vérification si la PartieInteresse existe
         Optional<PartieInteresse> optionalPip = repository.findById(id);
         if (!optionalPip.isPresent()) {
             throw new PartieInteresseNotFoundException("Partie intéressée avec ID " + id + " n'existe pas.");

@@ -1,8 +1,6 @@
 package com.itma.gestionProjet.services.imp;
 
-import com.itma.gestionProjet.dtos.DatabasePapAgricoleRequestDTO;
-import com.itma.gestionProjet.dtos.DatabasePapAgricoleResponseDTO;
-import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireRequestDTO;
+import com.itma.gestionProjet.dtos.*;
 import com.itma.gestionProjet.entities.DatabasePapAgricole;
 import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
 import com.itma.gestionProjet.entities.Project;
@@ -12,7 +10,9 @@ import com.itma.gestionProjet.services.DatabasePapAgricoleService;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,10 +35,18 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
         var pageRequest = PageRequest.of(page, size);
         var pageResult = repository.findAll(pageRequest);
 
+        return pageResult.getContent().stream()
+                .map(this::convertEntityToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DatabasePapAgricoleResponseDTO> getDatabasePapAgricoleByProjectId(Long projectId,int page, int size) {
+        var pageRequest = PageRequest.of(page, size);
+        var pageResult = repository.findByProjectId(projectId,pageRequest);
         List<DatabasePapAgricoleResponseDTO> data = pageResult.getContent().stream()
                 .map(this::convertEntityToResponseDTO)
                 .collect(Collectors.toList());
-
         return data;
     }
 
@@ -82,11 +90,14 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
 
         modelMapper.map(requestDTO, entity);
         entity.setType("PAPAGRICOLE");
+        /*
         if (requestDTO.getProjectId() != null) {
             Project project = projectRepository.findById(requestDTO.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project not found with ID: " + requestDTO.getProjectId()));
             entity.setProject(project);
         }
+
+         */
 
         repository.save(entity);
     }

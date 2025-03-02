@@ -246,7 +246,7 @@ public class PersonneAffecteServiceImpl implements IPersonneAffecteService {
         dto.setImagePath(personneAffecte.getImagePath());
         dto.setSuperficieCultive(personneAffecte.getSuperficieCultive());
         dto.setDescriptionBienAffecte(personneAffecte.getDescriptionBienAffecte());
-        dto.setProject_id(personneAffecte.getProject().getId()); // ID du projet
+        dto.setProject_id(Math.toIntExact(personneAffecte.getProject().getId())); // ID du projet
         dto.setCodePap(personneAffecte.getCodePap());
         return dto;
     }

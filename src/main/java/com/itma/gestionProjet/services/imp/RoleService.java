@@ -48,7 +48,7 @@ public class RoleService implements IRoleService {
 
     @Override
     public RoleDTO updateRole(Long id, RoleRequest roleRequest) {
-        Role role = roleRepository.findById(Math.toIntExact(id))
+        Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         if (!role.getName().equals(roleRequest.getName()) &&
                 roleRepository.existsByName(roleRequest.getName())) {
@@ -77,8 +77,8 @@ public class RoleService implements IRoleService {
 
     @Override
     public void deleteRoleById(Long id) {
-        if (roleRepository.existsById(Math.toIntExact(id))) {
-            roleRepository.deleteById(Math.toIntExact(id));
+        if (roleRepository.existsById(id)) {
+            roleRepository.deleteById(id);
         } else {
             throw new RoleNotFoundException("Le rôle avec l'id " + id + " n'existe pas.");
         }

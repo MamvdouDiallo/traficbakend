@@ -28,15 +28,18 @@ public class RencontreServiceImpl implements RencontreService {
 
     @Override
     public Page<RencontreDTO> getRencontresByProjectId(Long projectId, Pageable pageable) {
-        // Vérification si le projet existe
         if (!projectRepository.existsById(projectId)) {
             throw new RuntimeException("Project not found");
         }
-
         Page<Rencontre> rencontresPage = rencontreRepository.findByProjectId(projectId, pageable);
         return rencontresPage.map(rencontre -> modelMapper.map(rencontre, RencontreDTO.class));
     }
 
+    @Override
+    public Page<RencontreDTO> getAllRencontres(Pageable pageable) {
+        Page<Rencontre> rencontresPage = rencontreRepository.findAll(pageable);
+        return rencontresPage.map(rencontre -> modelMapper.map(rencontre, RencontreDTO.class));
+    }
     @Override
     public RencontreDTO createRencontre(RencontreDTO rencontreDTO) {
         // Vérification si le projet existe

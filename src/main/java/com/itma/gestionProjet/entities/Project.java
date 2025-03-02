@@ -5,11 +5,9 @@ import jakarta.persistence.*;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +19,7 @@ import java.util.List;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @NotNull
     @NotBlank(message = "Le libelle est obligatoire et ne peut pas être vide")
     @Column(nullable = false)
@@ -38,14 +36,30 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<NormeProjet> normes;
    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+
    @JsonIgnore
+   /*
     @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "user_project",
             joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
     )
+   @ToString.Exclude // Exclure cette propriété de toString()
     private List<User> users;
+    */
+   @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+   @JoinTable(
+           name = "user_project",
+           joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
+           inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
+   )
+   @ToString.Exclude
+   private List<User> users = new ArrayList<>();
+
+
+
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<PersonneAffecte> personnesAffectees ;
@@ -53,6 +67,10 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<PartieInteresse> partiesInteressees ;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Tache> taches ;
 
 
 }
