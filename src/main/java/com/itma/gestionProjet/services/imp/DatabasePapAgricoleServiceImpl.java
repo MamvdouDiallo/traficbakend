@@ -128,4 +128,9 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
                 .orElseThrow(() -> new EntityNotFoundException("DatabasePapAgricole avec codePap " + codePap + " introuvable"));
     }
 
+    @Override
+    public long getTotalCountByProjectId(Long projectId) {
+        return repository.countByProjectId(projectId);
+    }
+
 }

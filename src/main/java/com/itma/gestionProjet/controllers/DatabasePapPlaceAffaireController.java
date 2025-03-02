@@ -67,19 +67,24 @@ public class DatabasePapPlaceAffaireController {
     public AApiResponse<DatabasePapPlaceAffaireResponseDTO> getAll(
             @RequestParam(required = false) Long projectId,
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "100000000") int max) {
+            @RequestParam(defaultValue = "10") int max) {
         try {
             List<DatabasePapPlaceAffaireResponseDTO> data;
+            long totalCount;
+
             if (projectId != null) {
                 data = databasePapPlaceAffaireService.getDatabasePapPlaceAffaireByProjectId(projectId, offset, max);
+                totalCount = databasePapPlaceAffaireService.getTotalCountByProjectId(projectId);
             } else {
                 data = databasePapPlaceAffaireService.getAllDatabasePapPlaceAffaire(offset, max);
+                totalCount = databasePapPlaceAffaireService.getTotalCount();
             }
+
             AApiResponse<DatabasePapPlaceAffaireResponseDTO> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(data);
             response.setOffset(offset);
-            response.setLength(databasePapPlaceAffaireService.getTotalCount());
+            response.setLength(totalCount);
             response.setMax(max);
             response.setMessage("Successfully retrieved data.");
             return response;

@@ -18,4 +18,6 @@ public interface DatabasePapPlaceAffaireService {
     long getTotalCount();
 
     DatabasePapPlaceAffaire getByCodePap(String codePap);
+
+    long getTotalCountByProjectId(Long projectId);
 }

@@ -22,5 +22,7 @@ public interface DatabasePapAgricoleService {
      long getTotalCount();
 
     DatabasePapAgricole getByCodePap(String codePap);
+
+    long getTotalCountByProjectId(Long projectId);
 }
 

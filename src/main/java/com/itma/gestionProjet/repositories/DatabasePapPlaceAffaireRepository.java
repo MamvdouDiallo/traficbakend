@@ -12,5 +12,7 @@ public interface DatabasePapPlaceAffaireRepository extends JpaRepository<Databas
     Optional<DatabasePapPlaceAffaire> findByCodePap(String codePap);
 
     Page<DatabasePapPlaceAffaire> findByProjectId(Long projectId, Pageable pageable);
+
+    long countByProjectId(Long projectId);
 }
 

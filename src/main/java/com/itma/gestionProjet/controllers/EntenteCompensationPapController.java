@@ -36,6 +36,7 @@ public class EntenteCompensationPapController {
             @RequestParam(required = false) Long projectId,
             Pageable pageable) {
         Page<EntenteCompensationPapDto> ententes;
+        long totalCount;
         if (projectId != null) {
             ententes = ententeService.getEntentesByProjectId(projectId, pageable);
         } else {

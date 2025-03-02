@@ -82,16 +82,19 @@ public class PapAgricoleController {
             @RequestParam(defaultValue = "100000000") int max) {
         try {
             List<DatabasePapAgricoleResponseDTO> data;
+            long totalCount;
             if (projectId != null) {
                 data = databasePapAgricoleService.getDatabasePapAgricoleByProjectId(projectId, offset, max);
+                totalCount = databasePapAgricoleService.getTotalCountByProjectId(projectId);
             } else {
                 data = databasePapAgricoleService.getAllDatabasePapAgricole(offset, max);
+                totalCount = databasePapAgricoleService.getTotalCount();
             }
             AApiResponse<DatabasePapAgricoleResponseDTO> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(data);
             response.setOffset(offset);
-            response.setLength(databasePapAgricoleService.getTotalCount());
+            response.setLength(totalCount);
             response.setMax(max);
             response.setMessage("Successfully retrieved data.");
             return response;

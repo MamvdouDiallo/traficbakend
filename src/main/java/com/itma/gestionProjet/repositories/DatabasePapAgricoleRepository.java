@@ -14,5 +14,5 @@ public interface DatabasePapAgricoleRepository  extends JpaRepository<DatabasePa
     Optional<DatabasePapAgricole> findByCodePap(String codePap);
 
     Page<DatabasePapAgricole> findByProjectId(Long projectId, Pageable pageable);
-
+    long countByProjectId(Long projectId);
 }

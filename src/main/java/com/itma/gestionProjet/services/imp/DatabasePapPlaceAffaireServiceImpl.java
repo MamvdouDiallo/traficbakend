@@ -144,4 +144,9 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
         return repository.findByCodePap(codePap)
                 .orElseThrow(() -> new EntityNotFoundException("DatabasePapPlaceAffaire avec codePap " + codePap + " introuvable"));
     }
+
+    @Override
+    public long getTotalCountByProjectId(Long projectId) {
+        return repository.countByProjectId(projectId);
+    }
 }
