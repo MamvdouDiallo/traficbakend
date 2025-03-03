@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
-
+import java.util.Map;
 
 
 @Data
@@ -24,4 +24,5 @@ public class ProjectRequest {
     private String imageUrl;
     private  List<User> users;
     private  List<NormeProjet>normes;
+    private String colors;
 }

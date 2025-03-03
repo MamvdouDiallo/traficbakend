@@ -46,7 +46,7 @@ public class ProjectService implements IProjectService {
         project.setDatedebut(projectRequest.getDatedebut());
         project.setDatefin(projectRequest.getDatefin());
         project.setImageUrl(projectRequest.getImageUrl());
-
+        project.setColors(projectRequest.getColors());
         if (projectRequest.getUsers() != null && !projectRequest.getUsers().isEmpty()) {
             List<User> users = projectRequest.getUsers().stream()
                     .map(user -> userRepository.findById(user.getId())

@@ -72,5 +72,8 @@ public class Project {
     @JsonIgnore
     private List<Tache> taches ;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String colors;
 
 }

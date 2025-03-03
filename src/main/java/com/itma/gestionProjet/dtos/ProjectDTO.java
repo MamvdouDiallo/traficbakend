@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ProjectDTO {
@@ -20,4 +21,5 @@ public class ProjectDTO {
     private  String imageUrl;
    // private  List<MoDTO> users;
     private  List<NormeProjet> normes;
+    private String colors;
 }
