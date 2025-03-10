@@ -5,6 +5,8 @@ import com.itma.gestionProjet.requests.EntenteCompensationPapRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 
 public interface EntenteCompensationPapService {
     Page<EntenteCompensationPapDto> getAllEntentes(Pageable pageable);
@@ -19,4 +21,9 @@ public interface EntenteCompensationPapService {
     void deleteEntente(Long id);
 
     EntenteCompensationPapDto getEntenteByCodePap(String codePap);
+
+
+    // Nouvelle méthode pour la recherche globale
+    Page<EntenteCompensationPapDto> searchGlobalEntenteCompensationPap(String searchTerm, Optional<Long> projectId, Pageable pageable);
+
 }

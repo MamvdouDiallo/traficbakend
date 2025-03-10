@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -148,5 +149,21 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
     @Override
     public long getTotalCountByProjectId(Long projectId) {
         return repository.countByProjectId(projectId);
+    }
+
+    @Override
+    public List<DatabasePapPlaceAffaireResponseDTO> searchGlobalDatabasePapPlaceAffaire(String searchTerm, Optional<Long> projectId,int page, int size) {
+        Pageable pageRequest = PageRequest.of(page, size);
+        Page<DatabasePapPlaceAffaire> pageResult = repository.searchGlobal(searchTerm,projectId, pageRequest);
+        List<DatabasePapPlaceAffaireResponseDTO> data = pageResult.getContent().stream()
+                .map(this::convertEntityToResponseDTO)
+                .collect(Collectors.toList());
+        return data;
+    }
+
+
+    @Override
+    public long getTotalCountForSearch(String searchTerm) {
+        return repository.countBySearchTerm(searchTerm);
     }
 }

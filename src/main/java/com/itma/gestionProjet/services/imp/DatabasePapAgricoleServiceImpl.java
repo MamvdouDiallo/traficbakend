@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -127,10 +128,31 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
         return repository.findByCodePap(codePap)
                 .orElseThrow(() -> new EntityNotFoundException("DatabasePapAgricole avec codePap " + codePap + " introuvable"));
     }
-
     @Override
     public long getTotalCountByProjectId(Long projectId) {
         return repository.countByProjectId(projectId);
     }
+
+    @Override
+    public List<DatabasePapAgricoleResponseDTO> searchGlobalDatabasePapAgricole(String searchTerm, Optional<Long> projectId, int page, int size) {
+        Pageable pageRequest = PageRequest.of(page, size);
+        Page<DatabasePapAgricole> pageResult = repository.searchGlobal(searchTerm, projectId,pageRequest);
+
+        List<DatabasePapAgricoleResponseDTO> data = pageResult.getContent().stream()
+                .map(this::convertEntityToResponseDTO)
+                .collect(Collectors.toList());
+        return data;
+    }
+
+
+
+
+
+    @Override
+    public long getTotalCountForSearch(String searchTerm) {
+        return repository.countBySearchTerm(searchTerm);
+    }
+
+
 
 }

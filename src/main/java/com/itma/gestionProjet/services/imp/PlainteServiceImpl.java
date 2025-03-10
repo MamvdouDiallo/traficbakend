@@ -17,10 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -237,4 +234,30 @@ public class PlainteServiceImpl implements PlainteService {
 
         return response;
     }
+
+
+    @Override
+    public AApiResponse<PlainteDto> searchGlobalPlaintes(String searchTerm, Optional<Long> projectId, int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Plainte> pageResult = plainteRepository.searchGlobal(searchTerm, projectId, pageable);
+            List<PlainteDto> data = pageResult.getContent().stream()
+                    .map(this::convertEntityToDto)
+                    .collect(Collectors.toList());
+            AApiResponse<PlainteDto> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(data);
+            response.setOffset(page);
+            response.setLength(pageResult.getTotalElements()); // Nombre total d'éléments
+            response.setMax(size);
+            response.setMessage("Successfully retrieved data.");
+            return response;
+        } catch (Exception e) {
+            AApiResponse<PlainteDto> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error retrieving data: " + e.getMessage());
+            return errorResponse;
+        }
+    }
+
 }

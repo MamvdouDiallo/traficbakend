@@ -87,5 +87,4 @@ public class DatabasePapPlaceAffaire {
     @Column(columnDefinition = "LONGTEXT")
     private  String perteCloture;
 
-
 }

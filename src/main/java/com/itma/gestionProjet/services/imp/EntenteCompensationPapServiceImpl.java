@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 public class EntenteCompensationPapServiceImpl implements EntenteCompensationPapService {
@@ -110,6 +112,12 @@ public class EntenteCompensationPapServiceImpl implements EntenteCompensationPap
         EntenteCompensationPap entente = repository.findByCodePap(codePap)
                 .orElseThrow(() -> new RuntimeException("Entente not found with codePap: " + codePap));
         return modelMapper.map(entente, EntenteCompensationPapDto.class);
+    }
+
+    @Override
+    public Page<EntenteCompensationPapDto> searchGlobalEntenteCompensationPap(String searchTerm, Optional<Long> projectId, Pageable pageable) {
+        Page<EntenteCompensationPap> pageResult = repository.searchGlobal(searchTerm,projectId, pageable);
+        return pageResult.map(this::convertEntityToDto);
     }
 }
 

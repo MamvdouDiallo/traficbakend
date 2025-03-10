@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/databasePapPlaceAffaire")
@@ -80,6 +81,32 @@ public class DatabasePapPlaceAffaireController {
                 totalCount = databasePapPlaceAffaireService.getTotalCount();
             }
 
+            AApiResponse<DatabasePapPlaceAffaireResponseDTO> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(data);
+            response.setOffset(offset);
+            response.setLength(totalCount);
+            response.setMax(max);
+            response.setMessage("Successfully retrieved data.");
+            return response;
+        } catch (Exception e) {
+            AApiResponse<DatabasePapPlaceAffaireResponseDTO> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error retrieving data: " + e.getMessage());
+            return errorResponse;
+        }
+    }
+
+
+    @GetMapping("/search")
+    public AApiResponse<DatabasePapPlaceAffaireResponseDTO> searchGlobal(
+            @RequestParam String searchTerm,
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "100") int max) {
+        try {
+            List<DatabasePapPlaceAffaireResponseDTO> data = databasePapPlaceAffaireService.searchGlobalDatabasePapPlaceAffaire(searchTerm, Optional.ofNullable(projectId), offset, max);
+            long totalCount = databasePapPlaceAffaireService.getTotalCountForSearch(searchTerm);
             AApiResponse<DatabasePapPlaceAffaireResponseDTO> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(data);

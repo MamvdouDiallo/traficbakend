@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/papAgricole")
@@ -212,6 +213,33 @@ public class PapAgricoleController {
                 1L // length
         );
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/search")
+    public AApiResponse<DatabasePapAgricoleResponseDTO> searchGlobal(
+            @RequestParam String searchTerm,
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "100") int max) {
+        try {
+            List<DatabasePapAgricoleResponseDTO> data = databasePapAgricoleService.searchGlobalDatabasePapAgricole(searchTerm, Optional.ofNullable(projectId),offset, max);
+            long totalCount = databasePapAgricoleService.getTotalCountForSearch(searchTerm);
+
+            AApiResponse<DatabasePapAgricoleResponseDTO> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(data);
+            response.setOffset(offset);
+            response.setLength(totalCount);
+            response.setMax(max);
+            response.setMessage("Successfully retrieved data.");
+            return response;
+        } catch (Exception e) {
+            AApiResponse<DatabasePapAgricoleResponseDTO> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error retrieving data: " + e.getMessage());
+            return errorResponse;
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import com.itma.gestionProjet.services.EntenteCompensationPapService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/ententes")
@@ -166,6 +168,32 @@ public class EntenteCompensationPapController {
                     0
             );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+
+    @GetMapping("/search")
+    public AApiResponse<EntenteCompensationPapDto> searchGlobal(
+            @RequestParam String searchTerm,
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "100") int max) {
+        try {
+            Pageable pageable = PageRequest.of(offset, max);
+            Page<EntenteCompensationPapDto> resultPage = ententeService.searchGlobalEntenteCompensationPap(searchTerm, Optional.ofNullable(projectId),pageable);
+            AApiResponse<EntenteCompensationPapDto> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(resultPage.getContent());
+            response.setOffset(offset);
+            response.setLength(resultPage.getTotalElements());
+            response.setMax(max);
+            response.setMessage("Successfully retrieved data.");
+            return response;
+        } catch (Exception e) {
+            AApiResponse<EntenteCompensationPapDto> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error retrieving data: " + e.getMessage());
+            return errorResponse;
         }
     }
 

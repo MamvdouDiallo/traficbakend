@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface PlainteService {
     PlainteDto createPlainte(PlainteRequest plainteRequest);
@@ -23,4 +24,7 @@ public interface PlainteService {
     List<PlainteDto> createPlaintes(List<PlainteRequest> plainteRequests);
 
     AApiResponse<PlainteDto> getPlainteByCodePap(String codePap, int page, int size);
+
+    AApiResponse<PlainteDto> searchGlobalPlaintes(String searchTerm, Optional<Long> projectId, int page, int size);
+
 }

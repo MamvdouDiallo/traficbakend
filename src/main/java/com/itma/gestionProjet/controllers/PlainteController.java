@@ -155,4 +155,13 @@ public class PlainteController {
         AApiResponse<PlainteDto> response = plainteService.getPlainteByCodePap(codePap, page, size);
         return ResponseEntity.status(response.getResponseCode()).body(response);
     }
+
+    @GetMapping("/search")
+    public AApiResponse<PlainteDto> searchGlobal(
+            @RequestParam String searchTerm,
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        return plainteService.searchGlobalPlaintes(searchTerm, Optional.ofNullable(projectId),page, size);
+    }
 }

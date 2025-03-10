@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DatabasePapAgricoleService {
     List<DatabasePapAgricoleResponseDTO> getAllDatabasePapAgricole(int page, int size);
@@ -24,5 +25,11 @@ public interface DatabasePapAgricoleService {
     DatabasePapAgricole getByCodePap(String codePap);
 
     long getTotalCountByProjectId(Long projectId);
+
+    // Nouvelle méthode pour la recherche globale
+
+    List<DatabasePapAgricoleResponseDTO> searchGlobalDatabasePapAgricole(String searchTerm, Optional<Long> projectId, int page, int size);
+
+    long getTotalCountForSearch(String searchTerm);
 }
 
