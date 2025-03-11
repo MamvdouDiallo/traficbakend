@@ -25,7 +25,8 @@ public interface DatabasePapPlaceAffaireService {
 
 
     // Nouvelle méthode pour la recherche globale
-    List<DatabasePapPlaceAffaireResponseDTO> searchGlobalDatabasePapPlaceAffaire(String searchTerm, Optional<Long> projectId,int page, int size);
+    List<DatabasePapPlaceAffaireResponseDTO> searchGlobalDatabasePapPlaceAffaire(String searchTerm,  Optional<Long> projectId,int page, int size);
 
-    long getTotalCountForSearch(String searchTerm);
+
+    long getTotalCountForSearch(String searchTerm,Optional<Long> projectId);
 }

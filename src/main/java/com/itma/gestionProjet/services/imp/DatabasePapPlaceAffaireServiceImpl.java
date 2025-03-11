@@ -152,9 +152,10 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
     }
 
     @Override
-    public List<DatabasePapPlaceAffaireResponseDTO> searchGlobalDatabasePapPlaceAffaire(String searchTerm, Optional<Long> projectId,int page, int size) {
+    public List<DatabasePapPlaceAffaireResponseDTO> searchGlobalDatabasePapPlaceAffaire(String searchTerm,  Optional<Long> projectId,int page, int size) {
         Pageable pageRequest = PageRequest.of(page, size);
-        Page<DatabasePapPlaceAffaire> pageResult = repository.searchGlobal(searchTerm,projectId, pageRequest);
+        Long projectIdValue = projectId.orElse(null);
+        Page<DatabasePapPlaceAffaire> pageResult = repository.searchGlobal(searchTerm,projectIdValue, pageRequest);
         List<DatabasePapPlaceAffaireResponseDTO> data = pageResult.getContent().stream()
                 .map(this::convertEntityToResponseDTO)
                 .collect(Collectors.toList());
@@ -163,7 +164,8 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
 
 
     @Override
-    public long getTotalCountForSearch(String searchTerm) {
-        return repository.countBySearchTerm(searchTerm);
+    public long getTotalCountForSearch(String searchTerm,Optional<Long> projectId) {
+        Long projectIdValue = projectId.orElse(null);
+        return repository.countBySearchTermAndProjectId(searchTerm,projectIdValue);
     }
 }

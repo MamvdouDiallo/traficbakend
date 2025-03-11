@@ -149,8 +149,9 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
 
 
     @Override
-    public long getTotalCountForSearch(String searchTerm) {
-        return repository.countBySearchTerm(searchTerm);
+    public long getTotalCountForSearch(String searchTerm,Optional<Long> projectId) {
+        Long projectIdValue = projectId.orElse(null);
+        return repository.countBySearchTerm(searchTerm,projectIdValue);
     }
 
 

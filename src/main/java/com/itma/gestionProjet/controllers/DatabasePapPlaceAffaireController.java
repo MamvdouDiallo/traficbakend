@@ -106,7 +106,7 @@ public class DatabasePapPlaceAffaireController {
             @RequestParam(defaultValue = "100") int max) {
         try {
             List<DatabasePapPlaceAffaireResponseDTO> data = databasePapPlaceAffaireService.searchGlobalDatabasePapPlaceAffaire(searchTerm, Optional.ofNullable(projectId), offset, max);
-            long totalCount = databasePapPlaceAffaireService.getTotalCountForSearch(searchTerm);
+            long totalCount = databasePapPlaceAffaireService.getTotalCountForSearch(searchTerm,Optional.ofNullable(projectId));
             AApiResponse<DatabasePapPlaceAffaireResponseDTO> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(data);

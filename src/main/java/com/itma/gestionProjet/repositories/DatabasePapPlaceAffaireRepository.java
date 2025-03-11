@@ -21,15 +21,13 @@ public interface DatabasePapPlaceAffaireRepository extends JpaRepository<Databas
 
     @Query("SELECT d FROM DatabasePapPlaceAffaire d WHERE " +
             "(:projectId IS NULL OR d.project.id = :projectId) AND " +
-            "LOWER(d.nom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "(LOWER(d.nom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.prenom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.codePlaceAffaire) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.commune) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.departement) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.nombrePlaceAffaire) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.surnom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.sexe) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.existePni) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.typePni) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.numeroPni) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.numeroTelephone) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
@@ -42,25 +40,22 @@ public interface DatabasePapPlaceAffaireRepository extends JpaRepository<Databas
             "LOWER(d.religion) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.activitePrincipale) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.statutPap) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.vulnerabilite) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-
+            "LOWER(d.vulnerabilite) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     Page<DatabasePapPlaceAffaire> searchGlobal(
             @Param("searchTerm") String searchTerm,
-            @Param("projectId") Optional<Long> projectId,
+            @Param("projectId") Long projectId,
             Pageable pageable
     );
 
     @Query("SELECT COUNT(d) FROM DatabasePapPlaceAffaire d WHERE " +
             "(:projectId IS NULL OR d.project.id = :projectId) AND " +
-            "LOWER(d.nom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "(LOWER(d.nom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.prenom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.codePlaceAffaire) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.commune) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.departement) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.nombrePlaceAffaire) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.surnom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.sexe) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.existePni) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.typePni) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.numeroPni) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.numeroTelephone) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
@@ -73,6 +68,9 @@ public interface DatabasePapPlaceAffaireRepository extends JpaRepository<Databas
             "LOWER(d.religion) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.activitePrincipale) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.statutPap) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.vulnerabilite) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-    long countBySearchTerm(@Param("searchTerm") String searchTerm);
+            "LOWER(d.vulnerabilite) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+    long countBySearchTermAndProjectId(
+            @Param("searchTerm") String searchTerm,
+            @Param("projectId") Long projectId
+    );
 }

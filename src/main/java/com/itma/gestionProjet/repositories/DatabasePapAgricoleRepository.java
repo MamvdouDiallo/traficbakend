@@ -61,6 +61,6 @@ public interface DatabasePapAgricoleRepository  extends JpaRepository<DatabasePa
             "LOWER(d.niveauEtude) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.statutPap) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.vulnerabilite) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-    long countBySearchTerm(@Param("searchTerm") String searchTerm);
+    long countBySearchTerm(@Param("searchTerm") String searchTerm,  @Param("projectId") Long projectId);
 
 }

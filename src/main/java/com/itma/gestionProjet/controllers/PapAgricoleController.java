@@ -224,7 +224,7 @@ public class PapAgricoleController {
             @RequestParam(defaultValue = "100") int max) {
         try {
             List<DatabasePapAgricoleResponseDTO> data = databasePapAgricoleService.searchGlobalDatabasePapAgricole(searchTerm, Optional.ofNullable(projectId),offset, max);
-            long totalCount = databasePapAgricoleService.getTotalCountForSearch(searchTerm);
+            long totalCount = databasePapAgricoleService.getTotalCountForSearch(searchTerm, Optional.ofNullable(projectId));
 
             AApiResponse<DatabasePapAgricoleResponseDTO> response = new AApiResponse<>();
             response.setResponseCode(200);

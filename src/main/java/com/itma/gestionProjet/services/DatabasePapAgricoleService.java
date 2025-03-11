@@ -30,6 +30,6 @@ public interface DatabasePapAgricoleService {
 
     List<DatabasePapAgricoleResponseDTO> searchGlobalDatabasePapAgricole(String searchTerm, Optional<Long> projectId, int page, int size);
 
-    long getTotalCountForSearch(String searchTerm);
+    long getTotalCountForSearch(String searchTerm,Optional<Long> projectId);
 }
 
