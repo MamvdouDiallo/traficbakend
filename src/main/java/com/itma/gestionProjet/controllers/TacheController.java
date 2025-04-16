@@ -26,10 +26,11 @@ public class TacheController {
     private TacheServiceImpl tacheService;
 
     @PostMapping
-    public ResponseEntity<AApiResponse<Tache>> createTache(@RequestBody Tache tache) {
+
+    public ResponseEntity<AApiResponse<Tache>> createTache(@RequestBody Tache tache,@RequestParam Long projectId) {
         AApiResponse<Tache> response = new AApiResponse<>();
         try {
-            Tache createdTache = tacheService.createTache(tache);
+            Tache createdTache = tacheService.createTache(tache,projectId);
             response.setResponseCode(200);
             response.setMessage("Tâche créée avec succès");
             response.setData(Collections.singletonList(createdTache)); // Encapsulez la tâche dans une liste

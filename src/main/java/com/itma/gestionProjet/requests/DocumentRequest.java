@@ -7,6 +7,6 @@ import lombok.Data;
 public class DocumentRequest {
     private String libelle;
     private String urlDocument;
-    private Long projetId;
+    private Long projectId;
     private Long categorieDocumentId;
 }

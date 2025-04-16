@@ -11,15 +11,12 @@ public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String libelle;
-
     private String urlDocument;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
-
     @ManyToOne
     @JoinColumn(name = "categorie_document_id", nullable = false)
     private CategorieDocument categorieDocument;

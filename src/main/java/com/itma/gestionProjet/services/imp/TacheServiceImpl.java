@@ -4,8 +4,10 @@ import com.itma.gestionProjet.dtos.ConsultantResponse;
 import com.itma.gestionProjet.dtos.TacheDTO;
 import com.itma.gestionProjet.dtos.TacheResponseDTO;
 import com.itma.gestionProjet.dtos.UserDTO;
+import com.itma.gestionProjet.entities.Project;
 import com.itma.gestionProjet.entities.Tache;
 import com.itma.gestionProjet.entities.User;
+import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.repositories.TacheRepository;
 import com.itma.gestionProjet.services.ITacheService;
 import org.modelmapper.ModelMapper;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +30,27 @@ public class TacheServiceImpl implements ITacheService {
 
     @Autowired
     private TacheRepository tacheRepository;
-
+/*
     @Override
     public Tache createTache(Tache tache) {
+        return tacheRepository.save(tache);
+    }
+
+
+ */
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Override
+    public Tache createTache(Tache tache,Long projectId) {
+        // Validation des données de base
+        if (tache == null) {
+            throw new IllegalArgumentException("La tâche ne peut pas être nulle");
+        }
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("Projet non trouvé avec l'ID: " + projectId));
+            tache.setProject(project);
         return tacheRepository.save(tache);
     }
 

@@ -10,6 +10,7 @@ import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.requests.DocumentRequest;
 import com.itma.gestionProjet.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class DocumentServiceImpl implements DocumentService {
     private JwtUtil jwtUtil;
 
 
+    /*
     @Override
     public DocumentDTO createDocument(DocumentRequest documentRequest) {
         Document document = new Document();
@@ -53,6 +55,31 @@ public class DocumentServiceImpl implements DocumentService {
         return mapToDTO(document);
     }
 
+     */
+    public DocumentDTO createDocument(DocumentRequest documentRequest) {
+        if (documentRequest.getProjectId() == null) {
+            throw new IllegalArgumentException("L'ID du projet est requis");
+        }
+        Document document = new Document();
+        document.setLibelle(documentRequest.getLibelle());
+        document.setUrlDocument(documentRequest.getUrlDocument());
+
+        Project projet = projetRepository.findById(documentRequest.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Projet non trouvé avec l'ID: " + documentRequest.getProjectId()));
+        document.setProject(projet);
+        if (documentRequest.getCategorieDocumentId() != null) {
+            CategorieDocument categorieDocument = categorieDocumentRepository.findById(documentRequest.getCategorieDocumentId())
+                    .orElseThrow(() -> new RuntimeException("Catégorie de document non trouvée avec l'ID: " + documentRequest.getCategorieDocumentId()));
+            document.setCategorieDocument(categorieDocument);
+        }
+        try {
+            document = documentRepository.save(document);
+            return mapToDTO(document);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Erreur lors de la création du document: " + e.getRootCause().getMessage());
+        }
+    }
+
     @Override
     public DocumentDTO updateDocument(Long id, DocumentRequest documentRequest) {
         Document document = documentRepository.findById(id)
@@ -61,7 +88,7 @@ public class DocumentServiceImpl implements DocumentService {
         document.setLibelle(documentRequest.getLibelle());
         document.setUrlDocument(documentRequest.getUrlDocument());
 
-        Project projet = projetRepository.findById(documentRequest.getProjetId())
+        Project projet = projetRepository.findById(documentRequest.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Projet not found"));
         document.setProject(projet);
 
