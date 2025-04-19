@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ITacheService {
     Tache createTache(Tache tache,Long projectId);
-    Tache updateTache(Long id, Tache tache);
+    TacheDTO updateTache(Long id, Tache tache);
     void deleteTache(Long id);
     List<Tache> getAllTaches();
     Tache getTacheById(Long id);

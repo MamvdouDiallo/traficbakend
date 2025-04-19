@@ -75,8 +75,8 @@ public class TacheController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tache> updateTache(@PathVariable Long id, @RequestBody Tache tache) {
-        Tache updatedTache = tacheService.updateTache(id, tache);
+    public ResponseEntity<TacheDTO> updateTache(@PathVariable Long id, @RequestBody Tache tache) {
+        TacheDTO updatedTache = tacheService.updateTache(id, tache);
         return new ResponseEntity<>(updatedTache, HttpStatus.OK);
     }
 

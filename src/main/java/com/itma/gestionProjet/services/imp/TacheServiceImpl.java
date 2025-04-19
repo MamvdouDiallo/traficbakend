@@ -10,6 +10,7 @@ import com.itma.gestionProjet.entities.User;
 import com.itma.gestionProjet.repositories.ProjectRepository;
 import com.itma.gestionProjet.repositories.TacheRepository;
 import com.itma.gestionProjet.services.ITacheService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,29 @@ public class TacheServiceImpl implements ITacheService {
         return tacheRepository.save(tache);
     }
 
+    /*
     @Override
     public Tache updateTache(Long id, Tache tache) {
         tache.setId(id);
         return tacheRepository.save(tache);
+    }
+
+     */
+
+    @Override
+    @Transactional
+    public TacheDTO updateTache(Long id, Tache updatedTache) {
+        Tache existingTache = tacheRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tâche non trouvée avec l'ID: " + id));
+        existingTache.setLibelle(updatedTache.getLibelle());
+        existingTache.setDescription(updatedTache.getDescription());
+        existingTache.setDateDebut(updatedTache.getDateDebut());
+        existingTache.setDateFin(updatedTache.getDateFin());
+        existingTache.setStatut(updatedTache.getStatut());
+        if (updatedTache.getUtilisateurs() != null) {
+            existingTache.setUtilisateurs(updatedTache.getUtilisateurs());
+        }
+        return convertEntityToDto(existingTache);
     }
 
     @Override
