@@ -38,16 +38,6 @@ public class Project {
    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 
    @JsonIgnore
-   /*
-    @ManyToMany(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(
-            name = "user_project",
-            joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
-    )
-   @ToString.Exclude // Exclure cette propriété de toString()
-    private List<User> users;
-    */
    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
    @JoinTable(
            name = "user_project",
@@ -56,9 +46,6 @@ public class Project {
    )
    @ToString.Exclude
    private List<User> users = new ArrayList<>();
-
-
-
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

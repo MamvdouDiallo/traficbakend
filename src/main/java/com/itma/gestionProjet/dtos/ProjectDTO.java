@@ -19,7 +19,7 @@ public class ProjectDTO {
     private Date datedebut;
     private  Date datefin;
     private  String imageUrl;
-   // private  List<MoDTO> users;
+    private  List<MoDTO> users;
     private  List<NormeProjet> normes;
     private String colors;
 }
