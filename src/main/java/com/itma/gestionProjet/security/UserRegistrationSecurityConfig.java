@@ -69,7 +69,16 @@ public class UserRegistrationSecurityConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration cors = new CorsConfiguration();
-                        cors.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://testsolutiondigital.com","http://localhost:8080"));
+                        cors.setAllowedOrigins(Arrays.asList(
+                                "http://localhost:4200",
+                                "https://testsolutiondigital.com",
+                                "https://www.testsolutiondigital.com",
+                                "http://localhost:8080",
+                                "https://invodis.com",
+                                "https://www.invodis.com",
+                                "http://invodis.com",
+                                "http://www.invodis.com"
+                        ));
                         cors.setAllowedMethods(Collections.singletonList("*"));
                         cors.setAllowedHeaders(Collections.singletonList("*"));
                         cors.setExposedHeaders(Collections.singletonList("Authorization"));
