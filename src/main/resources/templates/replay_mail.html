@@ -20,7 +20,7 @@
       overflow: hidden;
     }
     .email-header {
-      background-color: #007bff;
+      background-color: #D45C00;
       color: white;
       text-align: center;
       padding: 20px;
@@ -35,7 +35,7 @@
       line-height: 1.6;
     }
     .email-body h2 {
-      color: #007bff;
+      color: #D45C00;
       margin-bottom: 10px;
     }
     .email-body p {
@@ -53,7 +53,7 @@
 <body>
 <div class="email-container">
   <div class="email-header">
-    <h1 style="text-align: center">Accusé de réception de votre demande</h1>
+    <h1 style="text-align: center">Accusé de réception </h1>
   </div>
   <div class="email-body">
     <div th:utext="${content}">
@@ -61,13 +61,13 @@
     </div>
     <p>
       Cordialement,<br/>
-      L’équipe Solution digitale
+      L’équipe d'Invodis
     </p>
 
   </div>
   <div class="email-footer">
-    <p>Si vous avez des questions, n'hésitez pas à nous contacter à <a th:href="${emailSupport}">Contactez le support</a>.</p>
-    <p>&copy; 2025 Solution digitale. Tous droits réservés.</p>
+    <p>Si vous avez des questions, n'hésitez pas à nous contacter à <a th:href="${emailSupport}" style="color: #28a745; text-decoration: underline;">Contactez le support</a>.</p>
+    <p>&copy; Invodis. Tous droits réservés.</p>
   </div>
 </div>
 </body>

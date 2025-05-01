@@ -41,9 +41,9 @@ public class MailUserServiceImpl implements MailUserService {
                     dto.setId(mailUser.getId());
                     dto.setNomComplet(mailUser.getNomComplet());
                     dto.setEmail(mailUser.getEmail());
-                    dto.setNumeroTelephone(mailUser.getNumeroTelephone());
-                    dto.setObject(mailUser.getObject());
-                    dto.setMotif(mailUser.getMotif());
+                  //  dto.setNumeroTelephone(mailUser.getNumeroTelephone());
+                    //dto.setObject(mailUser.getObject());
+                    //dto.setMotif(mailUser.getMotif());
                     dto.setContenu(mailUser.getContenu());
                     return dto;
                 })
@@ -57,9 +57,9 @@ public class MailUserServiceImpl implements MailUserService {
         dto.setId(mailUser.getId());
         dto.setNomComplet(mailUser.getNomComplet());
         dto.setEmail(mailUser.getEmail());
-        dto.setNumeroTelephone(mailUser.getNumeroTelephone());
-        dto.setObject(mailUser.getObject());
-        dto.setMotif(mailUser.getMotif());
+     //   dto.setNumeroTelephone(mailUser.getNumeroTelephone());
+       // dto.setObject(mailUser.getObject());
+        //dto.setMotif(mailUser.getMotif());
         dto.setContenu(mailUser.getContenu());
         return dto;
     }
@@ -89,9 +89,9 @@ public class MailUserServiceImpl implements MailUserService {
         MailUser mailUser = new MailUser();
         mailUser.setNomComplet(mailUserDTO.getNomComplet());
         mailUser.setEmail(mailUserDTO.getEmail());
-        mailUser.setNumeroTelephone(mailUserDTO.getNumeroTelephone());
-        mailUser.setObject(mailUserDTO.getObject());
-        mailUser.setMotif(mailUserDTO.getMotif());
+      //  mailUser.setNumeroTelephone(mailUserDTO.getNumeroTelephone());
+        //mailUser.setObject(mailUserDTO.getObject());
+        //mailUser.setMotif(mailUserDTO.getMotif());
         mailUser.setContenu(mailUserDTO.getContenu());
         mailUser.setDateCreation(mailUserDTO.getDateCreation());
         mailUser = mailUserRepository.save(mailUser);
@@ -112,15 +112,15 @@ public class MailUserServiceImpl implements MailUserService {
         // Contenu de l'email
         String mailContent = "<strong>Nom Complet:</strong> " + mailUserDTO.getNomComplet() + "<br/>"
                 + "<strong>Email:</strong> " + mailUserDTO.getEmail() + "<br/>"
-                + "<strong>Numéro de téléphone:</strong> " + mailUserDTO.getNumeroTelephone() + "<br/>"
-                + "<strong>Objet:</strong> " + mailUserDTO.getObject() + "<br/>"
-                + "<strong>Motif:</strong> " + mailUserDTO.getMotif() + "<br/>"
+          //      + "<strong>Numéro de téléphone:</strong> " + mailUserDTO.getNumeroTelephone() + "<br/>"
+            //    + "<strong>Objet:</strong> " + mailUserDTO.getObject() + "<br/>"
+              //  + "<strong>Motif:</strong> " + mailUserDTO.getMotif() + "<br/>"
                 + "<strong>Contenu:</strong> "+mailUserDTO.getContenu() + "<br/>"
                 + "<strong>Date de réclamation: </strong>" + mailUserDTO.getDateCreation();
 
         MailRequestDto mailRequestDto = new MailRequestDto();
         mailRequestDto.setSubject(subject);
-        mailRequestDto.setToEmail("babacar77979204@gmail.com");
+        mailRequestDto.setToEmail("invodis@gmail.com");
         mailRequestDto.setMessage(mailContent);
         mailRequestDto.setTemplate("contact_email");
         emailService.sendMail(mailRequestDto);
