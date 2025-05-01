@@ -9,7 +9,7 @@ import java.util.List;
 public class PartieInteresseResponseDTO {
     private Long id;
     private String adresse;
-    private String courielPrincipal;
+    private String courrielPrincipal;
     private String libelle;
     private String categorie;
     private String localisation;

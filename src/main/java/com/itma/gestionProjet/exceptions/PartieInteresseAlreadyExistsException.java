@@ -14,3 +14,6 @@ public class PartieInteresseAlreadyExistsException  extends  RuntimeException{
         super(message);
     }
 }
+
+
+

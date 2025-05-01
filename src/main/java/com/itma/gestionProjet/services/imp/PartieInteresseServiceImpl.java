@@ -6,12 +6,10 @@ import com.itma.gestionProjet.dtos.DatabasePapAgricoleResponseDTO;
 import com.itma.gestionProjet.dtos.PartieInteresseDTO;
 import com.itma.gestionProjet.dtos.PartieInteresseResponseDTO;
 import com.itma.gestionProjet.entities.*;
-import com.itma.gestionProjet.exceptions.ContactMobileAlreadyExistsException;
-import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
-import com.itma.gestionProjet.exceptions.PartieInteresseAlreadyExistsException;
-import com.itma.gestionProjet.exceptions.PartieInteresseNotFoundException;
+import com.itma.gestionProjet.exceptions.*;
 import com.itma.gestionProjet.repositories.*;
 import com.itma.gestionProjet.services.PartieInteresseService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,68 +62,125 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
     @Override
     @Transactional
     public PartieInteresse save(PartieInteresseResponseDTO partieInteresse) {
-        Optional<PartieInteresse> optionalPip = repository.findByLibelle(partieInteresse.getLibelle());
-        if (optionalPip.isPresent()) {
-            throw new PartieInteresseAlreadyExistsException("Partie intéressée avec ce même libellé existe déjà !");
+        try {
+            // Vérification existence par libellé
+            repository.findByLibelle(partieInteresse.getLibelle())
+                    .ifPresent(pip -> {
+                        String errorMsg = String.format("Partie intéressée existe déjà - ID: %d, Libellé: %s",
+                                pip.getId(), pip.getLibelle());
+                        throw new PartieInteresseAlreadyExistsException(errorMsg);
+                    });
+
+            // Vérification email principal
+            repository.findByCourrielPrincipal(partieInteresse.getCourrielPrincipal())
+                    .ifPresent(pip -> {
+                        String errorMsg = String.format("Email déjà utilisé - ID existant: %d, Email: %s",
+                                pip.getId(), pip.getCourrielPrincipal());
+                        throw new PartieInteresseAlreadyExistsException(errorMsg);
+                    });
+
+            // Vérification projet existe
+            Long projectId = (long) partieInteresse.getProject_id();
+            Project defaultProject = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Projet ID %d non trouvé", projectId)));
+
+            // Création entité
+            PartieInteresse pip = createPartieInteresse(partieInteresse, defaultProject);
+
+            // Gestion contacts
+            List<User> users = createContacts(partieInteresse.getContacts(), pip);
+            pip.setContacts(users);
+
+            return repository.save(pip);
+
+        } catch (PartieInteresseAlreadyExistsException | EntityNotFoundException e) {
+            // On log les erreurs métier connues
+           // logger.error("Erreur métier lors de la création: {}", e.getMessage());
+            throw e;
+
+        } catch (Exception e) {
+            // On log la stack trace complète pour les autres erreurs
+            String errorMsg = "Erreur technique lors de la création";
+           // logger.error("{} - Cause: {}", errorMsg, e.getMessage(), e);
+            // On inclut la cause originale dans l'exception
+            throw new PartieInteresseCreationException(
+                    String.format("%s: %s", errorMsg, e.getMessage()),
+                    e);
         }
-
-        Project defaultProject = projectRepository.findById((long) partieInteresse.getProject_id())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        // Créer la nouvelle PartieInteresse
-        PartieInteresse pip = new PartieInteresse();
-        pip.setLibelle(partieInteresse.getLibelle());
-        pip.setAdresse(partieInteresse.getAdresse());
-        pip.setLocalisation(partieInteresse.getLocalisation());
-        pip.setCourrielPrincipal(partieInteresse.getCourielPrincipal());
-        pip.setStatut(partieInteresse.getStatut());
-        pip.setNormes(partieInteresse.getNormes());
-        pip.setCategorie(partieInteresse.getCategorie());
-        pip.setProject(defaultProject);
-
-        // Parcourir les contacts dans la clé contacts
-        List<ContactDTO> contacts = partieInteresse.getContacts();
-        List<User> users = new ArrayList<>();
-
-        for (ContactDTO contact : contacts) {
-            // Créer un utilisateur pour chaque contact
-            User newUser = new User();
-            newUser.setEmail(contact.getEmailContactPrincipal());
-            newUser.setLastname(contact.getNomContactPrincipal());
-            newUser.setFirstname(contact.getPrenomContactPrincipal());
-            newUser.setContact(contact.getTelephoneContactPrincipal());
-            newUser.setLocality(contact.getAdresseContactPrincipal());
-            newUser.setSexe(contact.getSexeContactPrincipal());
-            newUser.setEnabled(true);
-            newUser.setPassword(bCryptPasswordEncoder.encode("P@sser123"));
-
-            // Assigner le rôle à l'utilisateur
-            Role role = roleRepository.findRoleByName("Representant Principal");
-            List<Role> roles = new ArrayList<>();
-            roles.add(role);
-            newUser.setRoles(roles);
-
-            Categorie categorie =categorieRepository.findByLibelle("Niveau 2");
-            newUser.setCategorie(categorie);
-
-            // Assigner la PartieInteresse à l'utilisateur
-            newUser.setPartieInteresse(pip);  // Set the PartieInteresse here
-
-            // Sauvegarder l'utilisateur
-            userRepository.save(newUser);
-
-            // Ajouter l'utilisateur à la liste des utilisateurs
-            users.add(newUser);
-
-        }
-
-        // Assigner les contacts à la PartieInteresse
-        pip.setContacts(users);
-
-        // Sauvegarder la PartieInteresse avec ses contacts
-        return repository.save(pip);
     }
 
+    private PartieInteresse createPartieInteresse(PartieInteresseResponseDTO dto, Project project) {
+        PartieInteresse pip = new PartieInteresse();
+        pip.setLibelle(dto.getLibelle());
+        pip.setAdresse(dto.getAdresse());
+        pip.setLocalisation(dto.getLocalisation());
+        pip.setCourrielPrincipal(dto.getCourrielPrincipal());
+        pip.setStatut(dto.getStatut());
+        pip.setNormes(dto.getNormes());
+        pip.setCategorie(dto.getCategorie());
+        pip.setProject(project);
+        return pip;
+    }
+
+    private List<User> createContacts(List<ContactDTO> contacts, PartieInteresse pip) {
+        return contacts.stream().map(contact -> {
+            try {
+                validateContactUniqueness(contact);
+                return createUser(contact, pip);
+            } catch (Exception e) {
+                String errorMsg = String.format("Erreur création contact %s %s: %s",
+                        contact.getPrenomContactPrincipal(),
+                        contact.getNomContactPrincipal(),
+                        e.getMessage());
+                throw new PartieInteresseCreationException(errorMsg, e);
+            }
+        }).toList();
+    }
+
+    private void validateContactUniqueness(ContactDTO contact) {
+        // Vérification email unique
+        userRepository.findByEmail(contact.getEmailContactPrincipal())
+                .ifPresent(user -> {
+                    throw new EmailAlreadyExistsException("Email déjà utilisé: " + contact.getEmailContactPrincipal());
+                });
+
+        // Vérification téléphone unique
+        userRepository.findByContact(contact.getTelephoneContactPrincipal())
+                .ifPresent(user -> {
+                    throw new ContactMobileAlreadyExistsException("Numéro de téléphone déjà utilisé: " + contact.getTelephoneContactPrincipal());
+                });
+    }
+
+    private User createUser(ContactDTO contact, PartieInteresse pip) {
+        User newUser = new User();
+        newUser.setEmail(contact.getEmailContactPrincipal());
+        newUser.setLastname(contact.getNomContactPrincipal());
+        newUser.setFirstname(contact.getPrenomContactPrincipal());
+        newUser.setContact(contact.getTelephoneContactPrincipal());
+        newUser.setLocality(contact.getAdresseContactPrincipal());
+        newUser.setSexe(contact.getSexeContactPrincipal());
+        newUser.setEnabled(true);
+        newUser.setPassword(bCryptPasswordEncoder.encode("P@sser123"));
+
+        // Récupération rôle et catégorie avec vérification
+
+        Role role = roleRepository.findRoleByName("Representant Principal");
+        if (role == null) {
+            throw new EntityNotFoundException("Rôle 'Representant Principal' non trouvé");
+        }
+
+        Categorie categorie = categorieRepository.findByLibelle("Niveau 2");
+        if (categorie == null) {
+            throw new EntityNotFoundException("Catégorie 'Niveau 2' non trouvée");
+        }
+
+        newUser.setRoles(List.of(role));
+        newUser.setCategorie(categorie);
+        newUser.setPartieInteresse(pip);
+
+        return newUser;
+    }
 
 
 
@@ -159,7 +214,7 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         pip.setLibelle(partieInteresseDTO.getLibelle());
         pip.setAdresse(partieInteresseDTO.getAdresse());
         pip.setLocalisation(partieInteresseDTO.getLocalisation());
-        pip.setCourrielPrincipal(partieInteresseDTO.getCourielPrincipal());
+        pip.setCourrielPrincipal(partieInteresseDTO.getCourrielPrincipal());
         pip.setNormes(partieInteresseDTO.getNormes());
         pip.setStatut(partieInteresseDTO.getStatut());
         pip.setCategorie(partieInteresseDTO.getCategorie());
@@ -248,13 +303,13 @@ public class PartieInteresseServiceImpl implements PartieInteresseService {
         PartieInteresseResponseDTO responseDTO = new PartieInteresseResponseDTO();
         responseDTO.setId(partieInteresse.getId());
         responseDTO.setAdresse(partieInteresse.getAdresse());
-      //  responseDTO.setCourielPrincipal(partieInteresse.getCourielPrincipal());
+       responseDTO.setCourrielPrincipal(partieInteresse.getCourrielPrincipal());
         responseDTO.setLibelle(partieInteresse.getLibelle());
         responseDTO.setCategorie(partieInteresse.getCategorie());
         responseDTO.setLocalisation(partieInteresse.getLocalisation());
         responseDTO.setNormes(partieInteresse.getNormes());
         responseDTO.setStatut(partieInteresse.getStatut());
-       // responseDTO.setProject_id(partieInteresse.getProject().getId());
+        responseDTO.setProject_id(partieInteresse.getProject().getId());
 
         // Mapper les utilisateurs (contacts) vers ContactDTO
         List<ContactDTO> contactDTOs = partieInteresse.getContacts().stream()

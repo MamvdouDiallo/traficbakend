@@ -183,13 +183,13 @@ public class PartieInteresseController {
         PartieInteresseResponseDTO responseDTO = new PartieInteresseResponseDTO();
         responseDTO.setId(partieInteresse.getId());
         responseDTO.setAdresse(partieInteresse.getAdresse());
-        //  responseDTO.setCourielPrincipal(partieInteresse.getCourielPrincipal());
+         responseDTO.setCourrielPrincipal(partieInteresse.getCourrielPrincipal());
         responseDTO.setLibelle(partieInteresse.getLibelle());
         responseDTO.setCategorie(partieInteresse.getCategorie());
         responseDTO.setLocalisation(partieInteresse.getLocalisation());
         responseDTO.setNormes(partieInteresse.getNormes());
         responseDTO.setStatut(partieInteresse.getStatut());
-        // responseDTO.setProject_id(partieInteresse.getProject().getId());
+        responseDTO.setProject_id(partieInteresse.getProject().getId());
 
         // Mapper les utilisateurs (contacts) vers ContactDTO
         List<ContactDTO> contactDTOs = partieInteresse.getContacts().stream()
