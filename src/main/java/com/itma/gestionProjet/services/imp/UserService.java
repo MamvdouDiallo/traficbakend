@@ -9,6 +9,7 @@ import com.itma.gestionProjet.repositories.*;
 import com.itma.gestionProjet.requests.ConsultantRequest;
 import com.itma.gestionProjet.requests.MoRequest;
 import com.itma.gestionProjet.requests.UserRequest;
+import com.itma.gestionProjet.utils.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,10 @@ public class UserService  implements IUserService {
 
 
     @Autowired
+    private EmailService emailService;
+
+
+    @Autowired
     private  VerificationTokenRepository tokenRepository;
     @Override
     public Optional<User> findUserByEmail(String email) {
@@ -81,7 +86,12 @@ public class UserService  implements IUserService {
         newUser.setLocality(p.getLocality());
         newUser.setImageUrl(p.getImageUrl());
         newUser.setEnabled(true);
-        newUser.setPassword(bCryptPasswordEncoder.encode(p.getPassword()));
+        // Génération du mot de passe encodé
+        String rawPassword = p.getPassword(); // ou générer un mot de passe aléatoire si vous préférez
+        String encodedPassword = bCryptPasswordEncoder.encode(rawPassword);
+        newUser.setPassword(encodedPassword);
+
+       // newUser.setPassword(bCryptPasswordEncoder.encode(p.getPassword()));
         // Assignation des rôles
         Role role = roleRepository.findById((p.getRole_id()))
                 .orElseThrow(() -> new RoleNotFoundException("Role not found"));
@@ -108,8 +118,34 @@ public class UserService  implements IUserService {
             newUser.setProjects(new ArrayList<>()); // Aucun projet associé
         }
 
+
         // Sauvegarde de l'utilisateur
-        return userRepository.save(newUser);
+       // return userRepository.save(newUser);
+
+        // Sauvegarde de l'utilisateur
+        User savedUser = userRepository.save(newUser);
+
+        // Envoi de l'email avec le mot de passe
+        try {
+            MailRequestDto mailRequest = new MailRequestDto();
+            mailRequest.setToEmail(savedUser.getEmail());
+            mailRequest.setSubject("Votre compte a été créé");
+            mailRequest.setMessage("Bonjour " + savedUser.getFirstname() + ",\n\n"
+                    + "Votre compte a été créé avec succès.\n"
+                    + "Voici vos informations de connexion :\n"
+                    + "Email: " + savedUser.getEmail() + "\n"
+                    + "Mot de passe par défaut: " + rawPassword + "\n\n"
+                    + "Nous vous recommandons de changer votre mot de passe après votre première connexion.\n\n"
+                    );
+            mailRequest.setTemplate("replay_mail"); // Remplacez par le nom de votre template
+
+            emailService.sendMail(mailRequest);
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de l'email de création de compte", e);
+            // Vous pouvez choisir de ne pas lever d'exception ici pour ne pas interrompre le processus
+        }
+
+        return savedUser;
     }
 
 
@@ -133,7 +169,7 @@ public class UserService  implements IUserService {
         newUser.setFirstname(p.getFirstname());
         newUser.setContact(p.getContact());
         newUser.setLocality(p.getLocality());
-        newUser.setEnabled(false);
+        newUser.setEnabled(true);
         newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
         newUser.setImageUrl(p.getImageUrl());
 
@@ -145,9 +181,39 @@ public class UserService  implements IUserService {
         Categorie categorie = categorieRepository.findByLibelle("Niveau 1");
         newUser.setCategorie(categorie);
 
-        return userRepository.save(newUser);
+
+        // Sauvegarde de l'utilisateur
+        User savedUser = userRepository.save(newUser);
+
+        // Envoi de l'email avec le mot de passe
+        try {
+            MailRequestDto mailRequest = getMailRequestDto(savedUser);
+
+            emailService.sendMail(mailRequest);
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de l'email de création de compte", e);
+            // Vous pouvez choisir de ne pas lever d'exception ici pour ne pas interrompre le processus
+        }
+
+        return savedUser;
+
+      //  return userRepository.save(newUser);
     }
 
+    private static MailRequestDto getMailRequestDto(User savedUser) {
+        MailRequestDto mailRequest = new MailRequestDto();
+        mailRequest.setToEmail(savedUser.getEmail());
+        mailRequest.setSubject("Votre compte a été créé");
+        mailRequest.setMessage("Bonjour " + savedUser.getFirstname() + ",\n\n"
+                + "Votre compte a été créé avec succès.\n"
+                + "Voici vos informations de connexion :\n"
+                + "Email: " + savedUser.getEmail() + "\n"
+                + "Mot de passe: " + "Passer@123" + "\n\n"
+                + "Nous vous recommandons de changer votre mot de passe après votre première connexion.\n\n"
+                + "Cordialement,\nL'équipe de support");
+        mailRequest.setTemplate("replay_mail"); // Remplacez par le nom de votre template
+        return mailRequest;
+    }
 
 
     @Transactional
@@ -169,7 +235,7 @@ public class UserService  implements IUserService {
         newUser.setFirstname(p.getFirstname());
         newUser.setContact(p.getContact());
         newUser.setLocality(p.getLocality());
-        newUser.setEnabled(false);
+        newUser.setEnabled(true);
         newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
         newUser.setImageUrl(p.getImageUrl());
 
@@ -187,8 +253,40 @@ public class UserService  implements IUserService {
         newUser.setPartieInteresse(partieInteresse);
 
 
+        // Sauvegarde de l'utilisateur
+        User savedUser = userRepository.save(newUser);
+
+        // Envoi de l'email avec le mot de passe
+        try {
+            /*
+            MailRequestDto mailRequest = new MailRequestDto();
+            mailRequest.setToEmail(savedUser.getEmail());
+            mailRequest.setSubject("Votre compte a été créé");
+            mailRequest.setMessage("Bonjour " + savedUser.getFirstname() + ",\n\n"
+                    + "Votre compte a été créé avec succès.\n"
+                    + "Voici vos informations de connexion :\n"
+                    + "Email: " + savedUser.getEmail() + "\n"
+                    + "Mot de passe: " + "Passer@123" + "\n\n"
+                    + "Nous vous recommandons de changer votre mot de passe après votre première connexion.\n\n"
+                    + "Cordialement,\nL'équipe de support");
+            mailRequest.setTemplate("email-template"); // Remplacez par le nom de votre template
+
+             */
+            MailRequestDto mailRequest = getMailRequestDto(savedUser);
+
+            emailService.sendMail(mailRequest);
+
+            emailService.sendMail(mailRequest);
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de l'email de création de compte", e);
+            // Vous pouvez choisir de ne pas lever d'exception ici pour ne pas interrompre le processus
+        }
+
+        return savedUser;
+
+
         // Sauvegarder l'utilisateur
-        return  userRepository.save(newUser);
+      //  return  userRepository.save(newUser);
     }
 
 
@@ -287,6 +385,7 @@ public class UserService  implements IUserService {
     }
 
      */
+
     public UserDTO convertEntityToDto(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId((long) user.getId());

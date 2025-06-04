@@ -12,11 +12,13 @@ import com.itma.gestionProjet.events.listenner.RegistrationCompleteEventListener
 import com.itma.gestionProjet.exceptions.EmailAlreadyExistsException;
 import com.itma.gestionProjet.repositories.UserRepository;
 import com.itma.gestionProjet.repositories.VerificationTokenRepository;
+import com.itma.gestionProjet.requests.ChangePasswordRequest;
 import com.itma.gestionProjet.requests.ConsultantRequest;
 import com.itma.gestionProjet.requests.MoRequest;
 import com.itma.gestionProjet.requests.UserRequest;
 import com.itma.gestionProjet.security.JWTGenerator;
 import com.itma.gestionProjet.services.imp.UserService;
+import com.itma.gestionProjet.utils.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -31,6 +33,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -55,6 +58,13 @@ public class UserController {
     private  final ApplicationEventPublisher publisher;
     @Autowired
     private  RegistrationCompleteEventListener eventListener;
+
+    @Autowired
+    PasswordEncoder bCryptPasswordEncoder;
+
+
+    @Autowired
+    private  EmailService emailService;
 
     @Autowired
     private  HttpServletRequest servletRequest;
@@ -169,6 +179,37 @@ public class UserController {
         }
         return new ApiResponse(400," Invalid password reset token",null);
     }
+
+
+    @PostMapping("/change-password")
+    public ApiResponse changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        // Vérifier que les champs requis sont présents
+        if (changePasswordRequest.getEmail() == null || changePasswordRequest.getOldPassword() == null
+                || changePasswordRequest.getNewPassword() == null) {
+            return new ApiResponse(400, "Tous les champs (email, ancien mot de passe, nouveau mot de passe) sont requis", null);
+        }
+
+        // Trouver l'utilisateur par email
+        Optional<User> userOptional = userRepository.findByEmail(changePasswordRequest.getEmail());
+        if (!userOptional.isPresent()) {
+            return new ApiResponse(404, "Aucun utilisateur trouvé avec cet email", null);
+        }
+
+        User user = userOptional.get();
+
+        // Vérifier l'ancien mot de passe
+        if (!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+            return new ApiResponse(400, "L'ancien mot de passe est incorrect", null);
+        }
+        // Vérifier que le nouveau mot de passe est différent de l'ancien
+        if (changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword())) {
+            return new ApiResponse(400, "Le nouveau mot de passe doit être différent de l'ancien", null);
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(user);
+        return new ApiResponse(200, "Mot de passe changé avec succès", null);
+    }
+
     @GetMapping("/verifyEmail")
     public String verifyEmail(@RequestParam("token") String token){
         VerificationToken theToken = tokenRepository.findByToken(token);
@@ -183,6 +224,7 @@ public class UserController {
     }
 
 
+    /*
     @PostMapping("/change-password")
     public String changePassword(@RequestBody PasswordRequestUtil requestUtil){
         User user = userService.findUserByEmail(requestUtil.getEmail()).get();
@@ -192,6 +234,8 @@ public class UserController {
         userService.changePassword(user, requestUtil.getNewPassword());
         return "Password changed successfully";
     }
+
+     */
     public String applicationUrl(HttpServletRequest httpServlet) {
         return "http://"+httpServlet.getServerName()+":"+httpServlet.getServerPort()+httpServlet.getContextPath();
 
