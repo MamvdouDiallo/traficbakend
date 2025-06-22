@@ -71,7 +71,10 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
             if (entity.getType() == null || entity.getType().isEmpty()) {
                 entity.setType("PAPAGRICOLE");
             }
-            if (dto.getProjectId() != null) {
+            if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
+                entity.setType("recense");
+            }
+                if (dto.getProjectId() != null) {
                 Project project = projectRepository.findById(dto.getProjectId())
                         .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
                 entity.setProject(project);

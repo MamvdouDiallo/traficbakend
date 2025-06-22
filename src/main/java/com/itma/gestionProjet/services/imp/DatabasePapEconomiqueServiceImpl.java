@@ -42,6 +42,9 @@ public class DatabasePapEconomiqueServiceImpl implements DatabasePapEconomiqueSe
             if (papEconomique.getType() == null || papEconomique.getType().isEmpty()) {
                 papEconomique.setType("PAPECONOMIQUE");
             }
+            if (papEconomique.getStatutPap() == null || papEconomique.getStatutPap().isEmpty()) {
+                papEconomique.setType("recense");
+            }
             papEconomique.setProject(project);
             papEconomiques.add(papEconomique);
         }
