@@ -1,7 +1,10 @@
 package com.itma.gestionProjet.repositories;
 
+import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.User;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +30,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void deleteUserAssociations(@Param("userId") Long userId);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT u FROM User u JOIN u.projects p WHERE p.id = :projectId")
+    Page<User> findByProjects_Id(Long projectId, Pageable pageable);
+
+    @Query("SELECT DISTINCT u FROM User u " +
+            "JOIN u.roles r " +
+            "JOIN u.projects p " +
+            "WHERE r.name = :roleName " +
+            "AND p.id = :projectId")
+    Page<User> findUsersByRoleNameAndProjectId(
+            @Param("roleName") String roleName,
+            @Param("projectId") Long projectId,
+            Pageable pageable
+    );
 }

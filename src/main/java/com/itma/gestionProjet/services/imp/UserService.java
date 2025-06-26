@@ -6,7 +6,6 @@ import com.itma.gestionProjet.entities.*;
 import com.itma.gestionProjet.exceptions.*;
 import com.itma.gestionProjet.exceptions.FonctionNotFoundException;
 import com.itma.gestionProjet.repositories.*;
-import com.itma.gestionProjet.requests.ConsultantRequest;
 import com.itma.gestionProjet.requests.MoRequest;
 import com.itma.gestionProjet.requests.UserRequest;
 import com.itma.gestionProjet.utils.EmailService;
@@ -15,6 +14,10 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -83,11 +86,11 @@ public class UserService  implements IUserService {
         newUser.setLastname(p.getLastname());
         newUser.setFirstname(p.getFirstname());
         newUser.setContact(p.getContact());
-        newUser.setLocality(p.getLocality());
+      //  newUser.setLocality(p.getLocality());
         newUser.setImageUrl(p.getImageUrl());
         newUser.setEnabled(true);
         // Génération du mot de passe encodé
-        String rawPassword = p.getPassword(); // ou générer un mot de passe aléatoire si vous préférez
+        String rawPassword ="Passer@123"; // ou générer un mot de passe aléatoire si vous préférez
         String encodedPassword = bCryptPasswordEncoder.encode(rawPassword);
         newUser.setPassword(encodedPassword);
 
@@ -234,7 +237,7 @@ public class UserService  implements IUserService {
         newUser.setLastname(p.getLastname());
         newUser.setFirstname(p.getFirstname());
         newUser.setContact(p.getContact());
-        newUser.setLocality(p.getLocality());
+       // newUser.setLocality(p.getLocality());
         newUser.setEnabled(true);
         newUser.setPassword(bCryptPasswordEncoder.encode("Passer@123"));
         newUser.setImageUrl(p.getImageUrl());
@@ -339,15 +342,20 @@ public class UserService  implements IUserService {
 
     @Override
     public List<User> getAllUsers() {
-        return   userRepository.findAll();
+        return  userRepository.findAll();
     }
+
+
 
     @Override
     public List<User> getUsersByRoleName(String roleName) {
         return new ArrayList<>(userRepository.findUsersByRoleName(roleName));
     }
 
-
+    @Override
+    public Page<User> getUsersByProjectId(Long projectId, Pageable pageable) {
+        return userRepository.findByProjects_Id(projectId, pageable);
+    }
     @Override
     public void deleteUser(User p) {
     }
@@ -514,7 +522,7 @@ public class UserService  implements IUserService {
         existingUser.setLastname(p.getLastname());
         existingUser.setFirstname(p.getFirstname());
         existingUser.setContact(p.getContact());
-        existingUser.setLocality(p.getLocality());
+      //  existingUser.setLocality(p.getLocality());
         existingUser.setImageUrl(p.getImageUrl());
 
         // Save the updated user
@@ -579,7 +587,7 @@ public class UserService  implements IUserService {
         user.setLastname(p.getLastname());
         user.setFirstname(p.getFirstname());
         user.setContact(p.getContact());
-        user.setLocality(p.getLocality());
+      //  user.setLocality(p.getLocality());
         user.setImageUrl(p.getImageUrl());
 
         // Role update (check if the role exists)
@@ -609,6 +617,13 @@ public class UserService  implements IUserService {
         return userRepository.save(user);
     }
 
-
+    public Page<User> getUsersByRoleNameAndProjectId(
+            String roleName,
+            Long projectId,
+            Pageable pageable
+    ) {
+        //Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return userRepository.findUsersByRoleNameAndProjectId(roleName, projectId, pageable);
+    }
 
 }

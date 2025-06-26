@@ -26,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -79,10 +82,36 @@ public class UserController {
     }
 
     @RequestMapping(path = "/all", method = RequestMethod.GET)
+
     public ApiResponse<List<UserDTO>> getUsers() {
         List<User> users = userService.getAllUsers();
         return new ApiResponse<>(HttpStatus.OK.value(), "Liste des utilisateurs récupérée avec succès", users);
     }
+
+
+
+    @RequestMapping("projects")
+    @GetMapping
+    public ResponseEntity<AApiResponse<User>> getUsers(
+            @RequestParam Long projectId, // Plus de required = false
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int max) {
+
+        Pageable pageable = PageRequest.of(offset, max);
+        Page<User> userPage = userService.getUsersByProjectId(projectId, pageable);
+
+        AApiResponse<User> response = new AApiResponse<>();
+        response.setResponseCode(200);
+        response.setMessage("Users filtered by project ID " + projectId);
+        response.setData(userPage.getContent());
+        response.setOffset(offset);
+        response.setMax(max);
+        response.setLength(userPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
     @RequestMapping(path = "/createUser", method = RequestMethod.POST)
     public  ApiResponse<User> createUser(@Valid @RequestBody UserRequest userRequest, final HttpServletRequest request) {
@@ -269,6 +298,28 @@ public class UserController {
     }
 
 
+
+    @RequestMapping("by_role/projects")
+    @GetMapping
+    public ResponseEntity<AApiResponse<User>> getMaitresOuvragesByProject(
+            @RequestParam Long projectId,
+            @RequestParam String roleName,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int max) {
+
+        Pageable pageable = PageRequest.of(offset, max);
+        Page<User> userPage = userService.getUsersByRoleNameAndProjectId(roleName,projectId, pageable);
+
+        AApiResponse<User> response = new AApiResponse<>();
+        response.setResponseCode(200);
+        response.setMessage("Users filtered by project ID " + projectId);
+        response.setData(userPage.getContent());
+        response.setOffset(offset);
+        response.setMax(max);
+        response.setLength(userPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
+    }
 
 
 
