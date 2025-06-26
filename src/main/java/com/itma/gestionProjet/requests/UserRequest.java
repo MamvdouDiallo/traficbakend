@@ -22,8 +22,8 @@ public class UserRequest {
     @Email(message = "L'email doit être valide.")
     private String email;
 
-    @NotBlank(message = "La localité ne peut pas être vide.")
-    private String locality;
+   // @NotBlank(message = "La localité ne peut pas être vide.")
+   // private String locality;
 
     @NotBlank(message = "Le contact ne peut pas être vide.")
     private String contact;
@@ -40,6 +40,6 @@ public class UserRequest {
     private Long role_id;
 
     private  Long project_id;
-    private  String password;
+   // private  String password;
 }
 
