@@ -110,8 +110,8 @@ public class UserService  implements IUserService {
         newUser.setFonction(fonction);
         newUser.setCategorie(categorie);
         // Assignation du projet (si project_id est présent dans la requête)
-        if (p.getProject_id() != null) {
-            Project project = projectRepository.findById(p.getProject_id())
+        if (p.projectId() != null) {
+            Project project = projectRepository.findById(p.projectId())
                     .orElseThrow(() -> new RuntimeException("Project not found"));
 
             // Synchronise les deux côtés de la relation
@@ -183,7 +183,16 @@ public class UserService  implements IUserService {
 
         Categorie categorie = categorieRepository.findByLibelle("Niveau 1");
         newUser.setCategorie(categorie);
+        if (p.getProjectId() != null) {
+            Project project = projectRepository.findById(p.getProjectId())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
 
+            // Synchronise les deux côtés de la relation
+            newUser.getProjects().add(project);
+            project.getUsers().add(newUser);
+        } else {
+            newUser.setProjects(new ArrayList<>()); // Aucun projet associé
+        }
 
         // Sauvegarde de l'utilisateur
         User savedUser = userRepository.save(newUser);
@@ -254,7 +263,16 @@ public class UserService  implements IUserService {
         PartieInteresse partieInteresse = partieInteresseRepository.findById(p.getPartieInteresse_id())
                 .orElseThrow(() -> new EntityNotFoundException("PartieInteresse introuvable avec l'ID " + p.getPartieInteresse_id()));
         newUser.setPartieInteresse(partieInteresse);
+        if (p.getProjectId() != null) {
+            Project project = projectRepository.findById(p.getProjectId())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
 
+            // Synchronise les deux côtés de la relation
+            newUser.getProjects().add(project);
+            project.getUsers().add(newUser);
+        } else {
+            newUser.setProjects(new ArrayList<>()); // Aucun projet associé
+        }
 
         // Sauvegarde de l'utilisateur
         User savedUser = userRepository.save(newUser);

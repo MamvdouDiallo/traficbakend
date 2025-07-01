@@ -18,5 +18,7 @@ public class MoRequest {
     private  String locality;
     private  String contact;
     private  String imageUrl;
-   // private  List<Long> project_ids;
+  private  Long projectId;
+
+  // private  List<Long> project_ids;
 }
