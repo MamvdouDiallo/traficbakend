@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -107,7 +108,13 @@ public class PapAgricoleController {
         }
     }
 
+    @GetMapping("/vulnerability-stats")
+    public ResponseEntity<Map<String, Object>> getVulnerabilityStats(
+            @RequestParam(required = false) Long projectId) {
 
+        Map<String, Object> stats = databasePapAgricoleService.getVulnerabilityStats(projectId);
+        return ResponseEntity.ok(stats);
+    }
 
 
     // Méthode GET pour récupérer une entité par ID

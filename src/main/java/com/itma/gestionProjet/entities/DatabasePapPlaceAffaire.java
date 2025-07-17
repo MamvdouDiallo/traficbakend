@@ -3,6 +3,8 @@ package com.itma.gestionProjet.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 
 @Entity
 @Data
@@ -21,6 +23,9 @@ public class DatabasePapPlaceAffaire {
     private String nombrePlaceAffaire;
     private String surnom;
     private String sexe;
+    private Long age;
+    private LocalDate dateNaissance; // Ajoutez ce champ
+    private String roleDansFoyer; // "chef de ménage", "membre", etc.
     private String existePni;
     private String typePni;
     private String numeroPni;

@@ -4,6 +4,8 @@ package com.itma.gestionProjet.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 public class DatabasePapAgricole {
@@ -34,6 +36,10 @@ public class DatabasePapAgricole {
     private String numeroPni;
     private String numeroTelephone;
     private String photoPap;
+    private Long age ;
+    private LocalDate dateNaissance; // Ajoutez ce champ
+    private String roleDansFoyer; // "chef de ménage", "membre", etc.
+    private String activitePrincipale;
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")

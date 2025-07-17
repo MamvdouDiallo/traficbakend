@@ -4,9 +4,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class DatabasePapAgricoleResponseDTO {
     private Long id;
+    private Long age;
     private String codePap;
     private String codeParcelle;
     private String nombreParcelle;
@@ -50,4 +53,10 @@ public class DatabasePapAgricoleResponseDTO {
     private  String perteEquipement;
     private Double perteTotale;
     private  String perteBatiment;
+
+    private LocalDate dateNaissance; // Ajoutez ce champ
+    private String roleDansFoyer; // "chef de ménage", "membre", etc.
+    private String activitePrincipale;
+
+
 }

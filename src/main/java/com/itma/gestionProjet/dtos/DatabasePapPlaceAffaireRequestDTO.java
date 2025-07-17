@@ -5,8 +5,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class DatabasePapPlaceAffaireRequestDTO {
+    private Long age;
     private String codePap;
     private String caracteristiquePlaceAffaire;
     private String nom;
@@ -44,6 +47,9 @@ public class DatabasePapPlaceAffaireRequestDTO {
     private String pj5;
     private String infosComplemenataires;
     private Long projectId;
+
+    private LocalDate dateNaissance; // Ajoutez ce champ
+    private String roleDansFoyer; // "chef de ménage", "membre", etc.
 
     private  String perteArbreJeune;
     private  String perteArbreAdulte;

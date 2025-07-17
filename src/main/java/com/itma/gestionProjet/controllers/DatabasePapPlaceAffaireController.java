@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/databasePapPlaceAffaire")
@@ -44,7 +46,20 @@ public class DatabasePapPlaceAffaireController {
         }
     }
 
+    @GetMapping("/vulnerability-stats")
+    public ResponseEntity<Map<String, Object>> getVulnerabilityStats( @RequestParam(required = false) Long projectId) {
+        Map<String,Object> stats = databasePapPlaceAffaireService.getVulnerabilityStats(projectId);
+        return ResponseEntity.ok(stats);
+    }
 
+//    @GetMapping("/vulnerable")
+//    public ResponseEntity<List<DatabasePapPlaceAffaire>> getVulnerablePaps() {
+//        List<DatabasePapPlaceAffaire> all = databasePapPlaceAffaireService.getAll();
+//        List<DatabasePapPlaceAffaire> vulnerable = all.stream()
+//                .filter(pap -> !"Non vulnérable".equals(pap.getVulnerabilite()))
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok(vulnerable);
+//    }
 
     /*
     @GetMapping

@@ -3,9 +3,12 @@ package com.itma.gestionProjet.dtos;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class DatabasePapPlaceAffaireResponseDTO {
     private Long id;
+    private Long age;
     private String codePap;
     private String caracteristiquePlaceAffaire;
     private String nom;
@@ -55,5 +58,8 @@ public class DatabasePapPlaceAffaireResponseDTO {
     private  String perteBatiment;
     private  String perteLoyer;
     private  String perteCloture;
+
+    private LocalDate dateNaissance; // Ajoutez ce champ
+    private String roleDansFoyer; // "chef de ménage", "membre", etc.
 
 }

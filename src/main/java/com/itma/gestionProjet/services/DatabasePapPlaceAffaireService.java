@@ -6,6 +6,7 @@ import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireResponseDTO;
 import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface DatabasePapPlaceAffaireService {
@@ -29,4 +30,7 @@ public interface DatabasePapPlaceAffaireService {
 
 
     long getTotalCountForSearch(String searchTerm,Optional<Long> projectId);
+
+    public  Map<String, Object> getVulnerabilityStats(Long projectId);
+
 }
