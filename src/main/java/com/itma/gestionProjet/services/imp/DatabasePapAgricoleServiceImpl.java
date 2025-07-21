@@ -320,6 +320,8 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
         return map;
     }
 
+
+
     private Map<String, Long> initGenderMap(long total) {
         Map<String, Long> map = new LinkedHashMap<>();
         map.put("Total", total);
