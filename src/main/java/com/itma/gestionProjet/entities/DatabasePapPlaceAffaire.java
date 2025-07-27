@@ -64,32 +64,38 @@ public class DatabasePapPlaceAffaire {
     private String type = "PAPPLACEAFFAIRE";
 
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteArbreJeune;
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteArbreAdulte;
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteEquipement;
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteRevenue;
+   // @Lob
+    //@Column(columnDefinition = "LONGTEXT")
+    private  Double perteArbreJeune;
+   // @Lob
+    //@Column(columnDefinition = "LONGTEXT")
+    private  Double perteArbreAdulte;
+   // @Lob
+    //@Column(columnDefinition = "LONGTEXT")
+    private  Double perteEquipement;
+//    @Lob
+//    @Column(columnDefinition = "LONGTEXT")
+    private Double perteRevenue;
     private Double appuieRelocalisation;
     private Double perteTotale;
     private Double fraisDeplacement;
+    private String typeHandicape;
 
+//    @Lob
+//    @Column(columnDefinition = "LONGTEXT")
+    private  Double perteBatiment;
 
+   // @Lob
+//    @Column(columnDefinition = "LONGTEXT")
+    private  Double perteLoyer;
+   // @Lob
+    //@Column(columnDefinition = "LONGTEXT")
+    private  Double perteCloture;
+
+    private  String optionPaiement;
+    private  Double perteTotaleArbre;
     @Lob
     @Column(columnDefinition = "LONGTEXT")
-    private  String perteBatiment;
-
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteLoyer;
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteCloture;
+    private  String description;
 
 }

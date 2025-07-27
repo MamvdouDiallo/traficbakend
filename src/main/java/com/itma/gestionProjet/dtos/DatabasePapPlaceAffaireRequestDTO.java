@@ -51,15 +51,19 @@ public class DatabasePapPlaceAffaireRequestDTO {
     private LocalDate dateNaissance; // Ajoutez ce champ
     private String roleDansFoyer; // "chef de ménage", "membre", etc.
 
-    private  String perteArbreJeune;
-    private  String perteArbreAdulte;
-    private  String perteEquipement;
-    private  String perteRevenue;
+    private  Double perteArbreJeune;
+    private  Double perteArbreAdulte;
+    private  Double perteEquipement;
+    private  Double perteRevenue;
     private Double appuieRelocalisation;
     private Double perteTotale;
     private Double fraisDeplacement;
-    private  String perteBatiment;
-    private  String perteLoyer;
-    private  String perteCloture;
+    private  Double perteBatiment;
+    private  Double perteLoyer;
+    private  Double perteCloture;
+    private  String optionPaiement;
+    private  Double perteTotaleArbre;
+    private String typeHandicape;
+    private String description;
 
 }

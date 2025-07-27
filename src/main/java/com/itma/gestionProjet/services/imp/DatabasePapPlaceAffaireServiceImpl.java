@@ -169,7 +169,7 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
         maleTerms.addAll(Arrays.asList("m", "masculin", "homme", "male", "garçon", "h", "mâle"));
 
         Set<String> femaleTerms = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        femaleTerms.addAll(Arrays.asList("f", "féminin", "femme", "femelle", "female", "fille"));
+        femaleTerms.addAll(Arrays.asList("f", "féminin", "femme", "femelle", "female", "fille","feminin"));
 
         // 2. Traitement des données
         for (DatabasePapPlaceAffaire pap : projectPaps) {

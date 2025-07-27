@@ -53,6 +53,7 @@ public class DatabasePapAgricole {
     private String religion;
     private String membreFoyer;
     private String membreFoyerHandicape;
+    private String typeHandicape;
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")  // Spécifie le type LONGTEXT
@@ -78,26 +79,33 @@ public class DatabasePapAgricole {
     @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PAPAGRICOLE'")
     private String type = "PAPAGRICOLE";
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteTerre;
+    //@Lob
+   // @Column(columnDefinition = "LONGTEXT")
+    private  Double perteTerre;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteArbreJeune;
+    //@Lob
+    //@Column(columnDefinition = "LONGTEXT")
+    private  Double perteArbreJeune;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteArbreAdulte;
+    //@Lob
+   // @Column(columnDefinition = "LONGTEXT")
+    private  Double perteArbreAdulte;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteEquipement;
+    //@Lob
+   // @Column(columnDefinition = "LONGTEXT")
+    private  Double perteEquipement;
 
     private Double perteTotale;
 
+   // @Lob
+    //@Column(columnDefinition = "LONGTEXT")
+    private  Double perteBatiment;
+
+    private  String optionPaiement;
+    private  Double perteTotaleArbre;
+
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private  String perteBatiment;
+     @Column(columnDefinition = "LONGTEXT")
+    private  String description;
 }
 
