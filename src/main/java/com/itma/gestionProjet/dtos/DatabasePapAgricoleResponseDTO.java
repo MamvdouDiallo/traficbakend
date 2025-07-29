@@ -47,12 +47,12 @@ public class DatabasePapAgricoleResponseDTO {
     private String infos_complemenataires;
     private String projectId;
     private  String type;
-    private  String perteTerre;
-    private  String perteArbreJeune;
-    private  String perteArbreAdulte;
-    private  String perteEquipement;
-    private Double perteTotale;
-    private  String perteBatiment;
+    private  Double perteTerre;
+    private  Double perteArbreJeune;
+    private  Double perteArbreAdulte;
+    private  Double perteEquipement;
+    private  Double perteTotale;
+    private  Double perteBatiment;
 
     private LocalDate dateNaissance; // Ajoutez ce champ
     private String roleDansFoyer; // "chef de ménage", "membre", etc.

@@ -48,16 +48,16 @@ public class DatabasePapPlaceAffaireResponseDTO {
     private Long projectId;
     private  String type;
 
-    private  String perteArbreJeune;
-    private  String perteArbreAdulte;
-    private  String perteEquipement;
-    private  String perteRevenue;
+    private  Double perteArbreJeune;
+    private  Double perteArbreAdulte;
+    private  Double perteEquipement;
+    private  Double perteRevenue;
     private Double appuieRelocalisation;
     private Double perteTotale;
     private Double fraisDeplacement;
-    private  String perteBatiment;
-    private  String perteLoyer;
-    private  String perteCloture;
+    private  Double perteBatiment;
+    private  Double perteLoyer;
+    private  Double perteCloture;
 
     private LocalDate dateNaissance; // Ajoutez ce champ
     private String roleDansFoyer; // "chef de ménage", "membre", etc.
