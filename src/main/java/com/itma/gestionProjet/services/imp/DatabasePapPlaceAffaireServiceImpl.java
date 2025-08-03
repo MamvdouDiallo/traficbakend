@@ -38,6 +38,32 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
     private ModelMapper modelMapper;
 
     @Override
+//    public void createDatabasePapPlaceAffaire(List<DatabasePapPlaceAffaireRequestDTO> requestDTOs) {
+//        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+//        modelMapper.typeMap(DatabasePapPlaceAffaireRequestDTO.class, DatabasePapPlaceAffaire.class)
+//                .addMappings(mapper -> mapper.skip(DatabasePapPlaceAffaire::setId));
+//
+//        List<DatabasePapPlaceAffaire> entities = requestDTOs.stream().map(dto -> {
+//            DatabasePapPlaceAffaire entity = modelMapper.map(dto, DatabasePapPlaceAffaire.class);
+//            if (entity.getType() == null || entity.getType().isEmpty()) {
+//                entity.setType("PAPPLACEAFFAIRE");
+//            }
+//            if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
+//                entity.setType("recense");
+//            }
+//            if (dto.getProjectId() != null) {
+//                Project project = projectRepository.findById(dto.getProjectId())
+//                        .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
+//                entity.setProject(project);
+//            }
+//
+//            // Déterminer la vulnérabilité
+//            entity.setVulnerabilite(determinerVulnerabilite(entity));
+//
+//            return entity;
+//        }).collect(Collectors.toList());
+//        repository.saveAll(entities);
+//    }
     public void createDatabasePapPlaceAffaire(List<DatabasePapPlaceAffaireRequestDTO> requestDTOs) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         modelMapper.typeMap(DatabasePapPlaceAffaireRequestDTO.class, DatabasePapPlaceAffaire.class)
@@ -45,26 +71,57 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
 
         List<DatabasePapPlaceAffaire> entities = requestDTOs.stream().map(dto -> {
             DatabasePapPlaceAffaire entity = modelMapper.map(dto, DatabasePapPlaceAffaire.class);
+
+            // Valeurs par défaut
             if (entity.getType() == null || entity.getType().isEmpty()) {
                 entity.setType("PAPPLACEAFFAIRE");
             }
             if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
-                entity.setType("recense");
+                entity.setStatutPap("recense"); // Correction: setStatutPap au lieu de setType
             }
+
+            // Association du projet
             if (dto.getProjectId() != null) {
                 Project project = projectRepository.findById(dto.getProjectId())
                         .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
                 entity.setProject(project);
             }
 
-            // Déterminer la vulnérabilité
+            // Détermination de la vulnérabilité
             entity.setVulnerabilite(determinerVulnerabilite(entity));
+
+            // Calcul automatique de perteTotale si non fournie
+            if (entity.getPerteTotale() == null) {
+                entity.setPerteTotale(calculatePerteTotale(entity));
+            }
 
             return entity;
         }).collect(Collectors.toList());
+
         repository.saveAll(entities);
     }
 
+    private Double calculatePerteTotale(DatabasePapPlaceAffaire entity) {
+        // Initialiser toutes les valeurs à 0 si elles sont null
+        Double perteArbreJeune = zeroIfNull(entity.getPerteArbreJeune());
+        Double perteArbreAdulte = zeroIfNull(entity.getPerteArbreAdulte());
+        Double perteEquipement = zeroIfNull(entity.getPerteEquipement());
+        Double perteRevenue = zeroIfNull(entity.getPerteRevenue());
+        Double perteBatiment = zeroIfNull(entity.getPerteBatiment());
+        Double perteLoyer = zeroIfNull(entity.getPerteLoyer());
+        Double perteCloture = zeroIfNull(entity.getPerteCloture());
+        Double fraisDeplacement = zeroIfNull(entity.getFraisDeplacement());
+        Double appuieRelocalisation = zeroIfNull(entity.getAppuieRelocalisation());
+
+        // Calcul de la perte totale (somme des pertes + frais - appui)
+        return perteArbreJeune + perteArbreAdulte + perteEquipement + perteRevenue
+                + perteBatiment + perteLoyer + perteCloture
+                + fraisDeplacement - appuieRelocalisation;
+    }
+
+    private Double zeroIfNull(Double value) {
+        return value != null ? value : 0.0;
+    }
 
     private String determinerVulnerabilite(DatabasePapPlaceAffaire pap) {
         List<String> vulnerabilites = new ArrayList<>();
@@ -427,4 +484,34 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
         Long projectIdValue = projectId.orElse(null);
         return repository.countBySearchTermAndProjectId(searchTerm,projectIdValue);
     }
+
+
+
+    @Override
+    public Double calculateTotalPerte(Long projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("L'ID du projet ne peut pas être null");
+        }
+
+        long totalItems = repository.countByProjectId(projectId);
+        if (totalItems == 0) return 0.0;
+
+        int pageSize = 1000; // Taille optimale selon votre volume de données
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        double total = 0.0;
+
+        for (int i = 0; i < totalPages; i++) {
+            Page<DatabasePapPlaceAffaire> page = repository.findByProjectId(
+                    projectId,
+                    PageRequest.of(i, pageSize)
+            );
+            total += page.getContent().stream()
+                    .filter(Objects::nonNull)
+                    .mapToDouble(p -> p.getPerteTotale() != null ? p.getPerteTotale() : 0.0)
+                    .sum();
+        }
+
+        return total;
+    }
+
 }

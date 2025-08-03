@@ -63,30 +63,82 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
 
 
     @Override
+//    public void createDatabasePapAgricole(List<DatabasePapAgricoleRequestDTO> requestDTOs) {
+//        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+//        modelMapper.typeMap(DatabasePapAgricoleRequestDTO.class, DatabasePapAgricole.class)
+//                .addMappings(mapper -> mapper.skip(DatabasePapAgricole::setId));
+//        List<DatabasePapAgricole> entities = requestDTOs.stream().map(dto -> {
+//            DatabasePapAgricole entity = modelMapper.map(dto, DatabasePapAgricole.class);
+//            if (entity.getType() == null || entity.getType().isEmpty()) {
+//                entity.setType("PAPAGRICOLE");
+//            }
+//            if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
+//                entity.setType("recense");
+//            }
+//                if (dto.getProjectId() != null) {
+//                Project project = projectRepository.findById(dto.getProjectId())
+//                        .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
+//                entity.setProject(project);
+//            }
+//            entity.setVulnerabilite(determinerVulnerabilite(entity));
+//
+//            return entity;
+//        }).collect(Collectors.toList());
+//        repository.saveAll(entities);
+//    }
     public void createDatabasePapAgricole(List<DatabasePapAgricoleRequestDTO> requestDTOs) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         modelMapper.typeMap(DatabasePapAgricoleRequestDTO.class, DatabasePapAgricole.class)
                 .addMappings(mapper -> mapper.skip(DatabasePapAgricole::setId));
+
         List<DatabasePapAgricole> entities = requestDTOs.stream().map(dto -> {
             DatabasePapAgricole entity = modelMapper.map(dto, DatabasePapAgricole.class);
+
+            // Valeurs par défaut
             if (entity.getType() == null || entity.getType().isEmpty()) {
                 entity.setType("PAPAGRICOLE");
             }
             if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
-                entity.setType("recense");
+                entity.setStatutPap("recense");
             }
-                if (dto.getProjectId() != null) {
+
+            // Association du projet
+            if (dto.getProjectId() != null) {
                 Project project = projectRepository.findById(dto.getProjectId())
                         .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
                 entity.setProject(project);
             }
+
+            // Détermination de la vulnérabilité
             entity.setVulnerabilite(determinerVulnerabilite(entity));
+
+            // Calcul automatique de perteTotale si non fournie
+            if (entity.getPerteTotale() == null) {
+                entity.setPerteTotale(calculatePerteTotaleAgricole(entity));
+            }
 
             return entity;
         }).collect(Collectors.toList());
+
         repository.saveAll(entities);
     }
 
+    private Double calculatePerteTotaleAgricole(DatabasePapAgricole entity) {
+        // Initialiser toutes les valeurs à 0 si elles sont null
+        Double perteTerre = zeroIfNull(entity.getPerteTerre());
+        Double perteArbreJeune = zeroIfNull(entity.getPerteArbreJeune());
+        Double perteArbreAdulte = zeroIfNull(entity.getPerteArbreAdulte());
+        Double perteEquipement = zeroIfNull(entity.getPerteEquipement());
+        Double perteBatiment = zeroIfNull(entity.getPerteBatiment());
+
+        // Calcul spécifique pour l'agricole
+        return perteTerre + perteArbreJeune + perteArbreAdulte
+                + perteEquipement + perteBatiment;
+    }
+
+    private Double zeroIfNull(Double value) {
+        return value != null ? value : 0.0;
+    }
     @Override
     public void updateDatabasePapAgricole(Long id, DatabasePapAgricoleRequestDTO requestDTO) {
         DatabasePapAgricole entity = repository.findById(id)
@@ -137,6 +189,35 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
     @Override
     public long getTotalCountByProjectId(Long projectId) {
         return repository.countByProjectId(projectId);
+    }
+
+
+
+    @Override
+    public Double calculateTotalPerte(Long projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("L'ID du projet ne peut pas être null");
+        }
+
+        long totalItems = repository.countByProjectId(projectId);
+        if (totalItems == 0) return 0.0;
+
+        int pageSize = 1000; // Taille optimale selon votre volume de données
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        double total = 0.0;
+
+        for (int i = 0; i < totalPages; i++) {
+            Page<DatabasePapAgricole> page = repository.findByProjectId(
+                    projectId,
+                    PageRequest.of(i, pageSize)
+            );
+            total += page.getContent().stream()
+                    .filter(Objects::nonNull)
+                    .mapToDouble(p -> p.getPerteTotale() != null ? p.getPerteTotale() : 0.0)
+                    .sum();
+        }
+
+        return total;
     }
 
     @Override

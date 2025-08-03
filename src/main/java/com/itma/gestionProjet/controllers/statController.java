@@ -20,19 +20,60 @@ public class statController {
 
     @Autowired
     private DatabasePapAgricoleService databasePapAgricoleService;
-    @GetMapping("/combine")
-    public CombinedStatsResponse getCombinedStats( @RequestParam(required = false) Long projectId) {
-        // Récupérer les stats séparées
-        Map<String, Object> placeAffaire = databasePapPlaceAffaireService.getVulnerabilityStats(projectId);
-        Map<String, Object> agricole = databasePapAgricoleService.getVulnerabilityStats(projectId);
+//    @GetMapping("/combine")
+//    public CombinedStatsResponse getCombinedStats( @RequestParam(required = false) Long projectId) {
+//        // Récupérer les stats séparées
+//        Map<String, Object> placeAffaire = databasePapPlaceAffaireService.getVulnerabilityStats(projectId);
+//        Map<String, Object> agricole = databasePapAgricoleService.getVulnerabilityStats(projectId);
+//
+//        // Créer la réponse combinée
+//        CombinedStatsResponse response = new CombinedStatsResponse();
+//        response.setPlaceAffaireStats(placeAffaire);
+//        response.setAgricoleStats(agricole);
+//        response.setTotalStats(calculateTotalStats(placeAffaire, agricole));
+//
+//        return response;
+//    }
+@GetMapping("/combine")
+public CombinedStatsResponse getCombinedStats(@RequestParam(required = false) Long projectId) {
+    // Récupérer les stats existantes
+    Map<String, Object> placeAffaire = databasePapPlaceAffaireService.getVulnerabilityStats(projectId);
+    Map<String, Object> agricole = databasePapAgricoleService.getVulnerabilityStats(projectId);
 
-        // Créer la réponse combinée
-        CombinedStatsResponse response = new CombinedStatsResponse();
-        response.setPlaceAffaireStats(placeAffaire);
-        response.setAgricoleStats(agricole);
-        response.setTotalStats(calculateTotalStats(placeAffaire, agricole));
+    // Ajouter les stats de pertes
+    placeAffaire.put("statsPertes", getPerteStats(databasePapPlaceAffaireService, projectId));
+    agricole.put("statsPertes", getPerteStats(databasePapAgricoleService, projectId));
 
-        return response;
+    // Créer la réponse combinée
+    CombinedStatsResponse response = new CombinedStatsResponse();
+    response.setPlaceAffaireStats(placeAffaire);
+    response.setAgricoleStats(agricole);
+    response.setTotalStats(calculateTotalStats(placeAffaire, agricole));
+
+    return response;
+}
+
+    private Map<String, Double> getPerteStats(Object service, Long projectId) {
+        Map<String, Double> stats = new HashMap<>();
+
+        if (service instanceof DatabasePapPlaceAffaireService) {
+            DatabasePapPlaceAffaireService placeAffaireService = (DatabasePapPlaceAffaireService) service;
+            Double total = placeAffaireService.calculateTotalPerte(projectId);
+//            Double moyenne = placeAffaireService.calculateAveragePerte(projectId);
+
+            stats.put("totalPerte", total);
+//            stats.put("moyennePerte", moyenne);
+        }
+        else if (service instanceof DatabasePapAgricoleService) {
+            DatabasePapAgricoleService agricoleService = (DatabasePapAgricoleService) service;
+            Double total = agricoleService.calculateTotalPerte(projectId);
+//            Double moyenne = agricoleService.calculateAveragePerte(projectId);
+
+            stats.put("totalPerte", total);
+//            stats.put("moyennePerte", moyenne);
+        }
+
+        return stats;
     }
 
     private Map<String, Object> calculateTotalStats(Map<String, Object> stats1, Map<String, Object> stats2) {

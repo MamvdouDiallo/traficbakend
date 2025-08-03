@@ -24,7 +24,7 @@ public interface DatabasePapPlaceAffaireService {
 
     long getTotalCountByProjectId(Long projectId);
 
-
+    public Double calculateTotalPerte(Long projectId);
     // Nouvelle méthode pour la recherche globale
     List<DatabasePapPlaceAffaireResponseDTO> searchGlobalDatabasePapPlaceAffaire(String searchTerm,  Optional<Long> projectId,int page, int size);
 

@@ -28,6 +28,10 @@ public interface DatabasePapAgricoleService {
 
     long getTotalCountByProjectId(Long projectId);
 
+
+    public Double calculateTotalPerte(Long projectId);
+
+
     // Nouvelle méthode pour la recherche globale
 
     List<DatabasePapAgricoleResponseDTO> searchGlobalDatabasePapAgricole(String searchTerm, Optional<Long> projectId, int page, int size);
