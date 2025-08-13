@@ -86,17 +86,61 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
 //        }).collect(Collectors.toList());
 //        repository.saveAll(entities);
 //    }
+//    public void createDatabasePapAgricole(List<DatabasePapAgricoleRequestDTO> requestDTOs) {
+//        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+//        modelMapper.typeMap(DatabasePapAgricoleRequestDTO.class, DatabasePapAgricole.class)
+//                .addMappings(mapper -> mapper.skip(DatabasePapAgricole::setId));
+//
+//        List<DatabasePapAgricole> entities = requestDTOs.stream().map(dto -> {
+//            DatabasePapAgricole entity = modelMapper.map(dto, DatabasePapAgricole.class);
+//
+//            // Valeurs par défaut
+//            if (entity.getType() == null || entity.getType().isEmpty()) {
+//                entity.setType("PAPAGRICOLE");
+//            }
+//            if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
+//                entity.setStatutPap("recense");
+//            }
+//
+//            // Association du projet
+//            if (dto.getProjectId() != null) {
+//                Project project = projectRepository.findById(dto.getProjectId())
+//                        .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
+//                entity.setProject(project);
+//            }
+//
+//            // Détermination de la vulnérabilité
+//            entity.setVulnerabilite(determinerVulnerabilite(entity));
+//
+//            // Calcul automatique de perteTotale si non fournie
+//            if (entity.getPerteTotale() == null) {
+//                entity.setPerteTotale(calculatePerteTotaleAgricole(entity));
+//            }
+//
+//            return entity;
+//        }).collect(Collectors.toList());
+//
+//        repository.saveAll(entities);
+//    }
     public void createDatabasePapAgricole(List<DatabasePapAgricoleRequestDTO> requestDTOs) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
+
+        // Configuration explicite pour éviter les conflits de mapping
         modelMapper.typeMap(DatabasePapAgricoleRequestDTO.class, DatabasePapAgricole.class)
-                .addMappings(mapper -> mapper.skip(DatabasePapAgricole::setId));
+                .addMappings(mapper -> {
+                    mapper.skip(DatabasePapAgricole::setId); // Ignorer l'ID
+//                    mapper.map(DatabasePapAgricoleRequestDTO::getType, DatabasePapAgricole::setType);
+                    mapper.map(DatabasePapAgricoleRequestDTO::getTypeHandicape, DatabasePapAgricole::setTypeHandicape);
+                    mapper.map(DatabasePapAgricoleRequestDTO::getTypePni, DatabasePapAgricole::setTypePni);
+                    // Ajoutez d'autres mappings explicites si nécessaire
+                });
 
         List<DatabasePapAgricole> entities = requestDTOs.stream().map(dto -> {
             DatabasePapAgricole entity = modelMapper.map(dto, DatabasePapAgricole.class);
 
             // Valeurs par défaut
             if (entity.getType() == null || entity.getType().isEmpty()) {
-                entity.setType("PAPAGRICOLE");
+                entity.setType("PAPAGRICOLE"); // Valeur par défaut spécifique à PapAgricole
             }
             if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
                 entity.setStatutPap("recense");
@@ -109,12 +153,10 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
                 entity.setProject(project);
             }
 
-            // Détermination de la vulnérabilité
+            // Calculs automatiques
             entity.setVulnerabilite(determinerVulnerabilite(entity));
-
-            // Calcul automatique de perteTotale si non fournie
             if (entity.getPerteTotale() == null) {
-                entity.setPerteTotale(calculatePerteTotaleAgricole(entity));
+                entity.setPerteTotale(calculatePerteTotaleAgricole(entity)); // Méthode spécifique à PapAgricole
             }
 
             return entity;
@@ -122,7 +164,6 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
 
         repository.saveAll(entities);
     }
-
     private Double calculatePerteTotaleAgricole(DatabasePapAgricole entity) {
         // Initialiser toutes les valeurs à 0 si elles sont null
         Double perteTerre = zeroIfNull(entity.getPerteTerre());
@@ -140,24 +181,67 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
         return value != null ? value : 0.0;
     }
     @Override
+//    public void updateDatabasePapAgricole(Long id, DatabasePapAgricoleRequestDTO requestDTO) {
+//        DatabasePapAgricole entity = repository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Entity not found with ID: " + id));
+//
+//        modelMapper.typeMap(DatabasePapAgricoleRequestDTO.class, DatabasePapAgricole.class)
+//                .addMappings(mapper -> mapper.skip(DatabasePapAgricole::setId));
+//
+//        modelMapper.map(requestDTO, entity);
+//        entity.setType("PAPAGRICOLE");
+//        /*
+//        if (requestDTO.getProjectId() != null) {
+//            Project project = projectRepository.findById(requestDTO.getProjectId())
+//                    .orElseThrow(() -> new RuntimeException("Project not found with ID: " + requestDTO.getProjectId()));
+//            entity.setProject(project);
+//        }
+//
+//         */
+//        entity.setVulnerabilite(determinerVulnerabilite(entity));
+//        repository.save(entity);
+//    }
     public void updateDatabasePapAgricole(Long id, DatabasePapAgricoleRequestDTO requestDTO) {
+        // 1. Récupération de l'entité existante
         DatabasePapAgricole entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Entity not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("DatabasePapAgricole not found with ID: " + id));
 
+        // 2. Configuration explicite du ModelMapper
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         modelMapper.typeMap(DatabasePapAgricoleRequestDTO.class, DatabasePapAgricole.class)
-                .addMappings(mapper -> mapper.skip(DatabasePapAgricole::setId));
+                .addMappings(mapper -> {
+                    mapper.skip(DatabasePapAgricole::setId); // Toujours ignorer l'ID lors de la mise à jour
+//                    mapper.map(DatabasePapAgricoleRequestDTO::getType, DatabasePapAgricole::setType);
+                    mapper.map(DatabasePapAgricoleRequestDTO::getTypeHandicape, DatabasePapAgricole::setTypeHandicape);
+                    mapper.map(DatabasePapAgricoleRequestDTO::getTypePni, DatabasePapAgricole::setTypePni);
+                    // Ajouter d'autres mappings explicites si nécessaire
+                });
 
+        // 3. Application des modifications
         modelMapper.map(requestDTO, entity);
-        entity.setType("PAPAGRICOLE");
-        /*
+
+        // 4. Valeurs par défaut et vérifications
+        if (entity.getType() == null || entity.getType().isEmpty()) {
+            entity.setType("PAPAGRICOLE"); // Valeur par défaut spécifique
+        }
+        if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
+            entity.setStatutPap("recense");
+        }
+
+        // 5. Gestion de la relation Project
         if (requestDTO.getProjectId() != null) {
             Project project = projectRepository.findById(requestDTO.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project not found with ID: " + requestDTO.getProjectId()));
             entity.setProject(project);
         }
 
-         */
+        // 6. Calculs automatiques
         entity.setVulnerabilite(determinerVulnerabilite(entity));
+        if (entity.getPerteTotale() == null) {
+            entity.setPerteTotale(calculatePerteTotaleAgricole(entity));
+        }
+
+        // 7. Sauvegarde
         repository.save(entity);
     }
 

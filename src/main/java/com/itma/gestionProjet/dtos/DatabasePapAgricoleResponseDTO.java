@@ -53,10 +53,14 @@ public class DatabasePapAgricoleResponseDTO {
     private  Double perteEquipement;
     private  Double perteTotale;
     private  Double perteBatiment;
-
+    private  Double perteTotaleArbre;
+    private  Double perteCloture;
     private LocalDate dateNaissance; // Ajoutez ce champ
     private String roleDansFoyer; // "chef de ménage", "membre", etc.
     private String activitePrincipale;
+    private  Double perteRevenue;
+    private Double appuieRelocalisation;
+    private Double fraisDeplacement;
 
 
 }

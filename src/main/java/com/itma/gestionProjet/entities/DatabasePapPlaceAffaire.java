@@ -24,8 +24,8 @@ public class DatabasePapPlaceAffaire {
     private String surnom;
     private String sexe;
     private Long age;
-    private LocalDate dateNaissance; // Ajoutez ce champ
-    private String roleDansFoyer; // "chef de ménage", "membre", etc.
+    private LocalDate dateNaissance;
+    private String roleDansFoyer;
     private String existePni;
     private String typePni;
     private String numeroPni;
@@ -59,39 +59,19 @@ public class DatabasePapPlaceAffaire {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
-
     @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PAPPLACEAFFAIRE'")
     private String type = "PAPPLACEAFFAIRE";
-
-
-   // @Lob
-    //@Column(columnDefinition = "LONGTEXT")
     private  Double perteArbreJeune;
-   // @Lob
-    //@Column(columnDefinition = "LONGTEXT")
     private  Double perteArbreAdulte;
-   // @Lob
-    //@Column(columnDefinition = "LONGTEXT")
     private  Double perteEquipement;
-//    @Lob
-//    @Column(columnDefinition = "LONGTEXT")
     private Double perteRevenue;
     private Double appuieRelocalisation;
     private Double perteTotale;
     private Double fraisDeplacement;
     private String typeHandicape;
-
-//    @Lob
-//    @Column(columnDefinition = "LONGTEXT")
     private  Double perteBatiment;
-
-   // @Lob
-//    @Column(columnDefinition = "LONGTEXT")
     private  Double perteLoyer;
-   // @Lob
-    //@Column(columnDefinition = "LONGTEXT")
     private  Double perteCloture;
-
     private  String optionPaiement;
     private  Double perteTotaleArbre;
     @Lob

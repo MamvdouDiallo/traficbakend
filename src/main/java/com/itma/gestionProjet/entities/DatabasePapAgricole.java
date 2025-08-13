@@ -19,11 +19,11 @@ public class DatabasePapAgricole {
     private String nom;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")  // Spécifie le type LONGTEXT
-    private String caracteristiqueParcelle;  // Valeur très large
+    @Column(columnDefinition = "LONGTEXT")
+    private String caracteristiqueParcelle;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")  // Spécifie le type LONGTEXT
+    @Column(columnDefinition = "LONGTEXT") 
     private String evaluationPerte;
 
     private String commune;
@@ -96,8 +96,15 @@ public class DatabasePapAgricole {
     private  Double perteEquipement;
 
     private Double perteTotale;
+    private  Double perteCloture;
+    private Double fraisDeplacement;
 
-   // @Lob
+
+    private  Double perteRevenue;
+    private Double appuieRelocalisation;
+
+
+    // @Lob
     //@Column(columnDefinition = "LONGTEXT")
     private  Double perteBatiment;
 

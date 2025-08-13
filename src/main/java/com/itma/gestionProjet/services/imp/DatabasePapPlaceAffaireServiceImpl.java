@@ -64,10 +64,44 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
 //        }).collect(Collectors.toList());
 //        repository.saveAll(entities);
 //    }
+//    public void createDatabasePapPlaceAffaire(List<DatabasePapPlaceAffaireRequestDTO> requestDTOs) {
+//        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+//        modelMapper.typeMap(DatabasePapPlaceAffaireRequestDTO.class, DatabasePapPlaceAffaire.class)
+//                .addMappings(mapper -> mapper.skip(DatabasePapPlaceAffaire::setId));
+//        List<DatabasePapPlaceAffaire> entities = requestDTOs.stream().map(dto -> {
+//            DatabasePapPlaceAffaire entity = modelMapper.map(dto, DatabasePapPlaceAffaire.class);
+//            if (entity.getType() == null || entity.getType().isEmpty()) {
+//                entity.setType("PAPPLACEAFFAIRE");
+//            }
+//            if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
+//                entity.setStatutPap("recense");
+//            }
+//            if (dto.getProjectId() != null) {
+//                Project project = projectRepository.findById(dto.getProjectId())
+//                        .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
+//                entity.setProject(project);
+//            }
+//            entity.setVulnerabilite(determinerVulnerabilite(entity));
+//            if (entity.getPerteTotale() == null) {
+//                entity.setPerteTotale(calculatePerteTotale(entity));
+//            }
+//            return entity;
+//        }).collect(Collectors.toList());
+//        repository.saveAll(entities);
+//    }
+
     public void createDatabasePapPlaceAffaire(List<DatabasePapPlaceAffaireRequestDTO> requestDTOs) {
+        // Réinitialiser la configuration pour éviter les conflits
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
+
+        // Configurer le mapping pour éviter les ambiguïtés
         modelMapper.typeMap(DatabasePapPlaceAffaireRequestDTO.class, DatabasePapPlaceAffaire.class)
-                .addMappings(mapper -> mapper.skip(DatabasePapPlaceAffaire::setId));
+                .addMappings(mapper -> {
+                    mapper.skip(DatabasePapPlaceAffaire::setId); // Ignorer l'ID
+//                    mapper.map(DatabasePapPlaceAffaireRequestDTO::getType, DatabasePapPlaceAffaire::setType); // Mapping explicite pour 'type'
+                    mapper.map(DatabasePapPlaceAffaireRequestDTO::getTypeHandicape, DatabasePapPlaceAffaire::setTypeHandicape); // Mapping explicite pour 'typeHandicape'
+                    mapper.map(DatabasePapPlaceAffaireRequestDTO::getTypePni, DatabasePapPlaceAffaire::setTypePni); // Mapping explicite pour 'typePni'
+                });
 
         List<DatabasePapPlaceAffaire> entities = requestDTOs.stream().map(dto -> {
             DatabasePapPlaceAffaire entity = modelMapper.map(dto, DatabasePapPlaceAffaire.class);
@@ -77,20 +111,18 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
                 entity.setType("PAPPLACEAFFAIRE");
             }
             if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
-                entity.setStatutPap("recense"); // Correction: setStatutPap au lieu de setType
+                entity.setStatutPap("recense");
             }
 
-            // Association du projet
+            // Associer le projet
             if (dto.getProjectId() != null) {
                 Project project = projectRepository.findById(dto.getProjectId())
                         .orElseThrow(() -> new RuntimeException("Project not found with ID: " + dto.getProjectId()));
                 entity.setProject(project);
             }
 
-            // Détermination de la vulnérabilité
+            // Calculer la vulnérabilité et la perte totale
             entity.setVulnerabilite(determinerVulnerabilite(entity));
-
-            // Calcul automatique de perteTotale si non fournie
             if (entity.getPerteTotale() == null) {
                 entity.setPerteTotale(calculatePerteTotale(entity));
             }
@@ -102,7 +134,6 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
     }
 
     private Double calculatePerteTotale(DatabasePapPlaceAffaire entity) {
-        // Initialiser toutes les valeurs à 0 si elles sont null
         Double perteArbreJeune = zeroIfNull(entity.getPerteArbreJeune());
         Double perteArbreAdulte = zeroIfNull(entity.getPerteArbreAdulte());
         Double perteEquipement = zeroIfNull(entity.getPerteEquipement());
@@ -112,8 +143,6 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
         Double perteCloture = zeroIfNull(entity.getPerteCloture());
         Double fraisDeplacement = zeroIfNull(entity.getFraisDeplacement());
         Double appuieRelocalisation = zeroIfNull(entity.getAppuieRelocalisation());
-
-        // Calcul de la perte totale (somme des pertes + frais - appui)
         return perteArbreJeune + perteArbreAdulte + perteEquipement + perteRevenue
                 + perteBatiment + perteLoyer + perteCloture
                 + fraisDeplacement - appuieRelocalisation;
@@ -418,22 +447,62 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
     }
 
     @Override
+//    public void updateDatabasePapPlaceAffaire(Long id, DatabasePapPlaceAffaireRequestDTO requestDTO) {
+//        DatabasePapPlaceAffaire entity = repository.findById(id).orElseThrow(() -> new RuntimeException("Entity not found"));
+//        modelMapper.typeMap(DatabasePapPlaceAffaireRequestDTO.class, DatabasePapPlaceAffaire.class)
+//                .addMappings(mapper -> mapper.skip(DatabasePapPlaceAffaire::setId));
+//        modelMapper.map(requestDTO, entity);
+//        entity.setType("PAPPLACEAFFAIRE");
+//        /*
+//        if (requestDTO.getProjectId() != null) {
+//            Project project = projectRepository.findById(requestDTO.getProjectId())
+//                    .orElseThrow(() -> new RuntimeException("Project not found with ID: " + requestDTO.getProjectId()));
+//            entity.setProject(project);
+//        }
+//
+//
+//         */
+//        entity.setVulnerabilite(determinerVulnerabilite(entity));
+//        repository.save(entity);
+//    }
     public void updateDatabasePapPlaceAffaire(Long id, DatabasePapPlaceAffaireRequestDTO requestDTO) {
-        DatabasePapPlaceAffaire entity = repository.findById(id).orElseThrow(() -> new RuntimeException("Entity not found"));
+        DatabasePapPlaceAffaire entity = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Entity not found with ID: " + id));
+
+        // Configuration explicite du ModelMapper pour éviter les ambiguïtés
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         modelMapper.typeMap(DatabasePapPlaceAffaireRequestDTO.class, DatabasePapPlaceAffaire.class)
-                .addMappings(mapper -> mapper.skip(DatabasePapPlaceAffaire::setId));
+                .addMappings(mapper -> {
+                    mapper.skip(DatabasePapPlaceAffaire::setId); // Toujours ignorer l'ID
+//                    mapper.map(DatabasePapPlaceAffaireRequestDTO::getType, DatabasePapPlaceAffaire::setType);
+                    mapper.map(DatabasePapPlaceAffaireRequestDTO::getTypeHandicape, DatabasePapPlaceAffaire::setTypeHandicape);
+                    mapper.map(DatabasePapPlaceAffaireRequestDTO::getTypePni, DatabasePapPlaceAffaire::setTypePni);
+                });
+
+        // Appliquer les modifications depuis le DTO
         modelMapper.map(requestDTO, entity);
-        entity.setType("PAPPLACEAFFAIRE");
-        /*
+
+        // Valeurs par défaut
+        if (entity.getType() == null || entity.getType().isEmpty()) {
+            entity.setType("PAPPLACEAFFAIRE");
+        }
+        if (entity.getStatutPap() == null || entity.getStatutPap().isEmpty()) {
+            entity.setStatutPap("recense");
+        }
+
+        // Mise à jour du projet si nécessaire
         if (requestDTO.getProjectId() != null) {
             Project project = projectRepository.findById(requestDTO.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project not found with ID: " + requestDTO.getProjectId()));
             entity.setProject(project);
         }
 
-
-         */
+        // Calcul des champs dérivés
         entity.setVulnerabilite(determinerVulnerabilite(entity));
+        if (entity.getPerteTotale() == null) {
+            entity.setPerteTotale(calculatePerteTotale(entity));
+        }
+
         repository.save(entity);
     }
 

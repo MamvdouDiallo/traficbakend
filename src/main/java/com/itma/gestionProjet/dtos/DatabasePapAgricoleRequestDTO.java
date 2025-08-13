@@ -59,4 +59,10 @@ public class DatabasePapAgricoleRequestDTO {
     private  Double perteTotaleArbre;
     private String typeHandicape;
     private  String description;
+    private  Double perteCloture;
+    private  Double perteRevenue;
+    private Double appuieRelocalisation;
+    private Double fraisDeplacement;
+
+
 }
