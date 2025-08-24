@@ -46,17 +46,31 @@ public class ProjectController {
     }
 
 
-    @RequestMapping(path = "/createProject", method = RequestMethod.POST)
-    public ApiResponse<User> createProject(@Valid @RequestBody ProjectRequest projectRequest) {
-        Optional<Project> projectOptional= projectRepository.findByLibelle(projectRequest.getLibelle());
-        if(projectOptional.isPresent()){
-            throw  new ProjectAlreadyExistException("Un projet avec ce nom existe déja!!!");
-        }
-        else {
-            ProjectDTO projectDTO = projectService.saveProject(projectRequest);
-            return   new ApiResponse<>(HttpStatus.OK.value(), "Projet Créé avec succées crée avec succés",projectDTO);
-        }
+//    @RequestMapping(path = "/createProject", method = RequestMethod.POST)
+//    public ApiResponse<User> createProject(@Valid @RequestBody ProjectRequest projectRequest) {
+//        Optional<Project> projectOptional= projectRepository.findByLibelle(projectRequest.getLibelle());
+//        if(projectOptional.isPresent()){
+//            throw  new ProjectAlreadyExistException("Un projet avec ce nom existe déja!!!");
+//        }
+//        else {
+//            ProjectDTO projectDTO = projectService.saveProject(projectRequest);
+//            return   new ApiResponse<>(HttpStatus.OK.value(), "Projet Créé avec succées crée avec succés",projectDTO);
+//        }
+//    }
+@RequestMapping(path = "/createProject/{userId}", method = RequestMethod.POST)
+public ApiResponse<User> createProject(
+        @PathVariable Long userId,
+        @Valid @RequestBody ProjectRequest projectRequest) {
+
+    Optional<Project> projectOptional = projectRepository.findByLibelle(projectRequest.getLibelle());
+    if(projectOptional.isPresent()){
+        throw new ProjectAlreadyExistException("Un projet avec ce nom existe déjà !!!");
     }
+    else {
+        ProjectDTO projectDTO = projectService.saveProject(projectRequest, userId);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Projet créé avec succès", projectDTO);
+    }
+}
 
     @PostMapping("/updateProject")
     public ApiResponse<Project> updateProject(@RequestBody ProjectRequest projectRequest) {

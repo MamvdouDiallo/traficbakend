@@ -12,6 +12,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,9 +37,7 @@ public class ProjectService implements IProjectService {
         return Optional.empty();
     }
 
-    @Override
-    public ProjectDTO saveProject(ProjectRequest projectRequest) {
-        // Création d'une instance Project pour persister l'entité
+    public ProjectDTO saveProject(ProjectRequest projectRequest, Long userId) {
         Project project = new Project();
         project.setLibelle(projectRequest.getLibelle());
         project.setDescription(projectRequest.getDescription());
@@ -47,23 +46,44 @@ public class ProjectService implements IProjectService {
         project.setDatefin(projectRequest.getDatefin());
         project.setImageUrl(projectRequest.getImageUrl());
         project.setColors(projectRequest.getColors());
+
+        // Récupérer l'utilisateur principal par son ID (celui de l'URL)
+        User mainUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        // Créer la liste des utilisateurs et ajouter l'utilisateur principal
+        List<User> users = new ArrayList<>();
+        users.add(mainUser);
+
+        // Ajouter le projet à l'utilisateur principal
+        mainUser.getProjects().add(project);
+
+        // Gestion des utilisateurs supplémentaires du corps de la requête
         if (projectRequest.getUsers() != null && !projectRequest.getUsers().isEmpty()) {
-            List<User> users = projectRequest.getUsers().stream()
-                    .map(user -> userRepository.findById(user.getId())
-                            .orElseThrow(() -> new IllegalArgumentException("User not found: " + user.getId())))
-                    .collect(Collectors.toList());
-            project.setUsers(users);
-            for (User user : users) {
-                user.getProjects().add(project);
+            for (User userRequest : projectRequest.getUsers()) {
+                User additionalUser = userRepository.findById(userRequest.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("User not found: " + userRequest.getId()));
+
+                // Éviter les doublons
+                if (!users.contains(additionalUser)) {
+                    users.add(additionalUser);
+                    additionalUser.getProjects().add(project);
+                }
             }
         }
+
+        project.setUsers(users);
+
         Project savedProject = projectRepository.save(project);
+
+        // Gestion des normes
         if (projectRequest.getNormes() != null && !projectRequest.getNormes().isEmpty()) {
             for (NormeProjet norme : projectRequest.getNormes()) {
                 norme.setProject(savedProject);
                 normeProjectRepository.save(norme);
             }
         }
+
         return convertEntityToDto(savedProject);
     }
 
