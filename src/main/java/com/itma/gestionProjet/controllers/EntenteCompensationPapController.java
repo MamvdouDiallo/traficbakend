@@ -145,7 +145,7 @@ public class EntenteCompensationPapController {
 
 
     @GetMapping("/byCodePap")
-    public ResponseEntity<AApiResponse<EntenteCompensationPapDto>> getEntenteByCodePap(@RequestParam String codePap) {
+    public ResponseEntity<AApiResponse> getEntenteByCodePap(@RequestParam String codePap) {
         try {
             EntenteCompensationPapDto entente = ententeService.getEntenteByCodePap(codePap);
             List<EntenteCompensationPapDto> data = Collections.singletonList(entente);

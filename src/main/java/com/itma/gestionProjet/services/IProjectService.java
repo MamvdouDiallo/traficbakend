@@ -22,4 +22,8 @@ public interface IProjectService {
 
     ProjectDTO convertEntityToDto(Project p);
     Project convertDtoToEntity(Project ProjectDto);
+
+    Project getProjectById(Long projectId);
+
+//    Project getProjectById(Long projectId);
 }

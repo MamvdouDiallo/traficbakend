@@ -1,9 +1,7 @@
 package com.itma.gestionProjet.services.imp;
 
 import com.itma.gestionProjet.dtos.ProjectDTO;
-import com.itma.gestionProjet.dtos.UserDTO;
 import com.itma.gestionProjet.entities.*;
-import com.itma.gestionProjet.exceptions.UserNotFoundException;
 import com.itma.gestionProjet.repositories.*;
 import com.itma.gestionProjet.requests.ProjectRequest;
 import com.itma.gestionProjet.services.IProjectService;
@@ -180,5 +178,9 @@ public class ProjectService implements IProjectService {
         Project project = new Project();
         project = modelMapper.map(p, Project.class);
         return project;
+    }
+    @Override
+    public Project getProjectById(Long projectId) {
+        return projectRepository.findById(projectId).orElse(null);
     }
 }

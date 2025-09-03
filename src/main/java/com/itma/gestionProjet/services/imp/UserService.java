@@ -644,4 +644,19 @@ public class UserService  implements IUserService {
         return userRepository.findUsersByRoleNameAndProjectId(roleName, projectId, pageable);
     }
 
+
+    public boolean hasPermission(String email, List<String> requiredRoles) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return false;
+        }
+        User user = userOpt.get();
+        // Vérifier si l'utilisateur est activé
+        if (!user.getEnabled()) {
+            return false;
+        }
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch(roleName -> requiredRoles.contains(roleName));
+    }
 }

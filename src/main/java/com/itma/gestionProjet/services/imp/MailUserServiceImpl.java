@@ -41,9 +41,6 @@ public class MailUserServiceImpl implements MailUserService {
                     dto.setId(mailUser.getId());
                     dto.setNomComplet(mailUser.getNomComplet());
                     dto.setEmail(mailUser.getEmail());
-                  //  dto.setNumeroTelephone(mailUser.getNumeroTelephone());
-                    //dto.setObject(mailUser.getObject());
-                    //dto.setMotif(mailUser.getMotif());
                     dto.setContenu(mailUser.getContenu());
                     return dto;
                 })
@@ -57,41 +54,17 @@ public class MailUserServiceImpl implements MailUserService {
         dto.setId(mailUser.getId());
         dto.setNomComplet(mailUser.getNomComplet());
         dto.setEmail(mailUser.getEmail());
-     //   dto.setNumeroTelephone(mailUser.getNumeroTelephone());
-       // dto.setObject(mailUser.getObject());
-        //dto.setMotif(mailUser.getMotif());
         dto.setContenu(mailUser.getContenu());
         return dto;
     }
 
-    /*
-    @Override
-    public MailUserDTO createMailUser(MailUserDTO mailUserDTO) {
-        MailUser mailUser = new MailUser();
-        mailUser.setNomComplet(mailUserDTO.getNomComplet());
-        mailUser.setEmail(mailUserDTO.getEmail());
-        mailUser.setNumeroTelephone(mailUserDTO.getNumeroTelephone());
-        mailUser.setObject(mailUserDTO.getObject());
-        mailUser.setMotif(mailUserDTO.getMotif());
-        mailUser.setContenu(mailUserDTO.getContenu());
-        mailUser = mailUserRepository.save(mailUser);
-
-        mailUserDTO.setId(mailUser.getId());
-        return mailUserDTO;
-    }
-
-     */
     @Autowired
     private JavaMailSender mailSender;
-
     @Override
     public MailUserDTO createMailUser(MailUserDTO mailUserDTO) {
         MailUser mailUser = new MailUser();
         mailUser.setNomComplet(mailUserDTO.getNomComplet());
         mailUser.setEmail(mailUserDTO.getEmail());
-      //  mailUser.setNumeroTelephone(mailUserDTO.getNumeroTelephone());
-        //mailUser.setObject(mailUserDTO.getObject());
-        //mailUser.setMotif(mailUserDTO.getMotif());
         mailUser.setContenu(mailUserDTO.getContenu());
         mailUser.setDateCreation(mailUserDTO.getDateCreation());
         mailUser = mailUserRepository.save(mailUser);
@@ -108,16 +81,11 @@ public class MailUserServiceImpl implements MailUserService {
         log.info("Sending mail to {}", mailUserDTO.getEmail());
         String subject = "New Complaint/Message from: " + mailUserDTO.getNomComplet();
         String senderName = "Application - Support Team";
-
         // Contenu de l'email
         String mailContent = "<strong>Nom Complet:</strong> " + mailUserDTO.getNomComplet() + "<br/>"
                 + "<strong>Email:</strong> " + mailUserDTO.getEmail() + "<br/>"
-          //      + "<strong>Numéro de téléphone:</strong> " + mailUserDTO.getNumeroTelephone() + "<br/>"
-            //    + "<strong>Objet:</strong> " + mailUserDTO.getObject() + "<br/>"
-              //  + "<strong>Motif:</strong> " + mailUserDTO.getMotif() + "<br/>"
                 + "<strong>Contenu:</strong> "+mailUserDTO.getContenu() + "<br/>"
                 + "<strong>Date de réclamation: </strong>" + mailUserDTO.getDateCreation();
-
         MailRequestDto mailRequestDto = new MailRequestDto();
         mailRequestDto.setSubject(subject);
         mailRequestDto.setToEmail("invodis@gmail.com");
@@ -125,14 +93,11 @@ public class MailUserServiceImpl implements MailUserService {
         mailRequestDto.setTemplate("contact_email");
         emailService.sendMail(mailRequestDto);
 
-
-
         //replay email
         /* ---------------fin info mail admin*/
         /* info replay mail*/
         MailRequestDto request = new MailRequestDto();
         request.setToEmail(mailUserDTO.getEmail());
-
         request.setSubject("Accusé de réception");
         String message = "Bonjour "+mailUserDTO.getNomComplet()+",<br>" +
                 "Nous vous confirmons la réception de votre demande envoyée le "+new Date() +".<br/>" +
