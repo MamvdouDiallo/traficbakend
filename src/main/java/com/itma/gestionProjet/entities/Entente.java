@@ -71,6 +71,8 @@ public class Entente {
     private Boolean paiementEffectue;
     private LocalDateTime datePaiement;
     private String optionPaiement;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String referencePaiement;
 
     // Étape 5: Formation/Encadrement

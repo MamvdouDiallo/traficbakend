@@ -50,6 +50,40 @@ public class EntenteController {
         }
     }
 
+    @PostMapping("/{projectId}/auto-create")
+    public ResponseEntity<?> autoCreateEntentesForProject(@PathVariable Long projectId) {
+        try {
+            List<Entente> nouvellesEntentes = ententeService.createEntentesForProject(projectId);
+
+            if (nouvellesEntentes.isEmpty()) {
+                return ResponseEntity.ok(
+                        Map.of(
+                                "message", "Aucune nouvelle entente créée - toutes les ententes existent déjà pour ce projet",
+                                "ententesCrees", 0
+                        )
+                );
+            }
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "message", "Ententes créées avec succès",
+                            "ententesCrees", nouvellesEntentes.size(),
+                            "ententes", nouvellesEntentes
+                    )
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Erreur lors de la création des ententes: " + e.getMessage()));
+        }
+    }
+
+
+
+
+
+
+
     @GetMapping()
     public ResponseEntity<AApiResponse<EntenteDetailsDTO>> getEntentesByProject(
             @RequestParam(required = false) Long projectId,

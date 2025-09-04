@@ -80,6 +80,9 @@ public class EntenteDetailsDTO {
 
 //    private String modePaiement;
 
+    private String modeInformation;
+    private String detailsInformation;
+
 
 
     // Contact

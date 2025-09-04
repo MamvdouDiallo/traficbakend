@@ -8,11 +8,15 @@ import com.itma.gestionProjet.repositories.EntenteRepository;
 import com.itma.gestionProjet.services.imp.ProjectService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,6 +135,9 @@ public class EntenteService {
         dto.setPaiementEffectue(entente.getPaiementEffectue());
         dto.setFormationDonnee(entente.getFormationDonnee());
         dto.setSuiviEffectue(entente.getSuiviEffectue());
+
+        dto.setModeInformation(entente.getModeInformation());
+        dto.setDetailsInformation(entente.getDetailsInformation());
 
         dto.setDateFormation(entente.getDateFormation());
         dto.setDateInformationPap(entente.getDateInformationPap());
@@ -255,4 +262,87 @@ private void populateFromPlaceAffaire(Long papId, EntenteDetailsDTO dto) {
 
         return getEntenteDetails(entente.getId());
     }
+
+
+
+
+
+
+//    @Autowired
+//    private DatabasePapAgricoleRepository papAgricoleRepository;
+//
+//    @Autowired
+//    private DatabasePapPlaceAffaireRepository papPlaceAffaireRepository;
+
+    public List<Entente> createEntentesForProject(Long projectId) {
+        Project project = projectService.getProjectById(projectId);
+        List<Entente> nouvellesEntentes = new ArrayList<>();
+        // Traiter les PAPs agricoles avec pagination
+        processPapsAgricoles(projectId, project, nouvellesEntentes);
+        // Traiter les PAPs place d'affaire avec pagination
+        processPapsPlaceAffaire(projectId, project, nouvellesEntentes);
+
+        return ententeRepository.saveAll(nouvellesEntentes);
+    }
+
+    private void processPapsAgricoles(Long projectId, Project project, List<Entente> nouvellesEntentes) {
+        int page = 0;
+        int size = 200;
+        boolean hasMore = true;
+
+        while (hasMore) {
+            Page<DatabasePapAgricole> papPage = papAgricoleRepository.findByProjectId(
+                    projectId,
+                    PageRequest.of(page, size, Sort.by("id"))
+            );
+
+            for (DatabasePapAgricole pap : papPage.getContent()) {
+                createEntenteIfNotExists(pap.getId(), TypePap.PAPAGRICOLE, project, pap.getCodePap(), nouvellesEntentes);
+            }
+
+            hasMore = papPage.hasNext();
+            page++;
+        }
+    }
+
+    private void processPapsPlaceAffaire(Long projectId, Project project, List<Entente> nouvellesEntentes) {
+        int page = 0;
+        int size = 200;
+        boolean hasMore = true;
+
+        while (hasMore) {
+            Page<DatabasePapPlaceAffaire> papPage = papPlaceAffaireRepository.findByProjectId(
+                    projectId,
+                    PageRequest.of(page, size, Sort.by("id"))
+            );
+            for (DatabasePapPlaceAffaire pap : papPage.getContent()) {
+                createEntenteIfNotExists(pap.getId(), TypePap.PAPPLACEAFFAIRE, project, pap.getCodePap(), nouvellesEntentes);
+            }
+            hasMore = papPage.hasNext();
+            page++;
+        }
+    }
+
+    private void createEntenteIfNotExists(Long papId, TypePap papType, Project project, String codePap, List<Entente> nouvellesEntentes) {
+        List<Entente> ententesExistantes = ententeRepository.findByPapIdAndPapType(papId, papType);
+
+        if (ententesExistantes.isEmpty()) {
+            Entente entente = Entente.builder()
+                    .papId(papId)
+                    .papType(papType)
+                    .codePap(codePap)
+                    .project(project)
+                    .build();
+
+            nouvellesEntentes.add(entente);
+        }
+    }
+
+
+
+
+
+
+
+
 }
