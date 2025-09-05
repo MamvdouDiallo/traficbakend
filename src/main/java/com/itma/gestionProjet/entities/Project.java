@@ -26,7 +26,8 @@ public class Project {
     private String libelle;
     @NotNull
     @NotBlank(message = "La description est obligatoire et ne peut pas être vide")
-    @Column(nullable = false)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT",nullable = false)
     private String description;
     private String status;
     private String imageUrl;

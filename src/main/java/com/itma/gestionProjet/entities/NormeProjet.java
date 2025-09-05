@@ -15,7 +15,11 @@ public class NormeProjet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String titre;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
     @ManyToOne
     @JoinColumn (name="PROJECT_ID")
