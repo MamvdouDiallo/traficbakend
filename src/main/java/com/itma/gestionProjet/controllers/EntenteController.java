@@ -12,6 +12,7 @@ import com.itma.gestionProjet.services.ProcessusEntenteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -87,7 +88,9 @@ public class EntenteController {
     @GetMapping()
     public ResponseEntity<AApiResponse<EntenteDetailsDTO>> getEntentesByProject(
             @RequestParam(required = false) Long projectId,
-            @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int max) {
+        Pageable pageable = PageRequest.of(offset, max);
         Page<EntenteDetailsDTO> ententesPage = ententeService.getEntentesByProject(projectId, pageable);
         AApiResponse<EntenteDetailsDTO> response = new AApiResponse<>();
         response.setResponseCode(200);
@@ -96,7 +99,6 @@ public class EntenteController {
         response.setMax(ententesPage.getPageable().getPageSize());
         response.setLength(ententesPage.getTotalElements());
         response.setMessage("Successfully retrieved ententes for project: " + projectId);
-
         return ResponseEntity.ok(response);
     }
 
