@@ -188,10 +188,8 @@ public class PapAgricoleController {
     @DeleteMapping("/{id}")
     public AApiResponse<String> delete(@PathVariable Long id) {
         try {
-            // Appel au service pour supprimer l'entité
             databasePapAgricoleService.deleteDatabasePapAgricole(id);
 
-            // Création de la réponse AApiResponse pour succès
             AApiResponse<String> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(List.of("Entity deleted successfully."));
@@ -212,12 +210,12 @@ public class PapAgricoleController {
     public ResponseEntity<AApiResponse<DatabasePapAgricole>> getByCodePap(@PathVariable String codePap) {
         DatabasePapAgricole papAgricole = databasePapAgricoleService.getByCodePap(codePap);
         AApiResponse<DatabasePapAgricole> response = new AApiResponse<>(
-                200, // responseCode
-                List.of(papAgricole), // data
-                0, // offset
-                1, // max
-                "Success", // message
-                1L // length
+                200,
+                List.of(papAgricole),
+                0,
+                1,
+                "Success",
+                1L
         );
         return ResponseEntity.ok(response);
     }
@@ -248,5 +246,78 @@ public class PapAgricoleController {
             return errorResponse;
         }
     }
+
+
+
+    // Vider tous les PAPs agricoles d'un projet
+    @DeleteMapping("/project/{projectId}")
+    public ResponseEntity<AApiResponse<String>> deleteAllByProjectId(@PathVariable Long projectId) {
+        try {
+            long countBefore = databasePapAgricoleService.getTotalCountByProjectId(projectId);
+
+            if (countBefore == 0) {
+                AApiResponse<String> response = new AApiResponse<>();
+                response.setResponseCode(200);
+                response.setData(List.of("No agricultural PAPs found for this project."));
+                response.setMessage("No data to delete.");
+                return ResponseEntity.ok(response);
+            }
+
+            databasePapAgricoleService.deleteAllByProjectId(projectId);
+
+            AApiResponse<String> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(List.of("Deleted " + countBefore + " agricultural PAPs from project ID: " + projectId));
+            response.setMessage("Successfully deleted all agricultural PAPs for the project.");
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(400);
+            errorResponse.setMessage("Invalid input: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error deleting agricultural PAPs: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Supprimer par une liste d'IDs
+    @DeleteMapping("/batch")
+    public ResponseEntity<AApiResponse<String>> deleteAllByIds(@RequestBody List<Long> ids) {
+        try {
+            if (ids == null || ids.isEmpty()) {
+                AApiResponse<String> errorResponse = new AApiResponse<>();
+                errorResponse.setResponseCode(400);
+                errorResponse.setMessage("IDs list cannot be null or empty");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
+
+            long countBefore = ids.size();
+            databasePapAgricoleService.deleteAllByIds(ids);
+
+            AApiResponse<String> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(List.of("Deleted " + countBefore + " agricultural PAPs"));
+            response.setMessage("Successfully deleted selected agricultural PAPs.");
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(400);
+            errorResponse.setMessage("Invalid input: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error deleting agricultural PAPs: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
 }
 

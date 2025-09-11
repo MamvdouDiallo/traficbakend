@@ -40,5 +40,9 @@ public interface DatabasePapAgricoleService {
 
 
     Map<String, Object> getVulnerabilityStats(Long projectId);
+
+    void deleteAllByIds(List<Long> ids);
+
+    void deleteAllByProjectId(Long projectId);
 }
 

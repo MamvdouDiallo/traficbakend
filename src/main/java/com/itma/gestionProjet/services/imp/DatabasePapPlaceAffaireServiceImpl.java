@@ -583,4 +583,26 @@ public class DatabasePapPlaceAffaireServiceImpl implements DatabasePapPlaceAffai
         return total;
     }
 
+
+    // Vider tous les PAPs d'un projet
+    public void deleteAllByProjectId(Long projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("Project ID cannot be null");
+        }
+        repository.deleteAllByProjectId(projectId);
+    }
+
+    // Supprimer par une liste d'IDs
+    public void deleteAllByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("IDs list cannot be null or empty");
+        }
+        repository.deleteAllByIdIn(ids);
+    }
+
+    // Méthode utilitaire pour vérifier l'existence des IDs
+    public boolean existAllByIds(List<Long> ids) {
+        return repository.countByIdIn(ids) == ids.size();
+    }
+
 }

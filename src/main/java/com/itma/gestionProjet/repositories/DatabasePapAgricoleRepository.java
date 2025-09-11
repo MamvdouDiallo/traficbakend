@@ -1,12 +1,15 @@
 package com.itma.gestionProjet.repositories;
 
 import com.itma.gestionProjet.entities.DatabasePapAgricole;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DatabasePapAgricoleRepository  extends JpaRepository<DatabasePapAgricole, Long> {
@@ -62,5 +65,26 @@ public interface DatabasePapAgricoleRepository  extends JpaRepository<DatabasePa
             "LOWER(d.statutPap) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.vulnerabilite) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     long countBySearchTerm(@Param("searchTerm") String searchTerm,  @Param("projectId") Long projectId);
+
+
+    // Vider tous les PAPs agricoles d'un projet
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM DatabasePapAgricole d WHERE d.project.id = :projectId")
+    void deleteAllByProjectId(@Param("projectId") Long projectId);
+
+    // Supprimer par une liste d'IDs
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM DatabasePapAgricole d WHERE d.id IN :ids")
+    void deleteAllByIdIn(@Param("ids") List<Long> ids);
+
+    // Compter les PAPs d'un projet (si pas déjà existant)
+//    long countByProjectId(Long projectId);
+
+    // Méthode utilitaire pour vérifier l'existence des IDs
+    @Query("SELECT COUNT(d) FROM DatabasePapAgricole d WHERE d.id IN :ids")
+    long countByIdIn(@Param("ids") List<Long> ids);
+
 
 }

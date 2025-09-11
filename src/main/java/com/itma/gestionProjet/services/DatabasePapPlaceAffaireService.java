@@ -33,4 +33,8 @@ public interface DatabasePapPlaceAffaireService {
 
     public  Map<String, Object> getVulnerabilityStats(Long projectId);
 
+
+    void deleteAllByProjectId(Long projectId);
+
+    void deleteAllByIds(List<Long> ids);
 }

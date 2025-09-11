@@ -190,4 +190,88 @@ public class DatabasePapPlaceAffaireController {
         );
         return ResponseEntity.ok(response);
     }
+
+
+    // Vider tous les PAPs d'un projet
+    @DeleteMapping("/project/{projectId}")
+    public ResponseEntity<AApiResponse<String>> deleteAllByProjectId(@PathVariable Long projectId) {
+        try {
+            // Vérifier si le projet existe (vous devrez peut-être injecter ProjectRepository)
+            // if (!projectRepository.existsById(projectId)) {
+            //     return ResponseEntity.notFound().build();
+            // }
+
+            long countBefore = databasePapPlaceAffaireService.getTotalCountByProjectId(projectId);
+
+            if (countBefore == 0) {
+                AApiResponse<String> response = new AApiResponse<>();
+                response.setResponseCode(200);
+                response.setData(List.of("No PAPs found for this project."));
+                response.setMessage("No data to delete.");
+                return ResponseEntity.ok(response);
+            }
+
+            databasePapPlaceAffaireService.deleteAllByProjectId(projectId);
+
+            AApiResponse<String> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(List.of("Deleted " + countBefore + " PAPs from project ID: " + projectId));
+            response.setMessage("Successfully deleted all PAPs for the project.");
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(400);
+            errorResponse.setMessage("Invalid input: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error deleting PAPs: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Supprimer par une liste d'IDs
+    @DeleteMapping("/batch")
+    public ResponseEntity<AApiResponse<String>> deleteAllByIds(@RequestBody List<Long> ids) {
+        try {
+            if (ids == null || ids.isEmpty()) {
+                AApiResponse<String> errorResponse = new AApiResponse<>();
+                errorResponse.setResponseCode(400);
+                errorResponse.setMessage("IDs list cannot be null or empty");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
+
+            // Vérifier que tous les IDs existent (optionnel)
+            // if (!databasePapPlaceAffaireService.existAllByIds(ids)) {
+            //     AApiResponse<String> errorResponse = new AApiResponse<>();
+            //     errorResponse.setResponseCode(404);
+            //     errorResponse.setMessage("Some IDs do not exist");
+            //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            // }
+
+            long countBefore = ids.size();
+            databasePapPlaceAffaireService.deleteAllByIds(ids);
+
+            AApiResponse<String> response = new AApiResponse<>();
+            response.setResponseCode(200);
+            response.setData(List.of("Deleted " + countBefore + " PAPs"));
+            response.setMessage("Successfully deleted selected PAPs.");
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(400);
+            errorResponse.setMessage("Invalid input: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            AApiResponse<String> errorResponse = new AApiResponse<>();
+            errorResponse.setResponseCode(500);
+            errorResponse.setMessage("Error deleting PAPs: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 }

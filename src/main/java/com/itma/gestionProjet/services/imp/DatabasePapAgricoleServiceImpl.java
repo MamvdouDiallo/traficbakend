@@ -583,5 +583,32 @@ public class DatabasePapAgricoleServiceImpl implements DatabasePapAgricoleServic
 //    }
 
 
+    // Vider tous les PAPs agricoles d'un projet
+    public void deleteAllByProjectId(Long projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("Project ID cannot be null");
+        }
+        repository.deleteAllByProjectId(projectId);
+    }
+
+    // Supprimer par une liste d'IDs
+    public void deleteAllByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("IDs list cannot be null or empty");
+        }
+        repository.deleteAllByIdIn(ids);
+    }
+
+    // Méthode utilitaire pour vérifier l'existence des IDs
+    public boolean existAllByIds(List<Long> ids) {
+        return repository.countByIdIn(ids) == ids.size();
+    }
+
+    // Compter les PAPs d'un projet (si pas déjà existant)
+//    public long getTotalCountByProjectId(Long projectId) {
+//        return repository.countByProjectId(projectId);
+//    }
+
+
 
 }

@@ -3,12 +3,15 @@ package com.itma.gestionProjet.repositories;
 import com.itma.gestionProjet.entities.DatabasePapAgricole;
 import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
 import com.itma.gestionProjet.entities.Plainte;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DatabasePapPlaceAffaireRepository extends JpaRepository<DatabasePapPlaceAffaire, Long> {
@@ -73,4 +76,22 @@ public interface DatabasePapPlaceAffaireRepository extends JpaRepository<Databas
             @Param("searchTerm") String searchTerm,
             @Param("projectId") Long projectId
     );
+
+
+    // Vider tous les PAPs d'un projet
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM DatabasePapPlaceAffaire d WHERE d.project.id = :projectId")
+    void deleteAllByProjectId(@Param("projectId") Long projectId);
+
+    // Supprimer par une liste d'IDs
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM DatabasePapPlaceAffaire d WHERE d.id IN :ids")
+    void deleteAllByIdIn(@Param("ids") List<Long> ids);
+
+    int countByIdIn(List<Long> ids);
+
+    // Compter les PAPs d'un projet (déjà existant, je le vois)
+//    long countByProjectId(Long projectId);
 }
