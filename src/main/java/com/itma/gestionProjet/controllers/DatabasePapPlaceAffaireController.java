@@ -1,7 +1,6 @@
 package com.itma.gestionProjet.controllers;
 
 import com.itma.gestionProjet.dtos.AApiResponse;
-import com.itma.gestionProjet.dtos.DatabasePapAgricoleResponseDTO;
 import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireRequestDTO;
 import com.itma.gestionProjet.dtos.DatabasePapPlaceAffaireResponseDTO;
 import com.itma.gestionProjet.entities.DatabasePapPlaceAffaire;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/databasePapPlaceAffaire")
@@ -51,33 +49,6 @@ public class DatabasePapPlaceAffaireController {
         Map<String,Object> stats = databasePapPlaceAffaireService.getVulnerabilityStats(projectId);
         return ResponseEntity.ok(stats);
     }
-
-//    @GetMapping("/vulnerable")
-//    public ResponseEntity<List<DatabasePapPlaceAffaire>> getVulnerablePaps() {
-//        List<DatabasePapPlaceAffaire> all = databasePapPlaceAffaireService.getAll();
-//        List<DatabasePapPlaceAffaire> vulnerable = all.stream()
-//                .filter(pap -> !"Non vulnérable".equals(pap.getVulnerabilite()))
-//                .collect(Collectors.toList());
-//        return ResponseEntity.ok(vulnerable);
-//    }
-
-    /*
-    @GetMapping
-    public AApiResponse<DatabasePapPlaceAffaireResponseDTO> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10000000") int size) {
-        List<DatabasePapPlaceAffaireResponseDTO> data = databasePapPlaceAffaireService.getAllDatabasePapPlaceAffaire(page, size);
-        AApiResponse<DatabasePapPlaceAffaireResponseDTO> response = new AApiResponse<>();
-        response.setResponseCode(200);
-        response.setData(data);
-        response.setLength(databasePapPlaceAffaireService.getTotalCount());
-        response.setMessage("Successfully retrieved data.");
-
-
-        return response;
-    }
-
-     */
 
     @GetMapping
     public AApiResponse<DatabasePapPlaceAffaireResponseDTO> getAll(
@@ -196,13 +167,7 @@ public class DatabasePapPlaceAffaireController {
     @DeleteMapping("/project/{projectId}")
     public ResponseEntity<AApiResponse<String>> deleteAllByProjectId(@PathVariable Long projectId) {
         try {
-            // Vérifier si le projet existe (vous devrez peut-être injecter ProjectRepository)
-            // if (!projectRepository.existsById(projectId)) {
-            //     return ResponseEntity.notFound().build();
-            // }
-
             long countBefore = databasePapPlaceAffaireService.getTotalCountByProjectId(projectId);
-
             if (countBefore == 0) {
                 AApiResponse<String> response = new AApiResponse<>();
                 response.setResponseCode(200);
@@ -210,9 +175,7 @@ public class DatabasePapPlaceAffaireController {
                 response.setMessage("No data to delete.");
                 return ResponseEntity.ok(response);
             }
-
             databasePapPlaceAffaireService.deleteAllByProjectId(projectId);
-
             AApiResponse<String> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(List.of("Deleted " + countBefore + " PAPs from project ID: " + projectId));
@@ -243,23 +206,12 @@ public class DatabasePapPlaceAffaireController {
                 errorResponse.setMessage("IDs list cannot be null or empty");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-
-            // Vérifier que tous les IDs existent (optionnel)
-            // if (!databasePapPlaceAffaireService.existAllByIds(ids)) {
-            //     AApiResponse<String> errorResponse = new AApiResponse<>();
-            //     errorResponse.setResponseCode(404);
-            //     errorResponse.setMessage("Some IDs do not exist");
-            //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-            // }
-
             long countBefore = ids.size();
             databasePapPlaceAffaireService.deleteAllByIds(ids);
-
             AApiResponse<String> response = new AApiResponse<>();
             response.setResponseCode(200);
             response.setData(List.of("Deleted " + countBefore + " PAPs"));
             response.setMessage("Successfully deleted selected PAPs.");
-
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {
