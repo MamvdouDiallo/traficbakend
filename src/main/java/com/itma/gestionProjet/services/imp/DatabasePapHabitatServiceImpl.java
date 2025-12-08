@@ -58,12 +58,25 @@ public class DatabasePapHabitatServiceImpl implements DatabasePapHabitatService 
         repository.saveAll(entities);
     }
 
+//    private Double calculatePerteTotale(DatabasePapHabitat entity) {
+//        Double perteBatiment = zeroIfNull(entity.getPerteBatiment());
+//        Double perteMobiliers = zeroIfNull(entity.getPerteMobiliers());
+//        Double perteCloture = zeroIfNull(entity.getPerteCloture());
+//        Double fraisDeplacement = zeroIfNull(entity.getFraisDeplacement());
+//        return perteBatiment + perteMobiliers + perteCloture + fraisDeplacement;
+//    }
+
     private Double calculatePerteTotale(DatabasePapHabitat entity) {
+        // Initialiser toutes les valeurs à 0 si elles sont null
+        Double perteTerre = zeroIfNull(entity.getPerteTerre());
+        Double perteArbreJeune = zeroIfNull(entity.getPerteArbreJeune());
+        Double perteArbreAdulte = zeroIfNull(entity.getPerteArbreAdulte());
+        Double perteEquipement = zeroIfNull(entity.getPerteEquipement());
         Double perteBatiment = zeroIfNull(entity.getPerteBatiment());
-        Double perteMobiliers = zeroIfNull(entity.getPerteMobiliers());
-        Double perteCloture = zeroIfNull(entity.getPerteCloture());
-        Double fraisDeplacement = zeroIfNull(entity.getFraisDeplacement());
-        return perteBatiment + perteMobiliers + perteCloture + fraisDeplacement;
+
+        // Calcul spécifique pour l'agricole
+        return perteTerre + perteArbreJeune + perteArbreAdulte
+                + perteEquipement + perteBatiment;
     }
 
     private Double zeroIfNull(Double v) { return v != null ? v : 0.0; }

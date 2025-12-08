@@ -78,4 +78,9 @@ public class DatabasePapPlaceAffaire {
     @Column(columnDefinition = "LONGTEXT")
     private  String description;
 
+    private  String vulne;
+    private  String  suptotale;
+    private  String  pourcaffecte;
+
+
 }

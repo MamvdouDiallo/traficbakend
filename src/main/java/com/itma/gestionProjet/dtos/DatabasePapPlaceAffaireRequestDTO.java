@@ -65,5 +65,10 @@ public class DatabasePapPlaceAffaireRequestDTO {
     private  Double perteTotaleArbre;
     private String typeHandicape;
     private String description;
+    private  String vulne;
+
+    private  String  suptotale;
+
+    private  String  pourcaffecte;
 
 }

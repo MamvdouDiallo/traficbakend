@@ -62,4 +62,12 @@ public class DatabasePapPlaceAffaireResponseDTO {
     private LocalDate dateNaissance; // Ajoutez ce champ
     private String roleDansFoyer; // "chef de ménage", "membre", etc.
 
+    private  String vulne;
+
+
+    private  String  suptotale;
+
+    private  String  pourcaffecte;
+
+
 }

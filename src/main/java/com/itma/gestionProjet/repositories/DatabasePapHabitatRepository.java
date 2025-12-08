@@ -24,8 +24,7 @@ WHERE (:projectId IS NULL OR p.project.id = :projectId)
 AND (
 LOWER(p.nom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR
 LOWER(p.prenom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR
-LOWER(p.codePap) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR
-LOWER(p.adresseHabitat) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+LOWER(p.codePap) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
 )
 """)
     Page<DatabasePapHabitat> searchGlobal(@Param("searchTerm") String searchTerm, @Param("projectId") Long projectId, Pageable pageable);
@@ -34,8 +33,7 @@ LOWER(p.adresseHabitat) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
             "(:projectId IS NULL OR d.project.id = :projectId) AND (" +
             "LOWER(d.nom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(d.prenom) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.codePap) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(d.typeHabitat) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "LOWER(d.codePap) LIKE LOWER(CONCAT('%', :searchTerm, '%'))  " +
             ")")
     long countBySearchTermAndProjectId(
             @Param("searchTerm") String searchTerm,

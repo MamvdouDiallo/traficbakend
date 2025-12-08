@@ -114,5 +114,13 @@ public class DatabasePapAgricole {
     @Lob
      @Column(columnDefinition = "LONGTEXT")
     private  String description;
+
+    private  String vulne;
+
+
+    private  String  suptotale;
+
+    private  String  pourcaffecte;
+
 }
 

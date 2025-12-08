@@ -1,7 +1,6 @@
 package com.itma.gestionProjet.dtos;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Lob;
+
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -61,6 +60,13 @@ public class DatabasePapAgricoleResponseDTO {
     private  Double perteRevenue;
     private Double appuieRelocalisation;
     private Double fraisDeplacement;
+
+    private  String vulne;
+
+    private  String  suptotale;
+
+    private  String  pourcaffecte;
+
 
 
 }

@@ -64,5 +64,11 @@ public class DatabasePapAgricoleRequestDTO {
     private Double appuieRelocalisation;
     private Double fraisDeplacement;
 
+    private  String vulne;
+
+    private  String  suptotale;
+
+    private  String  pourcaffecte;
+
 
 }
