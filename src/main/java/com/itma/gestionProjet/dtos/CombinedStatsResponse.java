@@ -8,7 +8,10 @@ import java.util.Map;
 public class CombinedStatsResponse {
     private Map<String, Object> placeAffaireStats;
     private Map<String, Object> agricoleStats;
+    private Map<String, Object> habitatStats;
     private Map<String, Object> totalStats;
+
+
 
 }
 
