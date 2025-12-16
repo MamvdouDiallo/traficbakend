@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 @Data
 public class DatabasePapHabitatResponseDTO {
+    private Long id;
     private Long age;
     private String codePap;
     private String codeParcelle;
@@ -42,6 +43,7 @@ public class DatabasePapHabitatResponseDTO {
     private String pj5;
     private String infos_complemenataires;
     private Long projectId;
+    private  String type;
     private  Double perteTerre;
     private  Double perteArbreJeune;
     private  Double perteArbreAdulte;

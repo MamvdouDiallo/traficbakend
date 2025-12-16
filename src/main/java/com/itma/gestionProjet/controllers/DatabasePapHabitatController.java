@@ -4,6 +4,7 @@ import com.itma.gestionProjet.dtos.AApiResponse;
 import com.itma.gestionProjet.dtos.DatabasePapHabitatRequestDTO;
 import com.itma.gestionProjet.dtos.DatabasePapHabitatResponseDTO;
 import com.itma.gestionProjet.services.DatabasePapHabitatService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,16 +142,38 @@ public class DatabasePapHabitatController {
     @DeleteMapping("/batch")
     public ResponseEntity<AApiResponse<String>> deleteAllByIds(@RequestBody List<Long> ids) {
         try {
+            // Validation
+            if (ids == null || ids.isEmpty()) {
+                AApiResponse<String> err = new AApiResponse<>();
+                err.setResponseCode(400);
+                err.setMessage("IDs list cannot be null or empty");
+                return ResponseEntity.badRequest().body(err);
+            }
+
             service.deleteAllByIds(ids);
+
             AApiResponse<String> resp = new AApiResponse<>();
             resp.setResponseCode(200);
-            resp.setMessage("Deleted");
+            resp.setMessage("Successfully deleted " + ids.size() + " records");
             resp.setData(List.of("OK"));
             return ResponseEntity.ok(resp);
+
+        } catch (EntityNotFoundException e) {
+            AApiResponse<String> err = new AApiResponse<>();
+            err.setResponseCode(404);
+            err.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+
+        } catch (IllegalArgumentException e) {
+            AApiResponse<String> err = new AApiResponse<>();
+            err.setResponseCode(400);
+            err.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(err);
+
         } catch (Exception e) {
             AApiResponse<String> err = new AApiResponse<>();
             err.setResponseCode(500);
-            err.setMessage(e.getMessage());
+            err.setMessage("Error deleting records: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }

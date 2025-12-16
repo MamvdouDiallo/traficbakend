@@ -78,8 +78,8 @@ public class DatabasePapHabitat {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PAPAGRICOLE'")
-    private String type = "PAPAGRICOLE";
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PAPHABITAT'")
+    private String type = "PAPHABITAT";
 
     //@Lob
     // @Column(columnDefinition = "LONGTEXT")

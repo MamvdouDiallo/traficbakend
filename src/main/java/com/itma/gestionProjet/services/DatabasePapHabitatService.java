@@ -24,4 +24,7 @@ public interface DatabasePapHabitatService {
     Map<String, Object> getVulnerabilityStats(Long projectId);
     void deleteAllByProjectId(Long projectId);
     void deleteAllByIds(List<Long> ids);
+
+    // Méthode utilitaire pour vérifier l'existence
+    boolean existAllByIds(List<Long> ids);
 }
